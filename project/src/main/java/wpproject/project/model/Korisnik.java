@@ -13,5 +13,5 @@ public class Korisnik {
     String datumRodjenja;
     String profilnaSlika;
     String opis;
-    enum Uloga { Citalac, Administrator, Autor };
+    enum Uloga { CITALAC, ADMINISTRATOR, AUTOR };
 }

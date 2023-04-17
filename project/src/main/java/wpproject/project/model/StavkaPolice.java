@@ -1,2 +1,7 @@
-package wpproject.project.model;public class StavkaPolice {
+package wpproject.project.model;
+
+public class StavkaPolice {
+
+    Recenzija recenzija;
+    Knjiga knjiga;
 }
