@@ -30,4 +30,7 @@ public class Korisnik {
     String opis;
 
     enum Uloga { CITALAC, ADMINISTRATOR, AUTOR };
+
+    @Column
+    Uloga uloga;
 }
