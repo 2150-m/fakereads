@@ -1,0 +1,3 @@
+INSERT INTO PERSON (firstName, lastName, userName, mail, password, dateOfBirth, profilePicture, description, role) VALUES ("Marko", "Markovic", "markomarkovic", "marko@markovic.com", "sifra123", "24.3.1990.", "", "", 0);
+
+INSERT INTO PERSON (firstName, lastName, userName, mail, password, dateOfBirth, profilePicture, description, role) VALUES ("Jelena", "Jelenic", "jelena12", "jelena1234@bmail.com", "hlebhleb", "22.1.2000.", "", "", 0);
