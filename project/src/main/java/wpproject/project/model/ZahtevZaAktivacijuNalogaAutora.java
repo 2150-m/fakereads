@@ -1,25 +1,30 @@
 package wpproject.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
+
+enum Status { CEKANJE, ODOBREN, ODBIJEN }
 
 @Entity
-public class ZahtevZaAktivacijuNalogaAutora {
+public class ZahtevZaAktivacijuNalogaAutora implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column
-    String email;
+    protected String email;
 
     @Column
-    String telefon;
+    protected String telefon;
 
     @Column
-    String poruka;
+    protected String poruka;
 
     @Column
-    String datum;
-
-    enum Status { CEKANJE, ODOBREN, ODBIJEN }
+    protected String datum;
 
     @Column
-    Status status;
+    protected Status status;
 }

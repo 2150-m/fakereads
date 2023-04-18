@@ -1,14 +1,20 @@
 package wpproject.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
 
 @Entity
-public class StavkaPolice {
+public class StavkaPolice implements Serializable {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column
-    Recenzija recenzija;
+    protected Recenzija recenzija;
 
     @Column
-    Knjiga knjiga;
+    protected Knjiga knjiga;
 }

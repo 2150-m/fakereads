@@ -1,18 +1,16 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @Entity
-public class Autor extends Korisnik {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+public class Autor extends Korisnik implements Serializable {
 
     @Column
-    boolean nalogAktivan;
+    protected boolean nalogAktivan;
 
     @Column
-    ArrayList<Knjiga> spisakKnjiga;
+    protected String spisakKnjiga;
 }

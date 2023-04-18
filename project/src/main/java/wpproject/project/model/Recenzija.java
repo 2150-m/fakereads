@@ -1,23 +1,25 @@
 package wpproject.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
 
 @Entity
-public class Recenzija {
+public class Recenzija implements Serializable {
 
-
-    @Column
-    int ocena;
-
-    @Column
-    String tekst;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column
-    String datumRecenzije;
+    protected int ocena;
 
     @Column
-    Korisnik korisnik;
+    protected String tekst;
 
+    @Column
+    protected String datumRecenzije;
 
+    @Column
+    protected Korisnik korisnik;
 }

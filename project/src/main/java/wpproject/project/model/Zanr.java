@@ -1,11 +1,16 @@
 package wpproject.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
 
 @Entity
-public class Zanr {
+public class Zanr implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column
-    String naziv;
+    protected String naziv;
 }

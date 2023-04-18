@@ -1,36 +1,41 @@
 package wpproject.project.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
 
 @Entity
-public class Korisnik {
-    @Column
-    String ime;
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Korisnik implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Long id;
 
     @Column
-    String prezime;
+    protected String ime;
+
+    @Column
+    protected String prezime;
 
     @Column(unique = true)
-    String korisnickoIme;
+    protected  String korisnickoIme;
 
     @Column(unique = true)
-    String mejlAdresa;
+    protected String mejlAdresa;
 
     @Column
-    String lozinka;
+    protected String lozinka;
 
     @Column
-    String datumRodjenja;
+    protected String datumRodjenja;
 
     @Column
-    String profilnaSlika;
+    protected String profilnaSlika;
 
     @Column
-    String opis;
-
-    enum Uloga { CITALAC, ADMINISTRATOR, AUTOR };
+    protected String opis;
 
     @Column
-    Uloga uloga;
+    protected String uloga;
 }
