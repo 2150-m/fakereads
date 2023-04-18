@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 
-enum Status { CEKANJE, ODOBREN, ODBIJEN }
-
 @Entity
 public class ZahtevZaAktivacijuNalogaAutora implements Serializable {
 
@@ -24,6 +22,8 @@ public class ZahtevZaAktivacijuNalogaAutora implements Serializable {
 
     @Column
     protected String datum;
+
+    enum Status { CEKANJE, ODOBREN, ODBIJEN }
 
     @Column
     protected Status status;

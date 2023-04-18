@@ -1,8 +1,8 @@
 package wpproject.project.repository;
 
-import wpproject.project.model.Autor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import wpproject.project.model.Autor;
 
-public interface AutorRepository extends JpaRepository<Autor, Long> {
+public interface AutorRepository extends KorisnikRepository {
 
 }
