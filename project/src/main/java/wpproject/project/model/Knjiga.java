@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 
 @Entity
 public class Knjiga {
-    @Column(name = "nasolov")
+    @Column
     String naslov;
 
     @Column
