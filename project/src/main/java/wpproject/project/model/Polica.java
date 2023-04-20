@@ -3,6 +3,8 @@ package wpproject.project.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Polica implements Serializable {
@@ -17,6 +19,6 @@ public class Polica implements Serializable {
     @Column
     protected boolean primarna;
 
-    @Column
-    protected StavkaPolice stavkaPolice;
+    @OneToMany(mappedBy = "polica", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    protected Set<StavkaPolice> stavkaPolice = new HashSet<>();
 }

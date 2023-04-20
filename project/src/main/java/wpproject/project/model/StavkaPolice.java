@@ -3,6 +3,8 @@ package wpproject.project.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class StavkaPolice implements Serializable {
@@ -12,9 +14,9 @@ public class StavkaPolice implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @Column
-    protected Recenzija recenzija;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    protected Set<Recenzija> recenzija = new HashSet<>();
 
-    @Column
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     protected Knjiga knjiga;
 }

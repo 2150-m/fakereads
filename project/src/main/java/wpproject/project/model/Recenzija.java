@@ -1,6 +1,7 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CollectionIdMutability;
 
 import java.io.Serializable;
 
@@ -20,6 +21,6 @@ public class Recenzija implements Serializable {
     @Column
     protected String datumRecenzije;
 
-    @Column
+    @ManyToOne(fetch = FetchType.LAZY)
     protected Korisnik korisnik;
 }

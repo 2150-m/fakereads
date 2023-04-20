@@ -10,5 +10,15 @@ INSERT INTO KNJIGA (naslov, naslovna_fotografija, datum_objavljivanja, opis, bro
 INSERT INTO ZANR (naziv) VALUES
 ('Horor');
 
-INSERT INTO KNJIGA_ZANROVI (zanr_id, knjiga_id) VALUES
+INSERT INTO KNJIGE_ZANROVI (zanr_id, knjiga_id) VALUES
 (1, 1);
+
+INSERT INTO POLICA (naziv, primarna) VALUES
+("Polica1", true),
+("Polica2", false);
+
+INSERT INTO RECENZIJA (ocena, tekst, datumRecenzije, korisnik) VALUES
+
+
+INSERT INTO STAVKAPOLICE (recenzija, knjiga) VALUES
+()
