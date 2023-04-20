@@ -14,6 +14,10 @@ public class Autor extends Korisnik {
     protected boolean nalogAktivan;
 
     @ManyToMany
+    @JoinTable(name = "AUTORI_KNJIGE",
+            joinColumns = @JoinColumn(name = "autor_id"),
+            inverseJoinColumns = @JoinColumn(name = "knjiga_id")
+    )
     protected List<Knjiga> spisakKnjiga;
 
     public boolean isNalogAktivan() {

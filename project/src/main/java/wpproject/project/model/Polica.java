@@ -19,6 +19,10 @@ public class Polica implements Serializable {
     @Column
     protected boolean primarna;
 
-    @OneToMany(mappedBy = "polica", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "POLICA_STAVKE_POVEZIVANJE",
+            joinColumns = @JoinColumn(name = "polica_id"),
+            inverseJoinColumns = @JoinColumn(name = "stavka_police_id")
+    )
     protected Set<StavkaPolice> stavkaPolice = new HashSet<>();
 }

@@ -24,7 +24,9 @@ public abstract class WpProjectApplication implements CommandLineRunner {
 		//this.korisnikRepository.save(korisnik);
 
 		Autor autor = new Autor();
-		autor.setIme("Meme");
+		autor.setId(3L);
+		autor.setIme("Milos");
+		autor.setPrezime("Mihailovic");
 		autor.setNalogAktivan(true);
 		this.autorRepository.save(autor);
 
