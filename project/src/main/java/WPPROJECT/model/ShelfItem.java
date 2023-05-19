@@ -3,8 +3,9 @@ package WPPROJECT.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
 public class ShelfItem implements Serializable {
@@ -18,7 +19,7 @@ public class ShelfItem implements Serializable {
             joinColumns = @JoinColumn(name = "stavka_police_id"),
             inverseJoinColumns = @JoinColumn(name = "recenzija_id")
     )
-    protected List<BookReview> reviews = new ArrayList<>();
+    protected Set<BookReview> reviews;
 
     @ManyToOne
     protected Book book;

@@ -14,10 +14,10 @@ public class Shelf implements Serializable {
     protected Long id;
 
     @Column
-    protected String naziv;
+    protected String name;
 
     @Column
-    protected boolean primarna;
+    protected boolean primary;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "POLICA_STAVKE_POVEZIVANJE",

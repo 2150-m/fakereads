@@ -21,12 +21,12 @@ public abstract class Application implements CommandLineRunner {
 	@Override
 	public void run(String... args) {
 
-		AccountAuthor author = new AccountAuthor();
-		author.setId(3L);
-		author.setFirstname("Milos");
-		author.setLastname("Mihailovic");
-		author.setActivated(true);
-		this.accountAuthorRepository.save(author);
+		// AccountAuthor author = new AccountAuthor();
+		// author.setId(3L);
+		// author.setFirstname("Milos");
+		// author.setLastname("Mihailovic");
+		// author.setActivated(true);
+		// this.accountAuthorRepository.save(author);
 
 		for (AccountUser k : this.accountUserRepository.findAll()) { System.out.println(k); }
 	}
