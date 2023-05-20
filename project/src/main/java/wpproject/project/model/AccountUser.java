@@ -3,6 +3,9 @@ package wpproject.project.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -27,7 +30,7 @@ public class AccountUser implements Serializable {
     protected String password;
 
     @Column
-    protected String dateOfBirth;
+    protected Date dateOfBirth;
 
     @Column
     protected String profilePicture;
@@ -39,6 +42,25 @@ public class AccountUser implements Serializable {
 
     @Column
     protected AccountRole accountRole;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    protected Set<Shelf> shelves;
+
+    public AccountRole getAccountRole() {
+        return accountRole;
+    }
+
+    public void setAccountRole(AccountRole accountRole) {
+        this.accountRole = accountRole;
+    }
+
+    public Set<Shelf> getShelves() {
+        return shelves;
+    }
+
+    public void setShelves(Set<Shelf> shelves) {
+        this.shelves = shelves;
+    }
 
     public Long getId() {
         return id;
@@ -64,7 +86,7 @@ public class AccountUser implements Serializable {
         return password;
     }
 
-    public String getDateOfBirth() {
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
@@ -120,7 +142,7 @@ public class AccountUser implements Serializable {
         this.password = password;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

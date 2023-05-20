@@ -7,16 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import wpproject.project.model.AccountAuthor;
 import wpproject.project.model.AccountUser;
-import wpproject.project.repository.KorisnikRepository;
-import wpproject.project.repository.AutorRepository;
+import wpproject.project.repository.AccountUserRepository;
+import wpproject.project.repository.AuthorRepository;
 
 @SpringBootApplication
 public abstract class WpProjectApplication implements CommandLineRunner {
 
 	@Autowired
-	private KorisnikRepository korisnikRepository;
+	private AccountUserRepository accountUserRepository;
 	@Autowired
-	private AutorRepository autorRepository;
+	private AuthorRepository authorRepository;
 
 	@Override
 	public void run(String... args) {
@@ -28,9 +28,9 @@ public abstract class WpProjectApplication implements CommandLineRunner {
 		accountAuthor.setFirstName("Milos");
 		accountAuthor.setLastName("Mihailovic");
 		accountAuthor.setAccountActivated(true);
-		this.autorRepository.save(accountAuthor);
+		this.authorRepository.save(accountAuthor);
 
-		for (AccountUser k : this.korisnikRepository.findAll()) { System.out.println(k); }
+		for (AccountUser k : this.accountUserRepository.findAll()) { System.out.println(k); }
 	}
 
 	public static void main(String[] args) {

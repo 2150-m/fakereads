@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Genre implements Serializable {
+public class BookGenre implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
@@ -15,8 +15,8 @@ public class Genre implements Serializable {
     @Column
     protected String name;
 
-    @ManyToMany(mappedBy = "genres")
-    private Set<Book> books = new HashSet<>();
+    @ManyToMany(mappedBy = "bookGenres")
+    private Set<Book> books;
 
     @Override
     public String toString() {

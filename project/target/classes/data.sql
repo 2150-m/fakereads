@@ -7,22 +7,22 @@ INSERT INTO ACCOUNT_AUTHOR (id, account_activated) VALUES (2, true);
 INSERT INTO BOOK (title, cover_photo, release_date, description, num_of_pages, rating, isbn) VALUES
 ('Knjiga', 'knjiga_01.png', '12.8.1986.', 'Ovo je definitivno knjiga', 156, 6, 9783161484100);
 
-INSERT INTO GENRE (id, name) VALUES
+INSERT INTO BOOK_GENRE (id, name) VALUES
 (6, 'Horor');
 
-INSERT INTO BOOKS_GENRES (genre_id, book_id) VALUES
+INSERT INTO BOOKS_GENRES (book_genre_id, book_id) VALUES
 (6, 1);
 
 INSERT INTO AUTHORS_BOOKS (account_author_id, book_id) VALUES
 (2, 1);
 
-INSERT INTO REVIEW (id, rating, text, review_date, account_user_id) VALUES
+INSERT INTO BOOK_REVIEW (id, rating, text, review_date, account_user_id) VALUES
 (35, 8, 'tekst', '12.12.2012.', 1);
 
 INSERT INTO SHELF_ITEM (id, book_id) VALUES
 (10, 1);
 
-INSERT INTO SHELF_ITEM_REVIEW (shelf_item_id, review_id) VALUES
+INSERT INTO SHELF_ITEM_REVIEW (shelf_item_id, book_review_id) VALUES
 (10, 35);
 
 INSERT INTO SHELF (name, is_primary) VALUES ('Polica01', true);

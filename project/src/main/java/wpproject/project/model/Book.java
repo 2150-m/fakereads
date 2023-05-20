@@ -3,6 +3,7 @@ package wpproject.project.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class Book implements Serializable {
     protected String coverPhoto;
 
     @Column
-    protected String releaseDate;
+    protected Date releaseDate;
 
     @Column
     protected String description;
@@ -29,14 +30,14 @@ public class Book implements Serializable {
     @ManyToMany
     @JoinTable(name = "BOOKS_GENRES",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id", referencedColumnName = "id"))
-    private Set<Genre> genres = new HashSet<>();
+            inverseJoinColumns = @JoinColumn(name = "book_genre_id", referencedColumnName = "id"))
+    private Set<BookGenre> bookGenres;
 
     @Column
     protected int numOfPages;
 
     @Column
-    protected int rating;
+    protected double rating;
 
     @Column
     protected long isbn;
@@ -49,7 +50,7 @@ public class Book implements Serializable {
                 ", naslovnaFotografija='" + coverPhoto + '\'' +
                 ", datumObjavljivanja='" + releaseDate + '\'' +
                 ", description='" + description + '\'' +
-                ", zanrovi=" + genres +
+                ", zanrovi=" + bookGenres +
                 ", brojStrana=" + numOfPages +
                 ", rating=" + rating +
                 ", isbn=" + isbn +

@@ -2,7 +2,8 @@ package wpproject.project.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.util.Set;
+
 
 @Entity
 public class AccountAuthor extends AccountUser {
@@ -14,7 +15,7 @@ public class AccountAuthor extends AccountUser {
             joinColumns = @JoinColumn(name = "account_author_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id")
     )
-    protected List<Book> books;
+    protected Set<Book> books;
 
     public boolean isAccountActivated() {
         return accountActivated;
@@ -24,11 +25,11 @@ public class AccountAuthor extends AccountUser {
         this.accountActivated = accountActivated;
     }
 
-    public List<Book> getBooks() {
+    public Set<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(List<Book> books) {
+    public void setBooks(Set<Book> books) {
         this.books = books;
     }
 }

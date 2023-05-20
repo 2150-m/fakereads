@@ -3,6 +3,7 @@ package wpproject.project.model;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 public class AccountActivationRequest implements Serializable {
@@ -21,10 +22,13 @@ public class AccountActivationRequest implements Serializable {
     protected String message;
 
     @Column
-    protected String requestDate;
+    protected Date requestDate;
 
     enum Status {WAITING, APPROVED, REJECTED}
 
     @Column
     protected Status status;
+
+    @ManyToOne
+    protected AccountAuthor author;
 }

@@ -3,5 +3,5 @@ package wpproject.project.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import wpproject.project.model.AccountActivationRequest;
 
-public interface ZahtevZaAktivacijuNalogaAutoraRepository extends JpaRepository<AccountActivationRequest, Long> {
+public interface AccountActivationRequestRepository extends JpaRepository<AccountActivationRequest, Long> {
 }
