@@ -1,10 +1,8 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
-
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -20,6 +18,7 @@ public class Book implements Serializable {
     @Column
     protected String coverPhoto;
 
+    @Temporal(TemporalType.DATE)
     @Column
     protected Date releaseDate;
 

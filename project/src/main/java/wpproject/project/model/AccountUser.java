@@ -1,6 +1,7 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -29,6 +30,7 @@ public class AccountUser implements Serializable {
     @Column
     protected String password;
 
+    @Temporal(TemporalType.DATE)
     @Column
     protected Date dateOfBirth;
 

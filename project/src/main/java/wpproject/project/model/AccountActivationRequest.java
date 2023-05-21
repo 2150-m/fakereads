@@ -21,6 +21,7 @@ public class AccountActivationRequest implements Serializable {
     @Column
     protected String message;
 
+    @Temporal(TemporalType.DATE)
     @Column
     protected Date requestDate;
 
