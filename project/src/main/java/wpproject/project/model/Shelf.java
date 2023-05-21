@@ -25,4 +25,11 @@ public class Shelf implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "shelf_item_id")
     )
     protected Set<ShelfItem> shelfItems;
+
+    public Shelf() {}
+
+    public Shelf(String name, boolean isPrimary) {
+        this.name = name;
+        this.isPrimary = isPrimary;
+    }
 }

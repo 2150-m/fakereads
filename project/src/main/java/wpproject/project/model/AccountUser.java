@@ -40,13 +40,27 @@ public class AccountUser implements Serializable {
     @Column
     protected String description;
 
-    enum AccountRole {READER, AUTHOR, ADMINISTRATOR }
+    public enum AccountRole {READER, AUTHOR, ADMINISTRATOR }
 
     @Column
     protected AccountRole accountRole;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    protected Set<Shelf> shelves;
+    protected Set<Shelf> shelves = new HashSet<>();
+
+    public AccountUser() {}
+
+    public AccountUser(String firstName, String lastName, String username, String mailAddress, String password, Date dateOfBirth, String profilePicture, String description, AccountRole accountRole) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.mailAddress = mailAddress;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+        this.profilePicture = profilePicture;
+        this.description = description;
+        this.accountRole = accountRole;
+    }
 
     public AccountRole getAccountRole() {
         return accountRole;
@@ -104,22 +118,6 @@ public class AccountUser implements Serializable {
         return accountRole;
     }
 
-    @Override
-    public String toString() {
-        return "Korisnik{" +
-                "id=" + id +
-                ", ime='" + firstName + '\'' +
-                ", prezime='" + lastName + '\'' +
-                ", username='" + username + '\'' +
-                ", mailAddress='" + mailAddress + '\'' +
-                ", password='" + password + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
-                ", profilePicture='" + profilePicture + '\'' +
-                ", description='" + description + '\'' +
-                ", uloga=" + accountRole +
-                '}';
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -158,5 +156,21 @@ public class AccountUser implements Serializable {
 
     public void setUloga(AccountRole accountRole) {
         this.accountRole = accountRole;
+    }
+
+    @Override
+    public String toString() {
+        return "Korisnik{" +
+                "id=" + id +
+                ", ime='" + firstName + '\'' +
+                ", prezime='" + lastName + '\'' +
+                ", username='" + username + '\'' +
+                ", mailAddress='" + mailAddress + '\'' +
+                ", password='" + password + '\'' +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", description='" + description + '\'' +
+                ", uloga=" + accountRole +
+                '}';
     }
 }

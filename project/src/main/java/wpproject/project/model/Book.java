@@ -41,6 +41,19 @@ public class Book implements Serializable {
     @Column
     protected long isbn;
 
+    public Book() {
+    }
+
+    public Book(String title, String coverPhoto, Date releaseDate, String description, int numOfPages, double rating, long isbn) {
+        this.title = title;
+        this.coverPhoto = coverPhoto;
+        this.releaseDate = releaseDate;
+        this.description = description;
+        this.numOfPages = numOfPages;
+        this.rating = rating;
+        this.isbn = isbn;
+    }
+
     @Override
     public String toString() {
         return "Knjiga{" +

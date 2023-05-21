@@ -21,4 +21,10 @@ public class ShelfItem implements Serializable {
 
     @ManyToOne
     protected Book book;
+
+    public ShelfItem() {}
+
+    public ShelfItem(Book book) {
+        this.book = book;
+    }
 }

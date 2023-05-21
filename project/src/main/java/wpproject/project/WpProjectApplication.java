@@ -20,16 +20,6 @@ public abstract class WpProjectApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) {
-		//Korisnik korisnik = new Korisnik();
-		//this.korisnikRepository.save(korisnik);
-
-		AccountAuthor accountAuthor = new AccountAuthor();
-		accountAuthor.setId(3L);
-		accountAuthor.setFirstName("Milos");
-		accountAuthor.setLastName("Mihailovic");
-		accountAuthor.setAccountActivated(true);
-		this.authorRepository.save(accountAuthor);
-
 		for (AccountUser k : this.accountUserRepository.findAll()) { System.out.println(k); }
 	}
 

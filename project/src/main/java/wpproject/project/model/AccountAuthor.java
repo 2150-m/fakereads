@@ -17,6 +17,12 @@ public class AccountAuthor extends AccountUser {
     )
     protected Set<Book> books;
 
+    public AccountAuthor() {}
+
+    public AccountAuthor(boolean accountActivated) {
+        this.accountActivated = accountActivated;
+    }
+
     public boolean isAccountActivated() {
         return accountActivated;
     }

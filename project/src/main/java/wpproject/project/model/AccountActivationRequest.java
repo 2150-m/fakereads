@@ -32,4 +32,15 @@ public class AccountActivationRequest implements Serializable {
 
     @ManyToOne
     protected AccountAuthor author;
+
+    public AccountActivationRequest() {}
+
+    public AccountActivationRequest(String mailAddress, String phoneNumber, String message, Date requestDate, Status status, AccountAuthor author) {
+        this.mailAddress = mailAddress;
+        this.phoneNumber = phoneNumber;
+        this.message = message;
+        this.requestDate = requestDate;
+        this.status = status;
+        this.author = author;
+    }
 }

@@ -26,6 +26,15 @@ public class BookReview implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     protected AccountUser accountUser;
 
+    public BookReview() {}
+
+    public BookReview(double rating, String text, Date reviewDate, AccountUser accountUser) {
+        this.rating = rating;
+        this.text = text;
+        this.reviewDate = reviewDate;
+        this.accountUser = accountUser;
+    }
+
     public Long getId() {
         return id;
     }

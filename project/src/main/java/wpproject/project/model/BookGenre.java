@@ -18,6 +18,13 @@ public class BookGenre implements Serializable {
     @ManyToMany(mappedBy = "bookGenres")
     private Set<Book> books;
 
+    public BookGenre() {
+    }
+
+    public BookGenre(String name) {
+        this.name = name;
+    }
+
     @Override
     public String toString() {
         return "Zanr{" +
