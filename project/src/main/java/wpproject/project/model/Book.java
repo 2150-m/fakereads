@@ -1,5 +1,9 @@
 package wpproject.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -25,10 +29,11 @@ public class Book implements Serializable {
     private String description;
 
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "BOOKS_GENRES",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "book_genre_id", referencedColumnName = "id"))
+    @JsonManagedReference
     private Set<BookGenre> bookGenres;
 
     @Column
