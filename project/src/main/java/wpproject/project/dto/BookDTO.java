@@ -1,56 +1,35 @@
-package wpproject.project.model;
+package wpproject.project.dto;
 
-import jakarta.persistence.*;
-import java.io.Serializable;
+import wpproject.project.model.Book;
+import wpproject.project.model.BookGenre;
+
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-public class Book implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class BookDTO {
     private Long id;
-
-    @Column
     private String title;
-
-    @Column
     private String coverPhoto;
-
-    @Temporal(TemporalType.DATE)
-    @Column
     private Date releaseDate;
-
-    @Column
     private String description;
-
-
-    @ManyToMany
-    @JoinTable(name = "BOOKS_GENRES",
-            joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "book_genre_id", referencedColumnName = "id"))
-    private Set<BookGenre> bookGenres;
-
-    @Column
+    private Set<BookGenre> bookGenres = new HashSet<>();
     private int numOfPages;
-
-    @Column
     private double rating;
-
-    @Column
     private long isbn;
 
-    public Book() {
-    }
+    public BookDTO() {}
 
-    public Book(String title, String coverPhoto, Date releaseDate, String description, int numOfPages, double rating, long isbn) {
-        this.title = title;
-        this.coverPhoto = coverPhoto;
-        this.releaseDate = releaseDate;
-        this.description = description;
-        this.numOfPages = numOfPages;
-        this.rating = rating;
-        this.isbn = isbn;
+    public BookDTO(Book book) {
+        this.id = book.getId();
+        this.title = book.getTitle();
+        this.coverPhoto = book.getCoverPhoto();
+        this.releaseDate = book.getReleaseDate();
+        this.description = book.getDescription();
+        this.bookGenres = book.getBookGenres();
+        this.numOfPages = book.getNumOfPages();
+        this.rating = book.getRating();
+        this.isbn = book.getIsbn();
     }
 
     public Long getId() {
@@ -123,20 +102,5 @@ public class Book implements Serializable {
 
     public void setIsbn(long isbn) {
         this.isbn = isbn;
-    }
-
-    @Override
-    public String toString() {
-        return "Knjiga{" +
-                "id=" + id +
-                ", naslov='" + title + '\'' +
-                ", naslovnaFotografija='" + coverPhoto + '\'' +
-                ", datumObjavljivanja='" + releaseDate + '\'' +
-                ", description='" + description + '\'' +
-                ", zanrovi=" + bookGenres +
-                ", brojStrana=" + numOfPages +
-                ", rating=" + rating +
-                ", isbn=" + isbn +
-                '}';
     }
 }

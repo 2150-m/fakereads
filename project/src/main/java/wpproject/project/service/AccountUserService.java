@@ -13,6 +13,11 @@ public class AccountUserService {
     @Autowired
     private AccountUserRepository accountUserRepository;
 
+    public AccountUser findOne(String username) {
+        Optional<AccountUser> foundUser = accountUserRepository.findByUsername(username);
+        return foundUser.orElse(null);
+    }
+
     public AccountUser findOne(Long id) {
         Optional<AccountUser> foundUser = accountUserRepository.findById(id);
         return foundUser.orElse(null);

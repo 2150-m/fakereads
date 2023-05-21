@@ -8,6 +8,7 @@ import wpproject.project.model.Shelf;
 import wpproject.project.repository.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public class DatabaseConfiguration {
         ));
 
         // USERS
-        AccountUser user001 = new AccountUser("Milan", "Milanović", "milan1", "milan@milanovic.com", "milan123", new Date(1980, 10, 12), "pic1", "opis", AccountUser.AccountRole.READER);
+        AccountUser user001 = new AccountUser("Milan", "Milanović", "milan1", "milan@milanovic.com", "milan123", LocalDate.of(1983, 4, 12), "pic1", "opis", AccountUser.AccountRole.READER);
 
         /*user001.getShelves().addAll(List.of(
                 shelf_ToRead, shelf_Completed, shelf_Dropped

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public class AccountUser implements Serializable {
 
     @Temporal(TemporalType.DATE)
     @Column
-    protected Date dateOfBirth;
+    protected LocalDate dateOfBirth;
 
     @Column
     protected String profilePicture;
@@ -50,7 +50,7 @@ public class AccountUser implements Serializable {
 
     public AccountUser() {}
 
-    public AccountUser(String firstName, String lastName, String username, String mailAddress, String password, Date dateOfBirth, String profilePicture, String description, AccountRole accountRole) {
+    public AccountUser(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, AccountRole accountRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -60,6 +60,78 @@ public class AccountUser implements Serializable {
         this.profilePicture = profilePicture;
         this.description = description;
         this.accountRole = accountRole;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getMailAddress() {
+        return mailAddress;
+    }
+
+    public void setMailAddress(String mailAddress) {
+        this.mailAddress = mailAddress;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public AccountRole getAccountRole() {
@@ -76,86 +148,6 @@ public class AccountUser implements Serializable {
 
     public void setShelves(Set<Shelf> shelves) {
         this.shelves = shelves;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getMailAddress() {
-        return mailAddress;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public String getProfilePicture() {
-        return profilePicture;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public AccountRole getUloga() {
-        return accountRole;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setMailAddress(String mailAddress) {
-        this.mailAddress = mailAddress;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
-    }
-
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setUloga(AccountRole accountRole) {
-        this.accountRole = accountRole;
     }
 
     @Override
