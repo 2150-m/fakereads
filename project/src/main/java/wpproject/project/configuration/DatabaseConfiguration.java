@@ -59,7 +59,6 @@ public class DatabaseConfiguration {
         reviewRepository.saveAll(List.of(review_book001_1));
         shelfItemRepository.saveAll(List.of(shelfItem_book001));
         shelfRepository.saveAll(defaultShelves);
-
         
         shelfItem_book001.getBookReviews().add(review_book001_1);
         user001.getShelves().get(0).getShelfItems().add(shelfItem_book001);
