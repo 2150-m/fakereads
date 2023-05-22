@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -16,11 +18,16 @@ public class BookGenre implements Serializable {
     @Column
     protected String name;
 
-    @ManyToMany(mappedBy = "bookGenres", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "bookGenres")
     @JsonBackReference
-    private Set<Book> books;
+    private List<Book> books = new ArrayList<>();
 
     public BookGenre() {
+        this("");
+    }
+
+    public BookGenre(String name) {
+        this.name = name;
     }
 
     public Long getId() {
@@ -39,11 +46,11 @@ public class BookGenre implements Serializable {
         this.name = name;
     }
 
-    public Set<Book> getBooks() {
+    public List<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(Set<Book> books) {
+    public void setBooks(List<Book> books) {
         this.books = books;
     }
 

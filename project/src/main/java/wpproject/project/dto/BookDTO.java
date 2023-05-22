@@ -3,20 +3,22 @@ package wpproject.project.dto;
 import wpproject.project.model.Book;
 import wpproject.project.model.BookGenre;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class BookDTO {
     private Long id;
     private String title;
     private String coverPhoto;
-    private Date releaseDate;
+    private LocalDate releaseDate;
     private String description;
-    private Set<BookGenre> bookGenres = new HashSet<>();
+    private List<BookGenre> bookGenres = new ArrayList<>();
     private int numOfPages;
     private double rating;
-    private long isbn;
+    private String isbn;
 
     public BookDTO() {}
 
@@ -56,11 +58,11 @@ public class BookDTO {
         this.coverPhoto = coverPhoto;
     }
 
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 
@@ -72,11 +74,11 @@ public class BookDTO {
         this.description = description;
     }
 
-    public Set<BookGenre> getBookGenres() {
+    public List<BookGenre> getBookGenres() {
         return bookGenres;
     }
 
-    public void setBookGenres(Set<BookGenre> bookGenres) {
+    public void setBookGenres(List<BookGenre> bookGenres) {
         this.bookGenres = bookGenres;
     }
 
@@ -96,11 +98,11 @@ public class BookDTO {
         this.rating = rating;
     }
 
-    public long getIsbn() {
+    public String getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(long isbn) {
+    public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 }

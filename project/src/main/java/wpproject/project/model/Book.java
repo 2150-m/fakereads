@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,18 +26,17 @@ public class Book implements Serializable {
 
     @Temporal(TemporalType.DATE)
     @Column
-    private Date releaseDate;
+    private LocalDate releaseDate;
 
     @Column
     private String description;
 
-
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "BOOKS_GENRES",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "book_genre_id", referencedColumnName = "id"))
     @JsonManagedReference
-    private Set<BookGenre> bookGenres;
+    private List<BookGenre> bookGenres = new ArrayList<>();
 
     @Column
     private int numOfPages;
@@ -43,12 +45,12 @@ public class Book implements Serializable {
     private double rating;
 
     @Column
-    private long isbn;
+    private String isbn;
 
     public Book() {
     }
 
-    public Book(String title, String coverPhoto, Date releaseDate, String description, int numOfPages, double rating, long isbn) {
+    public Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, double rating, String isbn) {
         this.title = title;
         this.coverPhoto = coverPhoto;
         this.releaseDate = releaseDate;
@@ -82,11 +84,11 @@ public class Book implements Serializable {
         this.coverPhoto = coverPhoto;
     }
 
-    public Date getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
-    public void setReleaseDate(Date releaseDate) {
+    public void setReleaseDate(LocalDate releaseDate) {
         this.releaseDate = releaseDate;
     }
 
@@ -98,11 +100,11 @@ public class Book implements Serializable {
         this.description = description;
     }
 
-    public Set<BookGenre> getBookGenres() {
+    public List<BookGenre> getBookGenres() {
         return bookGenres;
     }
 
-    public void setBookGenres(Set<BookGenre> bookGenres) {
+    public void setBookGenres(List<BookGenre> bookGenres) {
         this.bookGenres = bookGenres;
     }
 
@@ -122,11 +124,11 @@ public class Book implements Serializable {
         this.rating = rating;
     }
 
-    public long getIsbn() {
+    public String getIsbn() {
         return isbn;
     }
 
-    public void setIsbn(long isbn) {
+    public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
 

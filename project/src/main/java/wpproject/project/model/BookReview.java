@@ -1,9 +1,9 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -21,18 +21,18 @@ public class BookReview implements Serializable {
 
     @Temporal(TemporalType.DATE)
     @Column
-    protected Date reviewDate;
+    protected LocalDate reviewDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    protected AccountUser accountUser;
+    protected Account account;
 
     public BookReview() {}
 
-    public BookReview(double rating, String text, Date reviewDate, AccountUser accountUser) {
+    public BookReview(double rating, String text, LocalDate reviewDate, Account account) {
         this.rating = rating;
         this.text = text;
         this.reviewDate = reviewDate;
-        this.accountUser = accountUser;
+        this.account = account;
     }
 
     public Long getId() {
@@ -47,11 +47,11 @@ public class BookReview implements Serializable {
         return text;
     }
 
-    public Date getReviewDate() {
+    public LocalDate getReviewDate() {
         return reviewDate;
     }
 
-    public AccountUser getAccountUser() {
-        return accountUser;
+    public Account getAccountUser() {
+        return account;
     }
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 
 
 @Entity
-public class AccountAuthor extends AccountUser {
+public class AccountAuthor extends Account {
     @Column
     protected boolean accountActivated;
 

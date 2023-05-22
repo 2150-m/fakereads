@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import wpproject.project.model.Book;
 import wpproject.project.model.BookGenre;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class BookGenreDTO {
     protected Long id;
     protected String name;
-    private Set<Book> books = new HashSet<>(); // If included, creates an infinite tree in the JSON view
+    private List<Book> books = new ArrayList<>(); // If included, creates an infinite tree in the JSON view
 
     public BookGenreDTO() {}
 
@@ -36,11 +38,11 @@ public class BookGenreDTO {
         this.name = name;
     }
 
-    public Set<Book> getBooks() {
+    public List<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(Set<Book> books) {
+    public void setBooks(List<Book> books) {
         this.books = books;
     }
 }

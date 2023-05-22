@@ -1,5 +1,5 @@
 package wpproject.project.repository;
 
-public interface AuthorRepository extends AccountUserRepository {
+public interface AuthorRepository extends AccountRepository {
 
 }

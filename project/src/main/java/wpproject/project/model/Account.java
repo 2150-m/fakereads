@@ -1,16 +1,21 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
+import wpproject.project.configuration.DatabaseConfiguration;
+import wpproject.project.repository.ShelfRepository;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class AccountUser implements Serializable {
+public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
@@ -40,17 +45,24 @@ public class AccountUser implements Serializable {
     @Column
     protected String description;
 
-    public enum AccountRole {READER, AUTHOR, ADMINISTRATOR }
-
     @Column
-    protected AccountRole accountRole;
+    protected Account_Role accountRole;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    protected Set<Shelf> shelves = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    /*@JoinTable(name = "ACCOUNTS_SHELVES",
+            joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "shelf_id", referencedColumnName = "id")
+    )*/
+    protected List<Shelf> shelves = new ArrayList<>();
 
-    public AccountUser() {}
+//    @Autowired
+//    private DatabaseConfiguration dbConfig;
 
-    public AccountUser(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, AccountRole accountRole) {
+    public Account() {
+        this("", "", "", "", "", LocalDate.MIN, "", "", Account_Role.READER);
+    }
+
+    public Account(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, Account_Role accountRole) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;
@@ -60,6 +72,18 @@ public class AccountUser implements Serializable {
         this.profilePicture = profilePicture;
         this.description = description;
         this.accountRole = accountRole;
+
+        List<Shelf> defaultShelves = new ArrayList<>();
+        defaultShelves = DatabaseConfiguration.DefaultShelves();
+        this.shelves.addAll(defaultShelves);
+
+//        Shelf shelf_WantToRead = new Shelf("WantToRead", true);
+//        Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
+//        Shelf shelf_Read = new Shelf("Read", true);
+//        List<Shelf> defaultShelves = List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read);
+//
+//        this.shelves.addAll(defaultShelves);
+//        dbConfig.SaveDefaultShelves(defaultShelves);
     }
 
     public Long getId() {
@@ -134,19 +158,19 @@ public class AccountUser implements Serializable {
         this.description = description;
     }
 
-    public AccountRole getAccountRole() {
+    public Account_Role getAccountRole() {
         return accountRole;
     }
 
-    public void setAccountRole(AccountRole accountRole) {
+    public void setAccountRole(Account_Role accountRole) {
         this.accountRole = accountRole;
     }
 
-    public Set<Shelf> getShelves() {
+    public List<Shelf> getShelves() {
         return shelves;
     }
 
-    public void setShelves(Set<Shelf> shelves) {
+    public void setShelves(List<Shelf> shelves) {
         this.shelves = shelves;
     }
 

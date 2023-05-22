@@ -1,13 +1,16 @@
 package wpproject.project.dto;
 
-import wpproject.project.model.AccountUser;
+import wpproject.project.model.Account;
+import wpproject.project.model.Account_Role;
 import wpproject.project.model.Shelf;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class AccountUserDTO {
+public class AccountDTO {
     private Long id;
     private String firstName;
     private String lastName;
@@ -17,14 +20,14 @@ public class AccountUserDTO {
     private LocalDate dateOfBirth;
     private String profilePicture;
     private String description;
-    private AccountUser.AccountRole accountRole;
-    private Set<Shelf> shelves = new HashSet<>();
+    private Account_Role accountRole;
+    private List<Shelf> shelves = new ArrayList<>();
 
-    public AccountUserDTO() {
+    public AccountDTO() {
 
     }
 
-    public AccountUserDTO(AccountUser user) {
+    public AccountDTO(Account user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
@@ -110,19 +113,19 @@ public class AccountUserDTO {
         this.description = description;
     }
 
-    public AccountUser.AccountRole getAccountRole() {
+    public Account_Role getAccountRole() {
         return accountRole;
     }
 
-    public void setAccountRole(AccountUser.AccountRole accountRole) {
+    public void setAccountRole(Account_Role accountRole) {
         this.accountRole = accountRole;
     }
 
-    public Set<Shelf> getShelves() {
+    public List<Shelf> getShelves() {
         return shelves;
     }
 
-    public void setShelves(Set<Shelf> shelves) {
+    public void setShelves(List<Shelf> shelves) {
         this.shelves = shelves;
     }
 }
