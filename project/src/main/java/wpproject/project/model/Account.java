@@ -1,5 +1,6 @@
 package wpproject.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import wpproject.project.configuration.DatabaseConfiguration;
@@ -139,6 +140,8 @@ public class Account implements Serializable {
     public void setAccountRole(Account_Role accountRole) {
         this.accountRole = accountRole;
     }
+
+    @JsonIgnore
     public List<Shelf> getShelves() {
         return shelves;
     }

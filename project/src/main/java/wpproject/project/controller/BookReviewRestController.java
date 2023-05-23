@@ -7,17 +7,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.AccountRegisterDTO;
 import wpproject.project.dto.BookReviewDTO;
+import wpproject.project.dto.BookReviewNewDTO;
 import wpproject.project.model.Account;
 import wpproject.project.model.Book;
 import wpproject.project.model.BookReview;
 import wpproject.project.model.Shelf;
 import wpproject.project.service.BookReviewService;
+import wpproject.project.service.BookService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class BookReviewRestController {
+
+    @Autowired
+    private BookService bookService;
 
     @Autowired
     private BookReviewService bookReviewService;
@@ -43,30 +49,23 @@ public class BookReviewRestController {
         return bookReviewService.findOne(id);
     }
 
-//    @PostMapping("/api/addreview")
-//    public ResponseEntity addReview(@RequestBody BookReviewDTO bookReviewDTO, HttpSession session) {
-//
-//        try {
-//            BookReview bookReview = bookReviewService.findOne(bookReviewDTO.getAccount().getId());
-//            if (account != null) { return ResponseEntity.badRequest().body("User already reviewed the book."); }
-//
-//            account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
-//
-//            Shelf shelf_WantToRead = new Shelf("WantToRead", true);
-//            Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
-//            Shelf shelf_Read = new Shelf("Read", true);
-//            shelfService.save(shelf_WantToRead);
-//            shelfService.save(shelf_CurrentlyReading);
-//            shelfService.save(shelf_Read);
-//            account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
-//
-//            accountService.save(account);
-//
-//            session.setAttribute("user", account);
-//            return ResponseEntity.ok("Succesfully registered: " + account.getUsername());
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register: " + e.getMessage());
-//        }
-//    }
+    @PostMapping("/api/book/{bookId}/addreview")
+    public ResponseEntity addReview(@PathVariable(name = "bookId") Long bookId, @RequestBody BookReviewNewDTO bookReviewNewDTO, HttpSession session) {
+
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("not logged in / can't post review"); }
+
+        Book book = bookService.findOne(bookId);
+        if (book == null) { return ResponseEntity.badRequest().body("book does not exist"); }
+
+        BookReview bookReview = bookReviewService.findByAccount(user);
+        if (bookReview != null) { return ResponseEntity.badRequest().body("user already has review"); }
+
+
+        BookReview newBookReview = new BookReview(bookReviewNewDTO.getRating(), bookReviewNewDTO.getText(), LocalDate.now(), user);
+        bookReviewService.save(newBookReview);
+
+        return ResponseEntity.ok("posted review");
+    }
 
 }
