@@ -12,18 +12,18 @@ public class ShelfItem implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "SHELF_ITEM_REVIEW",
             joinColumns = @JoinColumn(name = "shelf_item_id"),
             inverseJoinColumns = @JoinColumn(name = "book_review_id")
     )
-    @JsonBackReference
+//    @JsonBackReference
     private List<BookReview> bookReviews = new ArrayList<>();
 
     @ManyToOne
-    protected Book book;
+    private Book book;
 
     public ShelfItem() {}
     public ShelfItem(Book book) {

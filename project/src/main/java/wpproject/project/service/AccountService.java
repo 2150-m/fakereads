@@ -2,9 +2,12 @@ package wpproject.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import wpproject.project.dto.AccountDTO;
 import wpproject.project.model.Account;
+import wpproject.project.model.Shelf;
 import wpproject.project.repository.AccountRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,14 +16,19 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public Account findOne(String username) {
-        Optional<Account> foundUser = accountRepository.findByUsername(username);
-        return foundUser.orElse(null);
+    public Account findOneByUsername(String username) {
+        Optional<Account> account = accountRepository.findByUsername(username);
+        return account.orElse(null);
+    }
+
+    public Account findOneByMailAddress(String mailAddress) {
+        Optional<Account> account = accountRepository.findByMailAddress(mailAddress);
+        return account.orElse(null);
     }
 
     public Account findOne(Long id) {
-        Optional<Account> foundUser = accountRepository.findById(id);
-        return foundUser.orElse(null);
+        Optional<Account> account = accountRepository.findById(id);
+        return account.orElse(null);
     }
 
     public List<Account> findAll() {

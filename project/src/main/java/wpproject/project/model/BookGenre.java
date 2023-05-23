@@ -1,6 +1,7 @@
 package wpproject.project.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class BookGenre implements Serializable {
     protected String name;
 
     @ManyToMany(mappedBy = "bookGenres")
-    @JsonBackReference
+//    @JsonBackReference
     private List<Book> books = new ArrayList<>();
 
     public BookGenre() {
@@ -42,6 +43,7 @@ public class BookGenre implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    @JsonIgnore
     public List<Book> getBooks() {
         return books;
     }

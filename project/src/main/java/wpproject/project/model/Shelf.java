@@ -1,5 +1,7 @@
 package wpproject.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -24,9 +26,6 @@ public class Shelf implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "shelf_item_id")
     )
     private List<ShelfItem> shelfItems = new ArrayList<>();
-
-//    @ManyToMany(mappedBy = "shelves", fetch = FetchType.LAZY)
-//    private Set<Account> accounts = new HashSet<>();
 
     public Shelf() {}
 

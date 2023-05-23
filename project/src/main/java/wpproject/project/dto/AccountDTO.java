@@ -19,11 +19,7 @@ public class AccountDTO {
     private String profilePicture;
     private String description;
     private Account_Role accountRole;
-    private List<Shelf> shelves = new ArrayList<>();
-
-    public AccountDTO() {
-
-    }
+    private List<Shelf> shelvesDTO = new ArrayList<>();
 
     public AccountDTO(Account user) {
         this.id = user.getId();
@@ -36,7 +32,18 @@ public class AccountDTO {
         this.profilePicture = user.getProfilePicture();
         this.description = user.getDescription();
         this.accountRole = user.getAccountRole();
-        this.shelves = user.getShelves();
+//        convertToDTOList(user.getShelves());
+        this.shelvesDTO = user.getShelves();
+    }
+
+    private void convertToDTOList(List<Shelf> originalList) {
+        this.shelvesDTO = new ArrayList<>(originalList.size());
+
+        for (int i = 0; i < originalList.size(); i++) {
+            this.shelvesDTO.get(i).setId(originalList.get(i).getId());
+            this.shelvesDTO.get(i).setName(originalList.get(i).getName());
+            this.shelvesDTO.get(i).setPrimary(originalList.get(i).isPrimary());
+        }
     }
 
     public Long getId() {
@@ -100,9 +107,9 @@ public class AccountDTO {
         this.accountRole = accountRole;
     }
     public List<Shelf> getShelves() {
-        return shelves;
+        return shelvesDTO;
     }
-    public void setShelves(List<Shelf> shelves) {
-        this.shelves = shelves;
+    public void setShelves(List<Shelf> shelvesDTO) {
+        this.shelvesDTO = shelvesDTO;
     }
 }

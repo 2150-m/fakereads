@@ -30,7 +30,7 @@ public class Book implements Serializable {
     @JoinTable(name = "BOOKS_GENRES",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "book_genre_id", referencedColumnName = "id"))
-    @JsonManagedReference
+//    @JsonManagedReference
     private List<BookGenre> bookGenres = new ArrayList<>();
 
     @Column

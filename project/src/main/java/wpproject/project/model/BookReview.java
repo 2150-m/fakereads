@@ -1,5 +1,7 @@
 package wpproject.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -10,20 +12,20 @@ public class BookReview implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
 
     @Column
-    protected double rating;
+    private double rating;
 
     @Column
-    protected String text;
+    private String text;
 
     @Temporal(TemporalType.DATE)
     @Column
-    protected LocalDate reviewDate;
+    private LocalDate reviewDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    protected Account account;
+    private Account account;
 
     public BookReview() {}
 
@@ -34,19 +36,15 @@ public class BookReview implements Serializable {
         this.account = account;
     }
 
-    public Long getId() {
-        return id;
-    }
-    public double getRating() {
-        return rating;
-    }
-    public String getText() {
-        return text;
-    }
-    public LocalDate getReviewDate() {
-        return reviewDate;
-    }
-    public Account getAccountUser() {
-        return account;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+    public LocalDate getReviewDate() { return reviewDate; }
+    public void setReviewDate(LocalDate reviewDate) { this.reviewDate = reviewDate; }
+    @JsonIgnore
+    public Account getAccount() { return account; }
+    public void setAccount(Account account) { this.account = account; }
 }

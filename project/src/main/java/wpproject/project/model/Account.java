@@ -1,5 +1,6 @@
 package wpproject.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import wpproject.project.configuration.DatabaseConfiguration;
 
@@ -13,45 +14,42 @@ import java.util.List;
 public class Account implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
 
     @Column
-    protected String firstName;
+    private String firstName;
 
     @Column
-    protected String lastName;
+    private String lastName;
 
     @Column(unique = true)
-    protected  String username;
+    private  String username;
 
     @Column(unique = true)
-    protected String mailAddress;
+    private String mailAddress;
 
     @Column
-    protected String password;
+    private String password;
 
     @Temporal(TemporalType.DATE)
     @Column
-    protected LocalDate dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column
-    protected String profilePicture;
+    private String profilePicture;
 
     @Column
-    protected String description;
+    private String description;
 
     @Column
-    protected Account_Role accountRole;
+    private Account_Role accountRole;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    /*@JoinTable(name = "ACCOUNTS_SHELVES",
+    @JoinTable(name = "ACCOUNTS_SHELVES",
             joinColumns = @JoinColumn(name = "account_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "shelf_id", referencedColumnName = "id")
-    )*/
-    protected List<Shelf> shelves = new ArrayList<>();
-
-//    @Autowired
-//    private DatabaseConfiguration dbConfig;
+    )
+    private List<Shelf> shelves = new ArrayList<>();
 
     public Account() {
         this("", "", "", "", "", LocalDate.MIN, "", "", Account_Role.READER);
@@ -67,18 +65,6 @@ public class Account implements Serializable {
         this.profilePicture = profilePicture;
         this.description = description;
         this.accountRole = accountRole;
-
-        List<Shelf> defaultShelves = new ArrayList<>();
-        defaultShelves = DatabaseConfiguration.DefaultShelves();
-        this.shelves.addAll(defaultShelves);
-
-//        Shelf shelf_WantToRead = new Shelf("WantToRead", true);
-//        Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
-//        Shelf shelf_Read = new Shelf("Read", true);
-//        List<Shelf> defaultShelves = List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read);
-//
-//        this.shelves.addAll(defaultShelves);
-//        dbConfig.SaveDefaultShelves(defaultShelves);
     }
 
     public Long getId() {
