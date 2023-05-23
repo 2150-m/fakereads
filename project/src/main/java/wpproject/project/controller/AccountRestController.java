@@ -45,7 +45,7 @@ public class AccountRestController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/user/name={username}")
+    @GetMapping("/api/user/username={username}")
     public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         System.out.println(user);
@@ -59,11 +59,6 @@ public class AccountRestController {
         System.out.println(user);
         session.invalidate();
         return accountService.findOne(id);
-    }
-
-    @PostMapping("/api/pls")
-    public void pls(@RequestBody Account account) {
-        accountService.save(account);
     }
 
     @PostMapping("/api/register")
