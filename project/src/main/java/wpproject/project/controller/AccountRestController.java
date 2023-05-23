@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.AccountDTO;
+import wpproject.project.dto.AccountLoginDTO;
 import wpproject.project.dto.AccountRegisterDTO;
 import wpproject.project.model.Account;
 import wpproject.project.model.Account_Role;
@@ -92,14 +93,38 @@ public class AccountRestController {
         }
     }
 
+    @PostMapping("/api/login")
+    public ResponseEntity<String> login(@RequestBody AccountLoginDTO accountLoginDTO, HttpSession session){
+
+        Account user = (Account) session.getAttribute("user");
+        if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
+
+        if(accountLoginDTO.getUsername().isEmpty() || accountLoginDTO.getPassword().isEmpty())  { return new ResponseEntity("Invalid login data", HttpStatus.BAD_REQUEST); }
+
+        Account loggedAccount = accountService.login(accountLoginDTO.getUsername(), accountLoginDTO.getPassword());
+        if (loggedAccount == null)  { return new ResponseEntity<>("Account does not exist!", HttpStatus.NOT_FOUND); }
+
+        session.setAttribute("user", loggedAccount);
+        return ResponseEntity.ok("Successfully logged in: " + loggedAccount.getUsername());
+    }
+
+    @GetMapping("/api/myaccount")
+    public Account myaccount(HttpSession session){
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return null; }
+        return accountService.findOneByUsername(user.getUsername());
+    }
+
     @PostMapping("/api/logout")
     public ResponseEntity logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return new ResponseEntity("Forbidden.", HttpStatus.FORBIDDEN); }
 
         session.invalidate();
-        return new ResponseEntity("Succesfully logged out.", HttpStatus.OK);
+        return new ResponseEntity("Succesfully logged out: " + user.getUsername(), HttpStatus.OK);
     }
+
+
 
 //    private List<Shelf> DefaultShelves() {
 //        Shelf shelf_WantToRead = new Shelf("WantToRead", true);
