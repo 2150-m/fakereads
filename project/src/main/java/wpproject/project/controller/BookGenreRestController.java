@@ -32,6 +32,14 @@ public class BookGenreRestController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/api/genre/{id}")
+    public BookGenre getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
+        BookGenre genre = (BookGenre) session.getAttribute("genre");
+        System.out.println(genre);
+        session.invalidate();
+        return genreService.findOne(id);
+    }
+
     @GetMapping("/api/genre/name={name}")
     public BookGenre getGenre(@PathVariable(name = "name") String name, HttpSession session) {
         BookGenre genre = (BookGenre) session.getAttribute("genre");
@@ -40,11 +48,5 @@ public class BookGenreRestController {
         return genreService.findOne(name);
     }
 
-    @GetMapping("/api/genre/{id}")
-    public BookGenre getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        System.out.println(genre);
-        session.invalidate();
-        return genreService.findOne(id);
-    }
+
 }

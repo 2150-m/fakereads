@@ -52,7 +52,19 @@ public class Account implements Serializable {
     private List<Shelf> shelves = new ArrayList<>();
 
     public Account() {
-        this("", "", "", "", "", LocalDate.MIN, "", "", Account_Role.READER);
+        this("", "", "", "", "", LocalDate.MIN, "default.jpg", "bio", Account_Role.READER);
+    }
+
+    public Account(String firstName, String lastName, String username, String mailAddress, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.mailAddress = mailAddress;
+        this.password = password;
+        this.dateOfBirth = LocalDate.MIN;
+        this.profilePicture = "default.jpg";
+        this.description = "bio";
+        this.accountRole = Account_Role.READER;
     }
 
     public Account(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, Account_Role accountRole) {

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.AccountDTO;
+import wpproject.project.dto.AccountRegisterDTO;
 import wpproject.project.model.Account;
 import wpproject.project.model.Account_Role;
 import wpproject.project.model.Shelf;
@@ -62,7 +63,7 @@ public class AccountRestController {
     }
 
     @PostMapping("/api/register")
-    public ResponseEntity<String> registerAccount(@RequestBody Account accountRequest, HttpSession session) {
+    public ResponseEntity<String> registerAccount(@RequestBody AccountRegisterDTO accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
@@ -72,7 +73,7 @@ public class AccountRestController {
             account = accountService.findOneByUsername(accountRequest.getUsername());
             if (account != null) { return ResponseEntity.badRequest().body("User with this username already exists."); }
 
-            account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword(), accountRequest.getDateOfBirth(), accountRequest.getProfilePicture(), accountRequest.getDescription(), Account_Role.READER);
+            account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
 
             Shelf shelf_WantToRead = new Shelf("WantToRead", true);
             Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);

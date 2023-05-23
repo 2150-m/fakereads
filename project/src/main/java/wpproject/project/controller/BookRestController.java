@@ -40,12 +40,29 @@ public class BookRestController {
         return bookService.findOne(id);
     }
 
-    @GetMapping("/api/book/name={title}")
+    @GetMapping("/api/book/title={title}")
     public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
         Book book = (Book) session.getAttribute("book");
         System.out.println(book);
         session.invalidate();
         return bookService.findOne(title);
+    }
+
+    @GetMapping("/api/book/search={search}")
+    public ResponseEntity<List<BookDTO>> searchBooks(@PathVariable(name = "search") String search, HttpSession session) {
+
+        List<Book> bookList = bookService.findAll();
+
+        List<BookDTO> dtos = new ArrayList<>();
+        for (Book b : bookList) {
+
+            // search by title / description
+            if (b.getTitle().contains(search) || b.getDescription().contains(search)) {
+                BookDTO dto = new BookDTO(b); dtos.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(dtos);
     }
 
 }
