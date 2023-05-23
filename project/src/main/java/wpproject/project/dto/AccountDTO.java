@@ -32,7 +32,7 @@ public class AccountDTO {
         this.profilePicture = user.getProfilePicture();
         this.description = user.getDescription();
         this.accountRole = user.getAccountRole();
-//        convertToDTOList(user.getShelves());
+//      convertToDTOList(user.getShelves());
         this.shelvesDTO = user.getShelves();
     }
 
