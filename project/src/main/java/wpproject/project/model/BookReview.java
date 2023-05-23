@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Entity
 public class BookReview implements Serializable {
@@ -38,19 +37,15 @@ public class BookReview implements Serializable {
     public Long getId() {
         return id;
     }
-
     public double getRating() {
         return rating;
     }
-
     public String getText() {
         return text;
     }
-
     public LocalDate getReviewDate() {
         return reviewDate;
     }
-
     public Account getAccountUser() {
         return account;
     }

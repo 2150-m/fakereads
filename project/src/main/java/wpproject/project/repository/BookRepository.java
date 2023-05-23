@@ -1,6 +1,5 @@
 package wpproject.project.repository;
 
-import wpproject.project.dto.BookDTO;
 import wpproject.project.model.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 

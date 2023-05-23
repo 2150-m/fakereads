@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 public class Shelf implements Serializable {
@@ -40,31 +38,24 @@ public class Shelf implements Serializable {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public boolean isPrimary() {
         return isPrimary;
     }
-
     public void setPrimary(boolean primary) {
         isPrimary = primary;
     }
-
     public List<ShelfItem> getShelfItems() {
         return shelfItems;
     }
-
     public void setShelfItems(List<ShelfItem> shelfItems) {
         this.shelfItems = shelfItems;
     }

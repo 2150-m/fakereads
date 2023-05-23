@@ -26,15 +26,12 @@ public class AccountAuthor extends Account {
     public boolean isAccountActivated() {
         return accountActivated;
     }
-
     public void setAccountActivated(boolean accountActivated) {
         this.accountActivated = accountActivated;
     }
-
     public Set<Book> getBooks() {
         return books;
     }
-
     public void setBooks(Set<Book> books) {
         this.books = books;
     }

@@ -1,17 +1,12 @@
 package wpproject.project.model;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import wpproject.project.configuration.DatabaseConfiguration;
-import wpproject.project.repository.ShelfRepository;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -89,94 +84,73 @@ public class Account implements Serializable {
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getFirstName() {
         return firstName;
     }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-
     public String getLastName() {
         return lastName;
     }
-
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
-
     public String getMailAddress() {
         return mailAddress;
     }
-
     public void setMailAddress(String mailAddress) {
         this.mailAddress = mailAddress;
     }
-
     public String getPassword() {
         return password;
     }
-
     public void setPassword(String password) {
         this.password = password;
     }
-
     public LocalDate getDateOfBirth() {
         return dateOfBirth;
     }
-
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
-
     public String getProfilePicture() {
         return profilePicture;
     }
-
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
-
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
-
     public Account_Role getAccountRole() {
         return accountRole;
     }
-
     public void setAccountRole(Account_Role accountRole) {
         this.accountRole = accountRole;
     }
-
     public List<Shelf> getShelves() {
         return shelves;
     }
-
     public void setShelves(List<Shelf> shelves) {
         this.shelves = shelves;
     }
 
     @Override
     public String toString() {
-        return "Korisnik{" +
+        return "Account{" +
                 "id=" + id +
                 ", ime='" + firstName + '\'' +
                 ", prezime='" + lastName + '\'' +
