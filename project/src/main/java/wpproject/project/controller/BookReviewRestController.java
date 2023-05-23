@@ -58,6 +58,7 @@ public class BookReviewRestController {
         Book book = bookService.findOne(bookId);
         if (book == null) { return ResponseEntity.badRequest().body("book does not exist"); }
 
+        /// TODO: fix only one review per user
         BookReview bookReview = bookReviewService.findByAccount(user);
         if (bookReview != null) { return ResponseEntity.badRequest().body("user already has review"); }
 
