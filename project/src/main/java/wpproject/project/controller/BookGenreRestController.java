@@ -23,17 +23,11 @@ public class BookGenreRestController {
         List<BookGenre> genreList = genreService.findAll();
 
         BookGenre genre = (BookGenre) session.getAttribute("genre");
-        if (genre == null) {
-            System.out.println("No session");
-        } else {
-            System.out.println(genre);
-        }
+        if (genre == null) { System.out.println("No session"); }
+        else               { System.out.println(genre);        }
 
         List<BookGenreDTO> dtos = new ArrayList<>();
-        for (BookGenre g : genreList) {
-            BookGenreDTO dto = new BookGenreDTO(g);
-            dtos.add(dto);
-        }
+        for (BookGenre g : genreList) { BookGenreDTO dto = new BookGenreDTO(g); dtos.add(dto); }
 
         return ResponseEntity.ok(dtos);
     }

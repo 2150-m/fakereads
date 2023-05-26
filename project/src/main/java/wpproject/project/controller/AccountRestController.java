@@ -33,11 +33,8 @@ public class AccountRestController {
         List<Account> userList = accountService.findAll();
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            System.out.println("No session");
-        } else {
-            System.out.println(user);
-        }
+        if (user == null) { System.out.println("No session"); }
+        else              { System.out.println(user);         }
 
         List<AccountDTO> dtos = new ArrayList<>();
         for (Account u : userList) {
@@ -48,7 +45,7 @@ public class AccountRestController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/user/name={username}")
+    @GetMapping("/api/user/username={username}")
     public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         System.out.println(user);
@@ -64,27 +61,16 @@ public class AccountRestController {
         return accountService.findOne(id);
     }
 
-    @PostMapping("/api/pls")
-    public void pls(@RequestBody Account account) {
-        accountService.save(account);
-    }
-
     @PostMapping("/api/register")
     public ResponseEntity<String> registerAccount(@RequestBody Account accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user != null) {
-            return ResponseEntity.badRequest().body("Already logged in");
-        }
+        if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
         try {
             Account account = accountService.findOneByMailAddress(accountRequest.getMailAddress());
-            if (account != null) {
-                return ResponseEntity.badRequest().body("User with this mail address already exists.");
-            }
+            if (account != null) { return ResponseEntity.badRequest().body("User with this mail address already exists."); }
             account = accountService.findOneByUsername(accountRequest.getUsername());
-            if (account != null) {
-                return ResponseEntity.badRequest().body("User with this username already exists.");
-            }
+            if (account != null) { return ResponseEntity.badRequest().body("User with this username already exists."); }
 
             account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword(), accountRequest.getDateOfBirth(), accountRequest.getProfilePicture(), accountRequest.getDescription(), Account_Role.READER);
 
@@ -105,13 +91,10 @@ public class AccountRestController {
         }
     }
 
-    @PostMapping("api/logout")
+    @PostMapping("/api/logout")
     public ResponseEntity logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-
-        if (user == null) {
-            return new ResponseEntity("Forbidden.", HttpStatus.FORBIDDEN);
-        }
+        if (user == null) { return new ResponseEntity("Forbidden.", HttpStatus.FORBIDDEN); }
 
         session.invalidate();
         return new ResponseEntity("Succesfully logged out.", HttpStatus.OK);

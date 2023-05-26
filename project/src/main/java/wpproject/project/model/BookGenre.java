@@ -20,7 +20,7 @@ public class BookGenre implements Serializable {
     protected String name;
 
     @ManyToMany(mappedBy = "bookGenres")
-//    @JsonBackReference
+//  @JsonBackReference
     private List<Book> books = new ArrayList<>();
 
     public BookGenre() {

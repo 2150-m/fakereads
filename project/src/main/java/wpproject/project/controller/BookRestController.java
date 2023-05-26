@@ -23,17 +23,11 @@ public class BookRestController {
         List<Book> bookList = bookService.findAll();
 
         Book book = (Book) session.getAttribute("book");
-        if (book == null) {
-            System.out.println("No session");
-        } else {
-            System.out.println(book);
-        }
+        if (book == null) { System.out.println("No session"); }
+        else              { System.out.println(book);         }
 
         List<BookDTO> dtos = new ArrayList<>();
-        for (Book b : bookList) {
-            BookDTO dto = new BookDTO(b);
-            dtos.add(dto);
-        }
+        for (Book b : bookList) { BookDTO dto = new BookDTO(b); dtos.add(dto); }
 
         return ResponseEntity.ok(dtos);
     }
