@@ -1,17 +1,11 @@
 package wpproject.project.dto;
 
-import jakarta.persistence.*;
-import wpproject.project.model.Account;
-import wpproject.project.model.BookReview;
-
-import java.time.LocalDate;
-
-public class BookReviewNewDTO {
+public class BookReviewDTO_New {
     private Long id;
     private double rating;
     private String text;
 
-    public BookReviewNewDTO(double rating, String text) {
+    public BookReviewDTO_New(double rating, String text) {
         this.rating = rating;
         this.text = text;
     }

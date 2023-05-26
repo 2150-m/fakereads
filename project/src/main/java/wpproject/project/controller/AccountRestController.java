@@ -9,13 +9,15 @@ import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.AccountDTO;
 import wpproject.project.dto.AccountLoginDTO;
 import wpproject.project.dto.AccountRegisterDTO;
-import wpproject.project.model.Account;
-import wpproject.project.model.Account_Role;
-import wpproject.project.model.Shelf;
+import wpproject.project.model.*;
 import wpproject.project.service.AccountService;
+import wpproject.project.service.BookService;
+import wpproject.project.service.ShelfItemService;
 import wpproject.project.service.ShelfService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -24,6 +26,10 @@ public class AccountRestController {
     private AccountService accountService;
     @Autowired
     private ShelfService shelfService;
+    @Autowired
+    private BookService bookService;
+    @Autowired
+    private ShelfItemService shelfItemService;
 
     @GetMapping("/api")
     public String welcome() {
@@ -49,17 +55,17 @@ public class AccountRestController {
 
     @GetMapping("/api/user/username={username}")
     public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        System.out.println(user);
-        session.invalidate();
+//        Account user = (Account) session.getAttribute("user");
+//        System.out.println(user);
+//        session.invalidate();
         return accountService.findOneByUsername(username);
     }
 
     @GetMapping("/api/user/{id}")
     public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        System.out.println(user);
-        session.invalidate();
+//        Account user = (Account) session.getAttribute("user");
+//        System.out.println(user);
+//        session.invalidate();
         return accountService.findOne(id);
     }
 
@@ -95,7 +101,6 @@ public class AccountRestController {
 
     @PostMapping("/api/login")
     public ResponseEntity<String> login(@RequestBody AccountLoginDTO accountLoginDTO, HttpSession session){
-
         Account user = (Account) session.getAttribute("user");
         if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
@@ -118,13 +123,69 @@ public class AccountRestController {
     @PostMapping("/api/logout")
     public ResponseEntity logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return new ResponseEntity("Forbidden.", HttpStatus.FORBIDDEN); }
+        if (user == null) { return ResponseEntity.badRequest().body("Can't log out: already logged out."); }
 
         session.invalidate();
-        return new ResponseEntity("Succesfully logged out: " + user.getUsername(), HttpStatus.OK);
+        return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
     }
 
+    @PostMapping("/api/user/add/book_id={bookId}/shelf={shelfName}")
+    public ResponseEntity userAddBook(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in in order to add a book to a shelf.");
+        }
 
+        ShelfItem targetItem = shelfItemService.findByBook(bookService.findOne(bookId));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        Shelf targetShelf = null;
+        for (Shelf userShelf : user.getShelves()) {
+            if (userShelf.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = userShelf;
+                break;
+            }
+        }
+
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf [" + shelfName + "] does not exist.");
+        }
+
+        // contains() and object.equals(otherobject) don't work
+        for (ShelfItem item : targetShelf.getShelfItems()) {
+            if (item.getId().equals(targetItem.getId())) {
+                return ResponseEntity.badRequest().body("This item/book is already on '" + targetShelf.getName() + "'.");
+            }
+        }
+
+        if (targetShelf.isPrimary()) {
+            // Remove the book from the other primary shelf (if it's on it)
+            for (Shelf shelf : user.getShelves().subList(0, 3)) {
+                if (shelf.getId().equals(targetShelf.getId())) { continue; }
+
+                Iterator<ShelfItem> iterator = shelf.getShelfItems().iterator();
+                while (iterator.hasNext()) {
+                    if (iterator.next().getId().equals(targetItem.getId())) {
+                        iterator.remove();
+                        break;
+                    }
+                }
+            }
+
+            targetShelf.getShelfItems().add(targetItem);
+            shelfService.save(targetShelf);
+            return ResponseEntity.ok().body("[id: " + targetItem.getBook().getId() + "  / title: " + targetItem.getBook().getTitle() + "] has been added to " + targetShelf.getName() + " (id: " + targetShelf.getId() + ").");
+        }
+//        else if (shelfService.findOne(shelfName) != null) {
+//            targetShelf.getShelfItems().add(targetItem);
+//            shelfService.save(targetShelf);
+//            return ResponseEntity.ok().body("[id: " + targetItem.getBook().getId() + "  / title: " + targetItem.getBook().getTitle() + "] has been added to [" + shelfName + "].");
+//        }
+
+        return ResponseEntity.badRequest().body("An item has to be in a primary shelf in order to be added to custom ones.");
+    }
 
 //    private List<Shelf> DefaultShelves() {
 //        Shelf shelf_WantToRead = new Shelf("WantToRead", true);

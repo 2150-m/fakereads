@@ -2,18 +2,14 @@ package wpproject.project.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wpproject.project.dto.AccountRegisterDTO;
 import wpproject.project.dto.BookReviewDTO;
-import wpproject.project.dto.BookReviewNewDTO;
-import wpproject.project.model.Account;
-import wpproject.project.model.Book;
-import wpproject.project.model.BookReview;
-import wpproject.project.model.Shelf;
+import wpproject.project.dto.BookReviewDTO_New;
+import wpproject.project.model.*;
 import wpproject.project.service.BookReviewService;
 import wpproject.project.service.BookService;
+import wpproject.project.service.ShelfItemService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,6 +23,9 @@ public class BookReviewRestController {
 
     @Autowired
     private BookReviewService bookReviewService;
+
+    @Autowired
+    private ShelfItemService shelfItemService;
 
     @GetMapping("/api/reviews")
     public ResponseEntity<List<BookReviewDTO>> getBookReviews(HttpSession session) {
@@ -49,24 +48,26 @@ public class BookReviewRestController {
         return bookReviewService.findOne(id);
     }
 
-    @PostMapping("/api/book/{bookId}/addreview")
-    public ResponseEntity addReview(@PathVariable(name = "bookId") Long bookId, @RequestBody BookReviewNewDTO bookReviewNewDTO, HttpSession session) {
-
+    @PostMapping("/api/review/add/bookid={bookId}")
+    public ResponseEntity addReview(@PathVariable(name = "bookId") Long bookId, @RequestBody BookReviewDTO_New bookReviewDTONew, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("not logged in / can't post review"); }
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in in order to post a review."); }
 
         Book book = bookService.findOne(bookId);
-        if (book == null) { return ResponseEntity.badRequest().body("book does not exist"); }
+        if (book == null) { return ResponseEntity.badRequest().body("A book with this ID does not exist."); }
 
-        /// TODO: fix only one review per user
-        BookReview bookReview = bookReviewService.findByAccount(user);
-        if (bookReview != null) { return ResponseEntity.badRequest().body("user already has review"); }
+        for (ShelfItem item : user.getShelves().get(2).getShelfItems()) {
+            if (item.getBook() == book) {
+                return ResponseEntity.badRequest().body("This user has already reviewed this book.");
+            }
+        }
 
+//        BookReview bookReview = bookReviewService.findByAccount(user);
+//        if (bookReview != null) { return ResponseEntity.badRequest().body("user already has review"); }
 
-        BookReview newBookReview = new BookReview(bookReviewNewDTO.getRating(), bookReviewNewDTO.getText(), LocalDate.now(), user);
+        BookReview newBookReview = new BookReview(bookReviewDTONew.getRating(), bookReviewDTONew.getText(), LocalDate.now(), user);
         bookReviewService.save(newBookReview);
 
         return ResponseEntity.ok("posted review");
     }
-
 }

@@ -141,7 +141,7 @@ public class Account implements Serializable {
         this.accountRole = accountRole;
     }
 
-    @JsonIgnore
+//    @JsonIgnore
     public List<Shelf> getShelves() {
         return shelves;
     }

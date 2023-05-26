@@ -2,9 +2,7 @@ package wpproject.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wpproject.project.model.Account;
-import wpproject.project.model.Book;
-import wpproject.project.model.BookReview;
+import wpproject.project.model.*;
 import wpproject.project.repository.BookRepository;
 import wpproject.project.repository.BookReviewRepository;
 
@@ -25,7 +23,7 @@ public class BookReviewService {
         return bookReviewRepository.findAll();
     }
 
-    public BookReview findByAccount(Account account) { return bookReviewRepository.findByAccount(account); }
+    public List<BookReview> findByAccount(Account account) { return bookReviewRepository.findByAccount(account); }
 
     public BookReview save(BookReview bookReview) {
         return bookReviewRepository.save(bookReview);

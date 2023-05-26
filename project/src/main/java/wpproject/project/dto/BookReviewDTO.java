@@ -11,14 +11,16 @@ public class BookReviewDTO {
     private double rating;
     private String text;
     private LocalDate reviewDate;
-    private Account account;
+    private AccountDTO_NoShelves account;
 
     public BookReviewDTO(BookReview review) {
         this.id = review.getId();
         this.rating = review.getRating();
         this.text = review.getText();
         this.reviewDate = review.getReviewDate();
-        this.account = review.getAccount();
+        if (review.getAccount() != null) {
+            this.account = new AccountDTO_NoShelves(review.getAccount());
+        }
     }
 
     public Long getId() { return id; }
@@ -29,6 +31,6 @@ public class BookReviewDTO {
     public void setText(String text) { this.text = text; }
     public LocalDate getReviewDate() { return reviewDate; }
     public void setReviewDate(LocalDate reviewDate) { this.reviewDate = reviewDate; }
-    public Account getAccount() { return account; }
-    public void setAccount(Account account) { this.account = account; }
+    public AccountDTO_NoShelves getAccount() { return account; }
+    public void setAccount(AccountDTO_NoShelves account) { this.account = account; }
 }
