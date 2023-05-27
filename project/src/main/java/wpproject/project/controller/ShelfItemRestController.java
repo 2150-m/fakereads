@@ -61,6 +61,7 @@ public class ShelfItemRestController {
         return shelfItemService.findByBook(bookService.findOne(title));
     }
 
+    // TODO: has a server error
     @GetMapping("/api/database/book/search={search}")
     public ResponseEntity<List<ShelfItemDTO>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
         List<ShelfItem> items = shelfItemService.findAll();
@@ -76,6 +77,7 @@ public class ShelfItemRestController {
         return ResponseEntity.ok(dtos);
     }
 
+    // TODO: release date reader
     @PostMapping("/api/database/book/add")
     public ResponseEntity<String> addItem(@RequestBody BookDTO bookDTO, HttpSession session) {
         try {
