@@ -39,4 +39,9 @@ public class ShelfService {
     public Shelf save(Shelf shelf) {
         return shelfRepository.save(shelf);
     }
+
+    public List<Shelf> save(List<Shelf> shelves) {
+        return shelfRepository.saveAll(shelves);
+    }
+
 }

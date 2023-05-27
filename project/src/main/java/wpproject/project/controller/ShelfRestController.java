@@ -7,8 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.model.Account;
 import wpproject.project.model.Shelf;
+import wpproject.project.model.ShelfItem;
 import wpproject.project.service.AccountService;
 import wpproject.project.service.ShelfService;
+
+import java.util.Iterator;
 
 @RestController
 public class ShelfRestController {
@@ -35,7 +38,7 @@ public class ShelfRestController {
     }
 
     @PostMapping("/api/user/add/shelf")
-    public ResponseEntity addShelf(@RequestBody String newShelfName, HttpSession session) {
+    public ResponseEntity<String> addShelf(@RequestBody String newShelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = accountService.findOne(user.getId());
@@ -53,9 +56,61 @@ public class ShelfRestController {
             user.getShelves().add(newShelf);
             accountService.save(user);
 
-            return ResponseEntity.ok("A new shelf had been added.");
+            return ResponseEntity.ok("A new shelf, " + newShelfName.toUpperCase() + " (" + newShelf.getId() + "), had been added.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not add the shelf: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/api/user/remove/shelf/{id}")
+    public ResponseEntity<String> removeShelfID(@PathVariable(name = "id") Long id, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
+        user = accountService.findOne(user.getId());
+
+        Shelf shelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getId().equals(id)) {
+                shelf = s;
+                break;
+            }
+        }
+        return removeShelf(user, shelf);
+    }
+
+    @PostMapping("/api/user/remove/shelf/name={name}")
+    public ResponseEntity<String> removeShelfName(@PathVariable(name = "name") String name, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
+        user = accountService.findOne(user.getId());
+
+        Shelf shelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(name)) {
+                shelf = s;
+                break;
+            }
+        }
+        return removeShelf(user, shelf);
+    }
+
+    private ResponseEntity<String> removeShelf(Account user, Shelf shelf) {
+        if (shelf == null) { return ResponseEntity.badRequest().body("This shelf does not exist."); }
+        if (shelf.isPrimary()) { return ResponseEntity.badRequest().body("Primary shelves can not be removed."); }
+
+        try {
+            Iterator<Shelf> iterator = user.getShelves().iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().getId().equals(shelf.getId())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+
+            shelfService.save(user.getShelves());
+            return ResponseEntity.ok(shelf.getName().toUpperCase() + " (" + shelf.getId() + ") has been removed.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not remove the shelf" + e.getMessage());
         }
     }
 }

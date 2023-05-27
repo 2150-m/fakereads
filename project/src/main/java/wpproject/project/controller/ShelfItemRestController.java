@@ -96,7 +96,7 @@ public class ShelfItemRestController {
     }
 
     @PostMapping("/api/user/add/book/{bookId}/shelf/{shelfName}")
-    public ResponseEntity userAddBook(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -108,6 +108,26 @@ public class ShelfItemRestController {
             return ResponseEntity.badRequest().body("Book with this ID does not exist.");
         }
 
+        return userAddBook(user, targetItem, shelfName);
+    }
+
+    @PostMapping("/api/user/add/book/isbn={isbn}/shelf/{shelfName}")
+    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = accountService.findOne(user.getId());
+
+        ShelfItem targetItem = shelfItemService.findByBook(bookService.findByIsbn(isbn));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        return userAddBook(user, targetItem, shelfName);
+    }
+
+    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName) {
         Shelf targetShelf = null;
         for (Shelf userShelf : user.getShelves()) {
             if (userShelf.getName().equalsIgnoreCase(shelfName)) {
@@ -145,7 +165,7 @@ public class ShelfItemRestController {
             shelfService.save(targetShelf);
             return ResponseEntity.ok().body(targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").");
         }
-        
+
         // Check if the item is in a primary shelf
         for (Shelf shelf : user.getShelves().subList(0, 3)) {
             for (ShelfItem item : shelf.getShelfItems()) {
@@ -159,6 +179,4 @@ public class ShelfItemRestController {
 
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
-
-    // TODO: Add book by ISBN
 }
