@@ -27,7 +27,7 @@ public class BookReviewRestController {
     @Autowired
     private ShelfItemService shelfItemService;
 
-    @GetMapping("/api/reviews")
+    @GetMapping("/api/database/reviews")
     public ResponseEntity<List<BookReviewDTO>> getBookReviews(HttpSession session) {
         List<BookReview> bookReviews = bookReviewService.findAll();
 
@@ -40,7 +40,7 @@ public class BookReviewRestController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/review/{id}")
+    @GetMapping("/api/database/review/{id}")
     public BookReview getBookReview(@PathVariable(name = "id") Long id, HttpSession session) {
         BookReview bookReview = (BookReview) session.getAttribute("bookReview");
         System.out.println(bookReview);
@@ -48,7 +48,7 @@ public class BookReviewRestController {
         return bookReviewService.findOne(id);
     }
 
-    @PostMapping("/api/review/add/bookid={bookId}")
+    @PostMapping("/api/user/add/review/{bookId}")
     public ResponseEntity addReview(@PathVariable(name = "bookId") Long bookId, @RequestBody BookReviewDTO_New bookReviewDTONew, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in in order to post a review."); }

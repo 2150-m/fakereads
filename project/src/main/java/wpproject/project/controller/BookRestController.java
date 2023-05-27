@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import wpproject.project.dto.BookDTO;
 import wpproject.project.model.Book;
 import wpproject.project.service.BookService;
 
