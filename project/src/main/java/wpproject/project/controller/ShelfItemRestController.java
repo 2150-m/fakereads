@@ -181,4 +181,85 @@ public class ShelfItemRestController {
 
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
+
+    @PostMapping("/api/user/remove/book/{bookId}/shelf/name={shelfName}")
+    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = accountService.findOne(user.getId());
+
+        Book book = bookService.findOne(bookID);
+        return userRemoveBook(user, book, shelfName);
+    }
+
+    @PostMapping("/api/user/remove/book/isbn={isbn}/shelf/name={shelfName}")
+    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = accountService.findOne(user.getId());
+
+        Book book = bookService.findByIsbn(isbn);
+        return userRemoveBook(user, book, shelfName);
+    }
+
+    private ResponseEntity<String> userRemoveBook(Account user, Book book, String shelfName) {
+        ShelfItem item = null;
+
+        // Check if the shelf exists
+        outer:
+        for (Shelf s : user.getShelves()) {
+            if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
+
+            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
+            while (iterator.hasNext()) {
+                ShelfItem i = iterator.next();
+                if (i.getBook().getId().equals(book.getId())) {
+                    item = i;
+                    break outer;
+                }
+            }
+        }
+
+        if (item == null) { return ResponseEntity.badRequest().body("Could not find a shelf called: " + shelfName.toUpperCase()); }
+
+        String msg = "";
+        boolean inPrimary = false;
+
+        outer: // Check if it's on a primary shelf
+        for (Shelf s : user.getShelves().subList(0, 3)) {
+            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
+            while (iterator.hasNext()) {
+                ShelfItem i = iterator.next();
+                if (i.getId().equals(item.getId())) {
+                    msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
+                    inPrimary = true;
+                    iterator.remove();
+                    shelfService.save(user.getShelves());
+                    break outer;
+                }
+            }
+        }
+
+        for (Shelf s : user.getShelves().subList(3, user.getShelves().size())) {
+            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
+            while (iterator.hasNext()) {
+                ShelfItem i = iterator.next();
+                if (i.getId().equals(item.getId())) {
+                    msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
+
+                    iterator.remove();
+                    shelfService.save(user.getShelves());
+
+                    if (!inPrimary) { return ResponseEntity.ok(msg); }
+                }
+            }
+        }
+
+        if (inPrimary) { return ResponseEntity.ok(msg); }
+        return ResponseEntity.badRequest().body("Could not find " + item.getBook().getTitle().toUpperCase() + " (" + item.getBook().getId() + ") in " + shelfName.toUpperCase() + ".");
+    }
 }
