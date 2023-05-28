@@ -10,6 +10,9 @@ import wpproject.project.dto.ShelfItemDTO;
 import wpproject.project.model.*;
 import wpproject.project.service.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -93,7 +96,7 @@ public class ShelfItemRestController {
         }
     }
 
-    @PostMapping("/api/user/add/book/{bookId}/shelf/{shelfName}")
+    @PostMapping("/api/user/add/book/{bookId}/shelf/name={shelfName}")
     public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
@@ -109,7 +112,7 @@ public class ShelfItemRestController {
         return userAddBook(user, targetItem, shelfName);
     }
 
-    @PostMapping("/api/user/add/book/isbn={isbn}/shelf/{shelfName}")
+    @PostMapping("/api/user/add/book/isbn={isbn}/shelf/name={shelfName}")
     public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
@@ -186,15 +189,22 @@ public class ShelfItemRestController {
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
-    // TODO new reviews update ratings
-
     private String addReview(Account user, ShelfItem item) {
-        BookReview review = new BookReview(7, "review text", LocalDate.now(), user);
+        BookReview review = new BookReview(7.123, "review text", LocalDate.now(), user);
         reviewService.save(review);
 
         item.getBookReviews().add(review);
-        shelfItemService.save(item);
 
+        double sum = 0;
+        int counter = 0;
+        for (BookReview r : item.getBookReviews()) {
+            sum += r.getRating();
+            counter++;
+        }
+
+        item.getBook().setRating(new BigDecimal(sum / counter).setScale(2, RoundingMode.HALF_UP).doubleValue());
+        bookService.save(item.getBook());
+        shelfItemService.save(item);
         return "\nReview posted.";
     }
 
