@@ -28,4 +28,10 @@ public class BookReviewService {
     public BookReview save(BookReview bookReview) {
         return bookReviewRepository.save(bookReview);
     }
+
+    public void saveAll(List<BookReview> list) {
+        for (BookReview r : list) {
+            bookReviewRepository.save(r);
+        }
+    }
 }

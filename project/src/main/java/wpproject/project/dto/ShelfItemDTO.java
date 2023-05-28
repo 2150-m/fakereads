@@ -10,8 +10,8 @@ import java.util.List;
 
 public class ShelfItemDTO {
     private Long id;
-    private List<BookReview> bookReviews = new ArrayList<>();
     private Book book;
+    private List<BookReview> bookReviews = new ArrayList<>();
 
     public ShelfItemDTO(ShelfItem shelfItem) {
         this.id = shelfItem.getId();

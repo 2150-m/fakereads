@@ -7,14 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.BookDTO;
 import wpproject.project.dto.ShelfItemDTO;
-import wpproject.project.model.Account;
-import wpproject.project.model.Book;
-import wpproject.project.model.Shelf;
-import wpproject.project.model.ShelfItem;
-import wpproject.project.service.AccountService;
-import wpproject.project.service.BookService;
-import wpproject.project.service.ShelfItemService;
-import wpproject.project.service.ShelfService;
+import wpproject.project.model.*;
+import wpproject.project.service.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +25,8 @@ public class ShelfItemRestController {
     private ShelfService shelfService;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private BookReviewService reviewService;
 
     @GetMapping("/api/database/books")
     public ResponseEntity<List<ShelfItemDTO>> getItems(HttpSession session) {
@@ -131,9 +127,9 @@ public class ShelfItemRestController {
 
     private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName) {
         Shelf targetShelf = null;
-        for (Shelf userShelf : user.getShelves()) {
-            if (userShelf.getName().equalsIgnoreCase(shelfName)) {
-                targetShelf = userShelf;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = s;
                 break;
             }
         }
@@ -151,6 +147,7 @@ public class ShelfItemRestController {
 
         if (targetShelf.isPrimary()) {
             // Remove the book from the other primary shelf (if it's on it)
+            outer:
             for (Shelf shelf : user.getShelves().subList(0, 3)) {
                 if (shelf.getId().equals(targetShelf.getId())) { continue; }
 
@@ -158,14 +155,21 @@ public class ShelfItemRestController {
                 while (iterator.hasNext()) {
                     if (iterator.next().getId().equals(targetItem.getId())) {
                         iterator.remove();
-                        break;
+                        break outer;
                     }
                 }
             }
 
             targetShelf.getShelfItems().add(targetItem);
             shelfService.save(targetShelf);
-            return ResponseEntity.ok().body(targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").");
+
+            String msg = targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").";
+
+            if (targetShelf.getName().equalsIgnoreCase("Read")) {
+                msg += addReview(user, targetItem);
+            }
+
+            return ResponseEntity.ok().body(msg);
         }
 
         // Check if the item is in a primary shelf
@@ -182,34 +186,40 @@ public class ShelfItemRestController {
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
+    // TODO new reviews update ratings
+
+    private String addReview(Account user, ShelfItem item) {
+        BookReview review = new BookReview(7, "review text", LocalDate.now(), user);
+        reviewService.save(review);
+
+        item.getBookReviews().add(review);
+        shelfItemService.save(item);
+
+        return "\nReview posted.";
+    }
+
+    // TODO: independent review system
+
     @PostMapping("/api/user/remove/book/{bookId}/shelf/name={shelfName}")
     public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = accountService.findOne(user.getId());
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
 
-        Book book = bookService.findOne(bookID);
-        return userRemoveBook(user, book, shelfName);
+        return userRemoveBook(accountService.findOne(user.getId()), bookService.findOne(bookID), shelfName);
     }
 
     @PostMapping("/api/user/remove/book/isbn={isbn}/shelf/name={shelfName}")
     public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = accountService.findOne(user.getId());
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
 
-        Book book = bookService.findByIsbn(isbn);
-        return userRemoveBook(user, book, shelfName);
+        return userRemoveBook(accountService.findOne(user.getId()), bookService.findByIsbn(isbn), shelfName);
     }
 
     private ResponseEntity<String> userRemoveBook(Account user, Book book, String shelfName) {
         ShelfItem item = null;
 
-        // Check if the shelf exists
+        // Find the shelf
         outer:
         for (Shelf s : user.getShelves()) {
             if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
@@ -239,6 +249,12 @@ public class ShelfItemRestController {
                     inPrimary = true;
                     iterator.remove();
                     shelfService.save(user.getShelves());
+
+                    // Remove the associated review
+                    if (shelfName.equalsIgnoreCase("Read")) {
+                        msg += removeReview(user, i, book);
+                    }
+
                     break outer;
                 }
             }
@@ -261,5 +277,21 @@ public class ShelfItemRestController {
 
         if (inPrimary) { return ResponseEntity.ok(msg); }
         return ResponseEntity.badRequest().body("Could not find " + item.getBook().getTitle().toUpperCase() + " (" + item.getBook().getId() + ") in " + shelfName.toUpperCase() + ".");
+    }
+
+    private String removeReview(Account user, ShelfItem item, Book book) {
+        Iterator<BookReview> iterator = item.getBookReviews().iterator();
+        while (iterator.hasNext()) {
+            BookReview r = iterator.next();
+            if (item.getBook().getId().equals(book.getId()) && r.getAccount() != null && r.getAccount().getId().equals(user.getId())) {
+                iterator.remove();
+                reviewService.saveAll(item.getBookReviews());
+                shelfItemService.save(item);
+
+                return "Review (" + r.getId() + "), made by " + r.getAccount().getUsername().toUpperCase() + ", of " + book.getTitle().toUpperCase() + " (" + book.getId() + ") has been removed.\n";
+            }
+        }
+
+        return "Could not find an associated review.";
     }
 }

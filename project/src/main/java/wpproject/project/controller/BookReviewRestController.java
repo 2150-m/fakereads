@@ -48,26 +48,26 @@ public class BookReviewRestController {
         return bookReviewService.findOne(id);
     }
 
-    @PostMapping("/api/user/add/review/{bookId}")
-    public ResponseEntity addReview(@PathVariable(name = "bookId") Long bookId, @RequestBody BookReviewDTO_New bookReviewDTONew, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in in order to post a review."); }
-
-        Book book = bookService.findOne(bookId);
-        if (book == null) { return ResponseEntity.badRequest().body("A book with this ID does not exist."); }
-
-        for (ShelfItem item : user.getShelves().get(2).getShelfItems()) {
-            if (item.getBook() == book) {
-                return ResponseEntity.badRequest().body("This user has already reviewed this book.");
-            }
-        }
-
-//        BookReview bookReview = bookReviewService.findByAccount(user);
-//        if (bookReview != null) { return ResponseEntity.badRequest().body("user already has review"); }
-
-        BookReview newBookReview = new BookReview(bookReviewDTONew.getRating(), bookReviewDTONew.getText(), LocalDate.now(), user);
-        bookReviewService.save(newBookReview);
-
-        return ResponseEntity.ok("posted review");
-    }
+//    @PostMapping("/api/user/add/review/{bookId}")
+//    public ResponseEntity addReview(@PathVariable(name = "bookId") Long bookId, @RequestBody BookReviewDTO_New bookReviewDTONew, HttpSession session) {
+//        Account user = (Account) session.getAttribute("user");
+//        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in in order to post a review."); }
+//
+//        Book book = bookService.findOne(bookId);
+//        if (book == null) { return ResponseEntity.badRequest().body("A book with this ID does not exist."); }
+//
+//        for (ShelfItem item : user.getShelves().get(2).getShelfItems()) {
+//            if (item.getBook() == book) {
+//                return ResponseEntity.badRequest().body("This user has already reviewed this book.");
+//            }
+//        }
+//
+////        BookReview bookReview = bookReviewService.findByAccount(user);
+////        if (bookReview != null) { return ResponseEntity.badRequest().body("user already has review"); }
+//
+//        BookReview newBookReview = new BookReview(bookReviewDTONew.getRating(), bookReviewDTONew.getText(), LocalDate.now(), user);
+//        bookReviewService.save(newBookReview);
+//
+//        return ResponseEntity.ok("posted review");
+//    }
 }

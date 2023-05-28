@@ -121,7 +121,7 @@ public class AccountRestController {
     }
 
     @PostMapping("/api/user/logout")
-    public ResponseEntity logout(HttpSession session) {
+    public ResponseEntity<String> logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("Can't log out: already logged out."); }
 
