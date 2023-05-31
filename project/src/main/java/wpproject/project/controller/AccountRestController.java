@@ -58,7 +58,8 @@ public class AccountRestController {
         Account user = (Account) session.getAttribute("user");
 //        System.out.println(user);
 //        session.invalidate();
-        return accountService.findOneByUsername(username);
+        user = accountService.findOne(user.getId());
+        return user;
     }
 
     @GetMapping("/api/database/user/{id}")
@@ -66,7 +67,8 @@ public class AccountRestController {
         Account user = (Account) session.getAttribute("user");
 //        System.out.println(user);
 //        session.invalidate();
-        return accountService.findOne(id);
+        user = accountService.findOne(user.getId());
+        return user;
     }
 
     @PostMapping("/api/user/register")
@@ -117,7 +119,8 @@ public class AccountRestController {
     public Account myaccount(HttpSession session){
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return null; }
-        return accountService.findOneByUsername(user.getUsername());
+        user = accountService.findOne(user.getId());
+        return user;
     }
 
     @PostMapping("/api/user/logout")

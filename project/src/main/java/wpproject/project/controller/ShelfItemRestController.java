@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.BookDTO;
+import wpproject.project.dto.BookReviewDTO_New;
 import wpproject.project.dto.ShelfItemDTO;
 import wpproject.project.model.*;
 import wpproject.project.service.*;
@@ -95,8 +96,10 @@ public class ShelfItemRestController {
         }
     }
 
+    // TODO: ask
+
     @PostMapping("/api/user/add/book/{bookId}/shelf/name={shelfName}")
-    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) BookReviewDTO_New review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -108,11 +111,11 @@ public class ShelfItemRestController {
             return ResponseEntity.badRequest().body("Book with this ID does not exist.");
         }
 
-        return userAddBook(user, targetItem, shelfName);
+        return userAddBook(user, targetItem, shelfName, review);
     }
 
     @PostMapping("/api/user/add/book/isbn={isbn}/shelf/name={shelfName}")
-    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) BookReviewDTO_New review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -124,12 +127,12 @@ public class ShelfItemRestController {
             return ResponseEntity.badRequest().body("Book with this ID does not exist.");
         }
 
-        return userAddBook(user, targetItem, shelfName);
+        return userAddBook(user, targetItem, shelfName, review);
     }
 
     // TODO: add to multiple shelves in a single move
 
-    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName) {
+    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, BookReviewDTO_New review) {
         Shelf targetShelf = null;
         for (Shelf s : user.getShelves()) {
             if (s.getName().equalsIgnoreCase(shelfName)) {
@@ -169,8 +172,8 @@ public class ShelfItemRestController {
 
             String msg = targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").";
 
-            if (targetShelf.getName().equalsIgnoreCase("Read")) {
-                msg += addReview(user, targetItem);
+            if (targetShelf.getName().equalsIgnoreCase("Read") && review != null) {
+                    msg += addReview(user, targetItem, review);
             }
 
             return ResponseEntity.ok().body(msg);
@@ -190,11 +193,10 @@ public class ShelfItemRestController {
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
-    private String addReview(Account user, ShelfItem item) {
-        BookReview review = new BookReview(7.123, "review text", LocalDate.now(), user);
-        reviewService.save(review);
-
-        item.getBookReviews().add(review);
+    private String addReview(Account user, ShelfItem item, BookReviewDTO_New review) {
+        BookReview newReview = new BookReview(review.getRating(), review.getText(), LocalDate.now(), user);
+        reviewService.save(newReview);
+        item.getBookReviews().add(newReview);
 
         double sum = 0;
         int counter = 0;

@@ -11,12 +11,14 @@ import java.util.List;
 public class ShelfItemDTO {
     private Long id;
     private Book book;
-    private List<BookReview> bookReviews = new ArrayList<>();
+    private List<BookReviewDTO> bookReviews = new ArrayList<>();
 
     public ShelfItemDTO(ShelfItem shelfItem) {
         this.id = shelfItem.getId();
-        this.bookReviews = shelfItem.getBookReviews();
         this.book = shelfItem.getBook();
+        for (BookReview b : shelfItem.getBookReviews()) {
+            bookReviews.add(new BookReviewDTO(b));
+        }
     }
 
     public Long getId() {
@@ -27,11 +29,11 @@ public class ShelfItemDTO {
         this.id = id;
     }
 
-    public List<BookReview> getBookReviews() {
+    public List<BookReviewDTO> getBookReviews() {
         return bookReviews;
     }
 
-    public void setBookReviews(List<BookReview> bookReviews) {
+    public void setBookReviews(List<BookReviewDTO> bookReviews) {
         this.bookReviews = bookReviews;
     }
 

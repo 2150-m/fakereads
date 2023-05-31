@@ -12,6 +12,7 @@ import wpproject.project.service.AccountService;
 import wpproject.project.service.ShelfService;
 
 import java.util.Iterator;
+import java.util.List;
 
 @RestController
 public class ShelfRestController {
@@ -25,16 +26,71 @@ public class ShelfRestController {
         Account user = accountService.findOne(userID);
         if (user == null) { return null; }
 
-        Shelf shelf = shelfService.findOne(shelfID);
-        if (shelf == null) { return null; }
-
         for (Shelf s : user.getShelves()) {
-            if (s.getId().equals(shelf.getId())) {
-                return shelf;
+            if (s.getId().equals(shelfID)) {
+                return s;
             }
         }
 
         return null;
+    }
+
+    @GetMapping("/api/database/user/{userId}/shelf/name={shelfName}")
+    public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfName") String shelfname, HttpSession session) {
+        Account user = accountService.findOne(userID);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfname)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    @GetMapping("/api/database/user/username={userName}/shelf/{shelfId}")
+    public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
+        Account user = accountService.findOneByUsername(username);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getId().equals(shelfID)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    @GetMapping("/api/database/user/username={userName}/shelf/name={shelfName}")
+    public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = accountService.findOneByUsername(username);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    @GetMapping("/api/database/user/{userId}/shelves")
+    public List<Shelf> getUserShelves(@PathVariable(name = "userId") Long userID, HttpSession session) {
+        Account user = accountService.findOne(userID);
+        if (user == null) { return null; }
+
+        return user.getShelves();
+    }
+
+    @GetMapping("/api/database/user/username={userName}/shelves")
+    public List<Shelf> getUserShelves(@PathVariable(name = "userName") String username, HttpSession session) {
+        Account user = accountService.findOneByUsername(username);
+        if (user == null) { return null; }
+
+        return user.getShelves();
     }
 
     @PostMapping("/api/user/add/shelf")

@@ -1,5 +1,7 @@
 package wpproject.project.dto;
 
+import java.time.LocalDate;
+
 public class BookReviewDTO_New {
     private Long id;
     private double rating;
