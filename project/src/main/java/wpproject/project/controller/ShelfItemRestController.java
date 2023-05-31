@@ -76,7 +76,6 @@ public class ShelfItemRestController {
         return ResponseEntity.ok(dtos);
     }
 
-    // TODO: release date reader
     @PostMapping("/api/database/book/add")
     public ResponseEntity<String> addItem(@RequestBody BookDTO bookDTO, HttpSession session) {
         try {
@@ -127,6 +126,8 @@ public class ShelfItemRestController {
 
         return userAddBook(user, targetItem, shelfName);
     }
+
+    // TODO: add to multiple shelves in a single move
 
     private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName) {
         Shelf targetShelf = null;
@@ -227,66 +228,63 @@ public class ShelfItemRestController {
     }
 
     private ResponseEntity<String> userRemoveBook(Account user, Book book, String shelfName) {
-        ShelfItem item = null;
-
-        // Find the shelf
-        outer:
+        boolean doesExist = false;
+        boolean inPrimaryShelf = false;
         for (Shelf s : user.getShelves()) {
+            if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
+
+            doesExist = true;
+            if (s.isPrimary()) { inPrimaryShelf = true; }
+            break;
+        }
+        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find " + shelfName.toUpperCase() + " in this user's shelf list."); }
+
+        String msg = "";
+        ShelfItem targetItem = shelfItemService.findByBook(book);
+
+        if (!(shelfName.equalsIgnoreCase("read") || shelfName.equalsIgnoreCase("currentlyreading") || shelfName.equalsIgnoreCase("wanttoread"))) {
+            for (Shelf s : user.getShelves().subList(3, user.getShelves().size())) {
+                if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
+
+                Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
+                while (iterator.hasNext()) {
+                    ShelfItem i = iterator.next();
+                    if (i.getId().equals(targetItem.getId())) {
+                        msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
+
+                        iterator.remove();
+                        shelfService.save(user.getShelves());
+
+                        // If not in a primary, the only thing that needs to be removed is a single ShelfItem
+                        if (!inPrimaryShelf) { return ResponseEntity.ok(msg); }
+                    }
+                }
+            }
+        }
+
+        for (Shelf s : user.getShelves().subList(0, 3)) {
             if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
 
             Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
             while (iterator.hasNext()) {
                 ShelfItem i = iterator.next();
-                if (i.getBook().getId().equals(book.getId())) {
-                    item = i;
-                    break outer;
-                }
-            }
-        }
-
-        if (item == null) { return ResponseEntity.badRequest().body("Could not find a shelf called: " + shelfName.toUpperCase()); }
-
-        String msg = "";
-        boolean inPrimary = false;
-
-        outer: // Check if it's on a primary shelf
-        for (Shelf s : user.getShelves().subList(0, 3)) {
-            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
-            while (iterator.hasNext()) {
-                ShelfItem i = iterator.next();
-                if (i.getId().equals(item.getId())) {
+                if (i.getId().equals(targetItem.getId())) {
                     msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
-                    inPrimary = true;
-                    iterator.remove();
-                    shelfService.save(user.getShelves());
 
                     // Remove the associated review
                     if (shelfName.equalsIgnoreCase("Read")) {
                         msg += removeReview(user, i, book);
                     }
 
-                    break outer;
-                }
-            }
-        }
-
-        for (Shelf s : user.getShelves().subList(3, user.getShelves().size())) {
-            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
-            while (iterator.hasNext()) {
-                ShelfItem i = iterator.next();
-                if (i.getId().equals(item.getId())) {
-                    msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
-
                     iterator.remove();
                     shelfService.save(user.getShelves());
 
-                    if (!inPrimary) { return ResponseEntity.ok(msg); }
+                    return ResponseEntity.ok(msg);
                 }
             }
         }
 
-        if (inPrimary) { return ResponseEntity.ok(msg); }
-        return ResponseEntity.badRequest().body("Could not find " + item.getBook().getTitle().toUpperCase() + " (" + item.getBook().getId() + ") in " + shelfName.toUpperCase() + ".");
+        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + shelfName.toUpperCase() + ".");
     }
 
     private String removeReview(Account user, ShelfItem item, Book book) {

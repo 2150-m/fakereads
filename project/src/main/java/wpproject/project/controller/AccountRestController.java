@@ -128,4 +128,23 @@ public class AccountRestController {
         session.invalidate();
         return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
     }
+
+    @PutMapping("/api/user/myaccount/update")
+    public ResponseEntity<String> updateUser(@RequestBody Account newInfo, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
+        user = accountService.findOne(user.getId());
+
+        user.setFirstName(newInfo.getFirstName());
+        user.setLastName(newInfo.getLastName());
+        user.setUsername(newInfo.getUsername());
+        user.setMailAddress(newInfo.getMailAddress());
+        user.setDateOfBirth(newInfo.getDateOfBirth());
+        user.setDescription(newInfo.getDescription());
+        user.setPassword(newInfo.getPassword());
+        user.setProfilePicture(newInfo.getProfilePicture());
+
+        accountService.save(user);
+        return ResponseEntity.ok("User info updated.");
+    }
 }
