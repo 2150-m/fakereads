@@ -73,8 +73,6 @@ public class BookReviewRestController {
         return ResponseEntity.badRequest().body("Review update failed.");
     }
 
-    // TODO: book review author in returned jsons missing
-
     @PutMapping("/api/user/update/review/book_isbn={isbn}")
     public ResponseEntity<String> updateReview(@PathVariable(name = "isbn") String isbn, @RequestBody BookReviewDTO_New newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");

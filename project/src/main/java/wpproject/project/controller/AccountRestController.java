@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wpproject.project.dto.AccountDTO;
-import wpproject.project.dto.AccountLoginDTO;
-import wpproject.project.dto.AccountRegisterDTO;
+import wpproject.project.dto.*;
 import wpproject.project.model.*;
 import wpproject.project.service.AccountService;
 import wpproject.project.service.BookService;
@@ -72,15 +70,15 @@ public class AccountRestController {
     }
 
     @PostMapping("/api/user/register")
-    public ResponseEntity<String> registerAccount(@RequestBody AccountRegisterDTO accountRequest, HttpSession session) {
+    public Account registerAccount(@RequestBody AccountRegisterDTO accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
+        if (user != null) { System.out.println("Already logged in"); }
 
         try {
             Account account = accountService.findOneByMailAddress(accountRequest.getMailAddress());
-            if (account != null) { return ResponseEntity.badRequest().body("User with this mail address already exists."); }
+            if (account != null) { System.out.println("[x] Mail exists:" + accountRequest.getUsername()); return null; }
             account = accountService.findOneByUsername(accountRequest.getUsername());
-            if (account != null) { return ResponseEntity.badRequest().body("User with this username already exists."); }
+            if (account != null) { System.out.println("[x] Username exists:" + accountRequest.getUsername()); return null; }
 
             account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
 
@@ -95,9 +93,10 @@ public class AccountRestController {
             accountService.save(account);
 
             session.setAttribute("user", account);
-            return ResponseEntity.ok("Succesfully registered: " + account.getUsername());
+            return account;
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to register: " + e.getMessage());
+            System.out.println("Failed to register: " + e.getMessage());
+            return null;
         }
     }
 
@@ -133,21 +132,37 @@ public class AccountRestController {
     }
 
     @PutMapping("/api/user/myaccount/update")
-    public ResponseEntity<String> updateUser(@RequestBody Account newInfo, HttpSession session) {
+    public ResponseEntity<String> updateUser(@RequestBody AccountUpdateDTO newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = accountService.findOne(user.getId());
 
-        user.setFirstName(newInfo.getFirstName());
-        user.setLastName(newInfo.getLastName());
-        user.setUsername(newInfo.getUsername());
-        user.setMailAddress(newInfo.getMailAddress());
-        user.setDateOfBirth(newInfo.getDateOfBirth());
-        user.setDescription(newInfo.getDescription());
-        user.setPassword(newInfo.getPassword());
-        user.setProfilePicture(newInfo.getProfilePicture());
+        if (!newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(user.getFirstName()))                user.setFirstName(newInfo.getFirstName());
+        if (!newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(user.getLastName()))                   user.setLastName(newInfo.getLastName());
+        if (!newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(user.getUsername()))                   user.setUsername(newInfo.getUsername());
+        if (newInfo.getDateOfBirth() != null && !newInfo.getDateOfBirth().equals(user.getDateOfBirth()))             user.setDateOfBirth(newInfo.getDateOfBirth());
+        if (!newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(user.getDescription()))          user.setDescription(newInfo.getDescription());
+        if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(user.getProfilePicture())) user.setProfilePicture(newInfo.getProfilePicture());
 
         accountService.save(user);
         return ResponseEntity.ok("User info updated.");
+    }
+
+    @PutMapping("/api/user/myaccount/update/password")
+    public ResponseEntity<String> updatePassword(@RequestBody AccountUpdatePassDTO newInfo, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
+        user = accountService.findOne(user.getId());
+
+        if (!newInfo.getMail().isEmpty()     && !newInfo.getMail().equals(user.getMailAddress()))  user.setMailAddress(newInfo.getMail());
+        if (!newInfo.getPassword().isEmpty() && !newInfo.getPassword().equals(user.getPassword())) user.setPassword(newInfo.getPassword());
+
+        accountService.save(user);
+        return ResponseEntity.ok("User info updated.");
+    }
+
+    @PutMapping("/api/user/myaccount/update/mail")
+    public ResponseEntity<String> updateMail(@RequestBody AccountUpdatePassDTO newInfo, HttpSession session) {
+        return updatePassword(newInfo, session);
     }
 }

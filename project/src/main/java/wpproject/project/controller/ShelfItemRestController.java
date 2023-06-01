@@ -211,8 +211,6 @@ public class ShelfItemRestController {
         return "\nReview posted.";
     }
 
-    // TODO: independent review system
-
     @PostMapping("/api/user/remove/book/{bookId}/shelf/name={shelfName}")
     public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
