@@ -20,28 +20,10 @@ public class ShelfItemDTO {
             bookReviews.add(new BookReviewDTO(b));
         }
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<BookReviewDTO> getBookReviews() {
-        return bookReviews;
-    }
-
-    public void setBookReviews(List<BookReviewDTO> bookReviews) {
-        this.bookReviews = bookReviews;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
+	public Long getId() { return id;}
+	public void setId(Long id) { this.id = id;}
+	public List<BookReviewDTO> getBookReviews() { return bookReviews;}
+	public void setBookReviews(List<BookReviewDTO> bookReviews) { this.bookReviews = bookReviews;}
+	public Book getBook() { return book;}
+	public void setBook(Book book) { this.book = book;}
 }

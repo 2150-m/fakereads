@@ -21,36 +21,13 @@ public class BookReviewDTO {
         this.reviewDate = bookReview.getReviewDate();
         this.author = bookReview.getAccount().getUsername();
     }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public LocalDate getReviewDate() {
-        return reviewDate;
-    }
-
-    public void setReviewDate(LocalDate reviewDate) {
-        this.reviewDate = reviewDate;
-    }
-
-    public String getAccount() {
-        return author;
-    }
-
-    public void setAccount(String author) {
-        this.author = author;
-    }
+	
+    public double getRating() { return rating; }
+    public void setRating(double rating) { this.rating = rating; }
+    public String getText() { return text;    }
+    public void setText(String text) { this.text = text; }
+    public LocalDate getReviewDate() { return reviewDate; }
+    public void setReviewDate(LocalDate reviewDate) { this.reviewDate = reviewDate; }
+    public String getAccount() { return author; }
+    public void setAccount(String author) { this.author = author; }
 }

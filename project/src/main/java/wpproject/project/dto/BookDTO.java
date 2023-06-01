@@ -37,58 +37,19 @@ public class BookDTO {
         this.isbn = book.getIsbn();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getCoverPhoto() {
-        return coverPhoto;
-    }
-
-    public void setCoverPhoto(String coverPhoto) {
-        this.coverPhoto = coverPhoto;
-    }
-
-    public LocalDate getReleaseDate() {
-        return releaseDate;
-    }
-
-    public void setReleaseDate(LocalDate releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getNumOfPages() {
-        return numOfPages;
-    }
-
-    public void setNumOfPages(int numOfPages) {
-        this.numOfPages = numOfPages;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public String getCoverPhoto() { return coverPhoto; }
+    public void setCoverPhoto(String coverPhoto) { this.coverPhoto = coverPhoto; }
+    public LocalDate getReleaseDate() { return releaseDate; }
+    public void setReleaseDate(LocalDate releaseDate) { this.releaseDate = releaseDate; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public int getNumOfPages() { return numOfPages; }
+    public void setNumOfPages(int numOfPages) { this.numOfPages = numOfPages; }
+    public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
