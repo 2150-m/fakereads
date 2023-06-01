@@ -38,4 +38,10 @@ public class AccountService {
     public Account save(Account account) {
         return accountRepository.save(account);
     }
+
+    public Account login(String username, String password) {
+        Account account = accountRepository.getByUsername(username);
+        if(account == null || !account.getPassword().equals(password)) { return null; }
+        return  account;
+    }
 }

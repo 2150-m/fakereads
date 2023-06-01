@@ -1,14 +1,8 @@
 package wpproject.project.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import wpproject.project.model.*;
 import wpproject.project.repository.*;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 
 @Configuration
 public class DatabaseConfiguration {
@@ -23,7 +17,7 @@ public class DatabaseConfiguration {
     @Autowired
     private GenreRepository genreRepository;
     @Autowired
-    private ReviewRepository reviewRepository;
+    private BookReviewRepository bookReviewRepository;
     @Autowired
     private ShelfItemRepository shelfItemRepository;
     @Autowired
