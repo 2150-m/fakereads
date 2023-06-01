@@ -33,14 +33,14 @@ INSERT INTO BOOKS_GENRES (book_genre_id, book_id) VALUES
 INSERT INTO AUTHORS_BOOKS (account_author_id, book_id) VALUES
 (2, 1);
 
-INSERT INTO BOOK_REVIEW (id, rating, text, review_date) VALUES
-(35, 8, 'tekst', DATE '2012-12-12');
+--INSERT INTO BOOK_REVIEW (id, rating, text, review_date) VALUES
+--(35, 8, 'tekst', DATE '2012-12-12');
 
 INSERT INTO SHELF_ITEM (id, book_id) VALUES
 (10, 1);
 
-INSERT INTO SHELF_ITEM_REVIEW (shelf_item_id, book_review_id) VALUES
-(10, 35);
+--INSERT INTO SHELF_ITEM_REVIEW (shelf_item_id, book_review_id) VALUES
+--(10, 35);
 
 INSERT INTO SHELF_AND_ITEMS (shelf_id, shelf_item_id) VALUES (1, 10);
 

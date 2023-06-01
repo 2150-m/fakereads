@@ -6,6 +6,7 @@ import wpproject.project.model.Shelf;
 import wpproject.project.model.Shelf;
 import wpproject.project.repository.ShelfRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,8 +16,9 @@ public class ShelfService {
     private ShelfRepository shelfRepository;
 
     public Shelf findOne(String name) {
-        Optional<Shelf> shelf = shelfRepository.findByName(name);
-        return shelf.orElse(null);
+        Shelf shelf = shelfRepository.findByName(name);
+        if (shelf != null) { return shelf; }
+        return null;
     }
 
     public Shelf findOne(Long id) {
@@ -28,7 +30,18 @@ public class ShelfService {
         return shelfRepository.findAll();
     }
 
+    public List<Shelf> getPrimaries() {
+        List<Shelf> shelves = List.of(shelfRepository.findByName("WantToRead"), shelfRepository.findByName("CurrentlyReading"), shelfRepository.findByName("Read"));
+        if (shelves != null) { return shelves; }
+        return null;
+    }
+
     public Shelf save(Shelf shelf) {
         return shelfRepository.save(shelf);
     }
+
+    public List<Shelf> save(List<Shelf> shelves) {
+        return shelfRepository.saveAll(shelves);
+    }
+
 }

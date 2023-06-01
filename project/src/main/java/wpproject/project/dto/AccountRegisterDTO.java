@@ -3,7 +3,6 @@ package wpproject.project.dto;
 import wpproject.project.model.Account;
 
 public class AccountRegisterDTO {
-
     private Long id;
     private String firstName;
     private String lastName;

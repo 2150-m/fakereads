@@ -18,7 +18,7 @@ public class BookGenreRestController {
     @Autowired
     private BookGenreService genreService;
 
-    @GetMapping("/api/genres")
+    @GetMapping("/api/database/genres")
     public ResponseEntity<List<BookGenreDTO>> getGenres(HttpSession session) {
         List<BookGenre> genreList = genreService.findAll();
 
@@ -32,7 +32,7 @@ public class BookGenreRestController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/genre/{id}")
+    @GetMapping("/api/database/genre/{id}")
     public BookGenre getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
         BookGenre genre = (BookGenre) session.getAttribute("genre");
         System.out.println(genre);
@@ -40,7 +40,7 @@ public class BookGenreRestController {
         return genreService.findOne(id);
     }
 
-    @GetMapping("/api/genre/name={name}")
+    @GetMapping("/api/database/genre/name={name}")
     public BookGenre getGenre(@PathVariable(name = "name") String name, HttpSession session) {
         BookGenre genre = (BookGenre) session.getAttribute("genre");
         System.out.println(genre);

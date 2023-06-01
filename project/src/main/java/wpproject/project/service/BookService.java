@@ -2,7 +2,6 @@ package wpproject.project.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import wpproject.project.dto.BookDTO;
 import wpproject.project.model.Book;
 import wpproject.project.model.BookGenre;
 import wpproject.project.repository.BookRepository;
@@ -23,6 +22,11 @@ public class BookService {
 
     public Book findOne(Long id) {
         Optional<Book> book = bookRepository.findById(id);
+        return book.orElse(null);
+    }
+
+    public Book findByIsbn(String isbn) {
+        Optional<Book> book = bookRepository.findByIsbn(isbn);
         return book.orElse(null);
     }
 
