@@ -1,6 +1,5 @@
 package wpproject.project.controller;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,12 +13,10 @@ import wpproject.project.service.ShelfItemService;
 import wpproject.project.service.ShelfService;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 @RestController
-public class AccountRestController {
+public class Controller_Rest_Account {
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -35,16 +32,16 @@ public class AccountRestController {
     }
 
     @GetMapping("/api/database/users")
-    public ResponseEntity<List<AccountDTO>> getUsers(HttpSession session) {
+    public ResponseEntity<List<DTO_Account>> getUsers(HttpSession session) {
         List<Account> userList = accountService.findAll();
 
         Account user = (Account) session.getAttribute("user");
         if (user == null) { System.out.println("No session"); }
         else              { System.out.println(user);         }
 
-        List<AccountDTO> dtos = new ArrayList<>();
+        List<DTO_Account> dtos = new ArrayList<>();
         for (Account u : userList) {
-            AccountDTO dto = new AccountDTO(u);
+            DTO_Account dto = new DTO_Account(u);
             dtos.add(dto);
         }
 
@@ -70,7 +67,7 @@ public class AccountRestController {
     }
 
     @PostMapping("/api/user/register")
-    public Account registerAccount(@RequestBody AccountRegisterDTO accountRequest, HttpSession session) {
+    public Account registerAccount(@RequestBody DTO_AccountRegister accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user != null) { System.out.println("Already logged in"); }
 
@@ -101,13 +98,13 @@ public class AccountRestController {
     }
 
     @PostMapping("/api/user/login")
-    public ResponseEntity<String> login(@RequestBody AccountLoginDTO accountLoginDTO, HttpSession session){
+    public ResponseEntity<String> login(@RequestBody DTO_AccountLogin DTOAccountLogin, HttpSession session){
         Account user = (Account) session.getAttribute("user");
         if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
-        if(accountLoginDTO.getUsername().isEmpty() || accountLoginDTO.getPassword().isEmpty())  { return new ResponseEntity("Invalid login data", HttpStatus.BAD_REQUEST); }
+        if(DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return new ResponseEntity("Invalid login data", HttpStatus.BAD_REQUEST); }
 
-        Account loggedAccount = accountService.login(accountLoginDTO.getUsername(), accountLoginDTO.getPassword());
+        Account loggedAccount = accountService.login(DTOAccountLogin.getUsername(), DTOAccountLogin.getPassword());
         if (loggedAccount == null)  { return new ResponseEntity<>("Account does not exist!", HttpStatus.NOT_FOUND); }
 
         session.setAttribute("user", loggedAccount);
@@ -132,7 +129,7 @@ public class AccountRestController {
     }
 
     @PutMapping("/api/user/myaccount/update")
-    public ResponseEntity<String> updateUser(@RequestBody AccountUpdateDTO newInfo, HttpSession session) {
+    public ResponseEntity<String> updateUser(@RequestBody DTO_AccountUpdate newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = accountService.findOne(user.getId());
@@ -149,7 +146,7 @@ public class AccountRestController {
     }
 
     @PutMapping("/api/user/myaccount/update/password")
-    public ResponseEntity<String> updatePassword(@RequestBody AccountUpdatePassDTO newInfo, HttpSession session) {
+    public ResponseEntity<String> updatePassword(@RequestBody DTO_AccountUpdatePass newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = accountService.findOne(user.getId());
@@ -162,7 +159,7 @@ public class AccountRestController {
     }
 
     @PutMapping("/api/user/myaccount/update/mail")
-    public ResponseEntity<String> updateMail(@RequestBody AccountUpdatePassDTO newInfo, HttpSession session) {
+    public ResponseEntity<String> updateMail(@RequestBody DTO_AccountUpdatePass newInfo, HttpSession session) {
         return updatePassword(newInfo, session);
     }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountDTO {
+public class DTO_Account {
     private Long id;
     private String firstName;
     private String lastName;
@@ -21,7 +21,7 @@ public class AccountDTO {
     private Account_Role accountRole;
     private List<Shelf> shelves = new ArrayList<>();
 
-    public AccountDTO(Account user) {
+    public DTO_Account(Account user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();

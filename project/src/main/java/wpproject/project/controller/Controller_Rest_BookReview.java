@@ -4,21 +4,18 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wpproject.project.dto.BookReviewDTO_New;
-import wpproject.project.dto.BookReviewDTO_NoShelves;
+import wpproject.project.dto.DTO_BookReviewNew;
+import wpproject.project.dto.DTO_BookReviewNoShelves;
 import wpproject.project.model.*;
 import wpproject.project.service.AccountService;
 import wpproject.project.service.BookReviewService;
-import wpproject.project.service.BookService;
-import wpproject.project.service.ShelfItemService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 @RestController
-public class BookReviewRestController {
+public class Controller_Rest_BookReview {
     @Autowired
     private AccountService accountService;
 
@@ -26,15 +23,15 @@ public class BookReviewRestController {
     private BookReviewService bookReviewService;
 
     @GetMapping("/api/database/reviews")
-    public ResponseEntity<List<BookReviewDTO_NoShelves>> getBookReviews(HttpSession session) {
+    public ResponseEntity<List<DTO_BookReviewNoShelves>> getBookReviews(HttpSession session) {
         List<BookReview> bookReviews = bookReviewService.findAll();
 
         BookReview bookReview = (BookReview) session.getAttribute("bookReview");
         if (bookReview == null) { System.out.println("No session"); }
         else                    { System.out.println(bookReview);         }
 
-        List<BookReviewDTO_NoShelves> dtos = new ArrayList<>();
-        for (BookReview b : bookReviews) { BookReviewDTO_NoShelves dto = new BookReviewDTO_NoShelves(b); dtos.add(dto); }
+        List<DTO_BookReviewNoShelves> dtos = new ArrayList<>();
+        for (BookReview b : bookReviews) { DTO_BookReviewNoShelves dto = new DTO_BookReviewNoShelves(b); dtos.add(dto); }
         return ResponseEntity.ok(dtos);
     }
 
@@ -47,7 +44,7 @@ public class BookReviewRestController {
     }
 
     @PutMapping("/api/user/update/review/book_id={id}")
-    public ResponseEntity<String> updateReview(@PathVariable(name = "id") Long bookId, @RequestBody BookReviewDTO_New newReviewDTO, HttpSession session) {
+    public ResponseEntity<String> updateReview(@PathVariable(name = "id") Long bookId, @RequestBody DTO_BookReviewNew newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = accountService.findOne(user.getId());
@@ -74,7 +71,7 @@ public class BookReviewRestController {
     }
 
     @PutMapping("/api/user/update/review/book_isbn={isbn}")
-    public ResponseEntity<String> updateReview(@PathVariable(name = "isbn") String isbn, @RequestBody BookReviewDTO_New newReviewDTO, HttpSession session) {
+    public ResponseEntity<String> updateReview(@PathVariable(name = "isbn") String isbn, @RequestBody DTO_BookReviewNew newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = accountService.findOne(user.getId());
@@ -100,7 +97,7 @@ public class BookReviewRestController {
         return ResponseEntity.badRequest().body("Could not find a book with the ISBN " + isbn + " in this user's account.");
     }
 
-    private ResponseEntity<String> addNewReview(Account user, ShelfItem i, BookReviewDTO_New newReviewDTO) {
+    private ResponseEntity<String> addNewReview(Account user, ShelfItem i, DTO_BookReviewNew newReviewDTO) {
         BookReview newReview = new BookReview(newReviewDTO.getRating(), newReviewDTO.getText(), LocalDate.now(), user);
         i.getBookReviews().add(newReview);
         bookReviewService.save(newReview);

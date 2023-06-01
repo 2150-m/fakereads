@@ -1,13 +1,10 @@
 package wpproject.project.dto;
 
 import wpproject.project.model.Book;
-import wpproject.project.model.BookGenre;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-public class BookDTO {
+public class DTO_Book {
     private Long id;
     private String title;
     private String coverPhoto;
@@ -16,9 +13,9 @@ public class BookDTO {
     private int numOfPages;
     private String isbn;
 
-    public BookDTO() {}
+    public DTO_Book() {}
 
-    public BookDTO(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn) {
+    public DTO_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn) {
         this.title = title;
         this.coverPhoto = coverPhoto;
         this.releaseDate = releaseDate;
@@ -27,7 +24,7 @@ public class BookDTO {
         this.isbn = isbn;
     }
 
-    public BookDTO(Book book) {
+    public DTO_Book(Book book) {
         this.id = book.getId();
         this.title = book.getTitle();
         this.coverPhoto = book.getCoverPhoto();

@@ -1,13 +1,11 @@
 package wpproject.project.dto;
 
-import java.time.LocalDate;
-
-public class BookReviewDTO_New {
+public class DTO_BookReviewNew {
     private Long id;
     private double rating;
     private String text;
 
-    public BookReviewDTO_New(double rating, String text) {
+    public DTO_BookReviewNew(double rating, String text) {
         this.rating = rating;
         this.text = text;
     }

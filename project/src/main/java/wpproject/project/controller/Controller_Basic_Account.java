@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import wpproject.project.service.AccountService;
 
 @Controller
-public class AccountBasicController {
+public class Controller_Basic_Account {
     @Autowired
     private AccountService accountService;
 

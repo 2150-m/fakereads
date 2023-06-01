@@ -1,8 +1,6 @@
 package wpproject.project.dto;
 
-import wpproject.project.model.Account;
-
-public class AccountRegisterDTO {
+public class DTO_AccountRegister {
     private Long id;
     private String firstName;
     private String lastName;
@@ -10,7 +8,7 @@ public class AccountRegisterDTO {
     private String mailAddress;
     private String password;
 
-    public AccountRegisterDTO(Long id, String firstName, String lastName, String username, String mailAddress, String password) {
+    public DTO_AccountRegister(Long id, String firstName, String lastName, String username, String mailAddress, String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;

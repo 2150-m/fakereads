@@ -1,21 +1,16 @@
 package wpproject.project.dto;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import wpproject.project.model.Account;
 import wpproject.project.model.BookReview;
 
 import java.time.LocalDate;
 
-public class BookReviewDTO {
+public class DTO_BookReview {
     private double rating;
     private String text;
     private LocalDate reviewDate;
     private String author;
 
-    public BookReviewDTO(BookReview bookReview) {
+    public DTO_BookReview(BookReview bookReview) {
         this.rating = bookReview.getRating();
         this.text = bookReview.getText();
         this.reviewDate = bookReview.getReviewDate();

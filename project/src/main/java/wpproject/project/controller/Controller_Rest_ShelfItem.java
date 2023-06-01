@@ -5,22 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import wpproject.project.dto.BookDTO;
-import wpproject.project.dto.BookReviewDTO_New;
-import wpproject.project.dto.ShelfItemDTO;
+import wpproject.project.dto.DTO_Book;
+import wpproject.project.dto.DTO_BookReviewNew;
+import wpproject.project.dto.DTO_ShelfItem;
 import wpproject.project.model.*;
 import wpproject.project.service.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 @RestController
-public class ShelfItemRestController {
+public class Controller_Rest_ShelfItem {
     @Autowired
     private ShelfItemService shelfItemService;
     @Autowired
@@ -33,15 +32,15 @@ public class ShelfItemRestController {
     private BookReviewService reviewService;
 
     @GetMapping("/api/database/books")
-    public ResponseEntity<List<ShelfItemDTO>> getItems(HttpSession session) {
+    public ResponseEntity<List<DTO_ShelfItem>> getItems(HttpSession session) {
         List<ShelfItem> shelfItems = shelfItemService.findAll();
 
         ShelfItem item = (ShelfItem) session.getAttribute("shelfItem");
         if (item == null) { System.out.println("No session"); }
         else              { System.out.println(item);         }
 
-        List<ShelfItemDTO> dtos = new ArrayList<>();
-        for (ShelfItem b : shelfItems) { ShelfItemDTO dto = new ShelfItemDTO(b); dtos.add(dto); }
+        List<DTO_ShelfItem> dtos = new ArrayList<>();
+        for (ShelfItem b : shelfItems) { DTO_ShelfItem dto = new DTO_ShelfItem(b); dtos.add(dto); }
         return ResponseEntity.ok(dtos);
     }
 
@@ -63,14 +62,14 @@ public class ShelfItemRestController {
 
     // TODO: has a server error
     @GetMapping("/api/database/book/search={search}")
-    public ResponseEntity<List<ShelfItemDTO>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
+    public ResponseEntity<List<DTO_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
         List<ShelfItem> items = shelfItemService.findAll();
 
-        List<ShelfItemDTO> dtos = new ArrayList<>();
+        List<DTO_ShelfItem> dtos = new ArrayList<>();
         for (ShelfItem i : items) {
             // search by title / description
             if (i.getBook().getTitle().contains(search) || i.getBook().getDescription().contains(search)) {
-                ShelfItemDTO dto = new ShelfItemDTO(i); dtos.add(dto);
+                DTO_ShelfItem dto = new DTO_ShelfItem(i); dtos.add(dto);
             }
         }
 
@@ -78,13 +77,13 @@ public class ShelfItemRestController {
     }
 
     @PostMapping("/api/database/book/add")
-    public ResponseEntity<String> addItem(@RequestBody BookDTO bookDTO, HttpSession session) {
+    public ResponseEntity<String> addItem(@RequestBody DTO_Book DTOBook, HttpSession session) {
         try {
-            if (bookService.findByIsbn(bookDTO.getIsbn()) != null) {
-                return ResponseEntity.badRequest().body("A book with the same ISBN (" + bookDTO.getIsbn() + ") is already in the database.");
+            if (bookService.findByIsbn(DTOBook.getIsbn()) != null) {
+                return ResponseEntity.badRequest().body("A book with the same ISBN (" + DTOBook.getIsbn() + ") is already in the database.");
             }
 
-            Book book = new Book(bookDTO.getTitle(), bookDTO.getCoverPhoto(), LocalDate.now(), bookDTO.getDescription(), bookDTO.getNumOfPages(), 0, bookDTO.getIsbn());
+            Book book = new Book(DTOBook.getTitle(), DTOBook.getCoverPhoto(), LocalDate.now(), DTOBook.getDescription(), DTOBook.getNumOfPages(), 0, DTOBook.getIsbn());
             bookService.save(book);
 
             ShelfItem item = new ShelfItem(book);
@@ -99,7 +98,7 @@ public class ShelfItemRestController {
     // TODO: ask
 
     @PostMapping("/api/user/add/book/{bookId}/shelf/name={shelfName}")
-    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) BookReviewDTO_New review, HttpSession session) {
+    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_BookReviewNew review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -115,7 +114,7 @@ public class ShelfItemRestController {
     }
 
     @PostMapping("/api/user/add/book/isbn={isbn}/shelf/name={shelfName}")
-    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) BookReviewDTO_New review, HttpSession session) {
+    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_BookReviewNew review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -132,7 +131,7 @@ public class ShelfItemRestController {
 
     // TODO: add to multiple shelves in a single move
 
-    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, BookReviewDTO_New review) {
+    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_BookReviewNew review) {
         Shelf targetShelf = null;
         for (Shelf s : user.getShelves()) {
             if (s.getName().equalsIgnoreCase(shelfName)) {
@@ -193,7 +192,7 @@ public class ShelfItemRestController {
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
-    private String addReview(Account user, ShelfItem item, BookReviewDTO_New review) {
+    private String addReview(Account user, ShelfItem item, DTO_BookReviewNew review) {
         BookReview newReview = new BookReview(review.getRating(), review.getText(), LocalDate.now(), user);
         reviewService.save(newReview);
         item.getBookReviews().add(newReview);

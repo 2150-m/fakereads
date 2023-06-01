@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.model.Account;
 import wpproject.project.model.Shelf;
-import wpproject.project.model.ShelfItem;
 import wpproject.project.service.AccountService;
 import wpproject.project.service.ShelfService;
 
@@ -15,7 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @RestController
-public class ShelfRestController {
+public class Controller_Rest_Shelf {
     @Autowired
     private ShelfService shelfService;
     @Autowired

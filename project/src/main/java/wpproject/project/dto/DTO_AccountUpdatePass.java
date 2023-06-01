@@ -1,10 +1,10 @@
 package wpproject.project.dto;
 
-public class AccountUpdatePassDTO {
+public class DTO_AccountUpdatePass {
     private String password;
     private String mail;
 
-    public AccountUpdatePassDTO(String password, String mail) {
+    public DTO_AccountUpdatePass(String password, String mail) {
         this.password = password;
         this.mail = mail;
     }

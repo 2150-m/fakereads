@@ -5,7 +5,7 @@ import wpproject.project.model.Account_Role;
 
 import java.time.LocalDate;
 
-public class AccountDTO_NoShelves {
+public class DTO_AccountNoShelves {
     private Long id;
     private String firstName;
     private String lastName;
@@ -17,9 +17,9 @@ public class AccountDTO_NoShelves {
     private String description;
     private Account_Role accountRole;
 
-    public AccountDTO_NoShelves() {}
+    public DTO_AccountNoShelves() {}
 
-    public AccountDTO_NoShelves(Account account) {
+    public DTO_AccountNoShelves(Account account) {
         this.id = account.getId();
         this.firstName = account.getFirstName();
         this.lastName = account.getLastName();
