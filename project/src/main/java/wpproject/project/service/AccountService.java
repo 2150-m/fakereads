@@ -3,7 +3,7 @@ package wpproject.project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wpproject.project.model.Account;
-import wpproject.project.repository.AccountRepository;
+import wpproject.project.repository.Repository_Account;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,33 +11,33 @@ import java.util.Optional;
 @Service
 public class AccountService {
     @Autowired
-    private AccountRepository accountRepository;
+    private Repository_Account repositoryAccount;
 
     public Account findOneByUsername(String username) {
-        Optional<Account> account = accountRepository.findByUsername(username);
+        Optional<Account> account = repositoryAccount.findByUsername(username);
         return account.orElse(null);
     }
 
     public Account findOneByMailAddress(String mailAddress) {
-        Optional<Account> account = accountRepository.findByMailAddress(mailAddress);
+        Optional<Account> account = repositoryAccount.findByMailAddress(mailAddress);
         return account.orElse(null);
     }
 
     public Account findOne(Long id) {
-        Optional<Account> account = accountRepository.findById(id);
+        Optional<Account> account = repositoryAccount.findById(id);
         return account.orElse(null);
     }
 
     public List<Account> findAll() {
-        return accountRepository.findAll();
+        return repositoryAccount.findAll();
     }
 
     public Account save(Account account) {
-        return accountRepository.save(account);
+        return repositoryAccount.save(account);
     }
 
     public Account login(String username, String password) {
-        Account account = accountRepository.getByUsername(username);
+        Account account = repositoryAccount.getByUsername(username);
         if(account == null || !account.getPassword().equals(password)) { return null; }
         return  account;
     }
