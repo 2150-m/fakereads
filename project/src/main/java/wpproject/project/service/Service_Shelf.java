@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ShelfService {
+public class Service_Shelf {
     @Autowired
     private Repository_Shelf repositoryShelf;
 

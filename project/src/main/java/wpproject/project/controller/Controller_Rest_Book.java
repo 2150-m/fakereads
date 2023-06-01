@@ -2,12 +2,12 @@ package wpproject.project.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
-import wpproject.project.service.BookService;
+import wpproject.project.service.Service_Book;
 
 @RestController
 public class Controller_Rest_Book {
     @Autowired
-    private BookService bookService;
+    private Service_Book serviceBook;
 
 //    @GetMapping("/api/books")
 //    public ResponseEntity<List<BookDTO>> getBooks(HttpSession session) {

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookGenreService {
+public class Service_BookGenre {
     @Autowired
     private Repository_Genre repositoryGenre;
 

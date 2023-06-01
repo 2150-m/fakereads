@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.*;
 import wpproject.project.model.*;
-import wpproject.project.service.AccountService;
-import wpproject.project.service.BookService;
-import wpproject.project.service.ShelfItemService;
-import wpproject.project.service.ShelfService;
+import wpproject.project.service.Service_Account;
+import wpproject.project.service.Service_Book;
+import wpproject.project.service.Service_ShelfItem;
+import wpproject.project.service.Service_Shelf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +18,13 @@ import java.util.List;
 @RestController
 public class Controller_Rest_Account {
     @Autowired
-    private AccountService accountService;
+    private Service_Account serviceAccount;
     @Autowired
-    private ShelfService shelfService;
+    private Service_Shelf serviceShelf;
     @Autowired
-    private BookService bookService;
+    private Service_Book serviceBook;
     @Autowired
-    private ShelfItemService shelfItemService;
+    private Service_ShelfItem serviceShelfItem;
 
     @GetMapping("/api")
     public String welcome() {
@@ -33,7 +33,7 @@ public class Controller_Rest_Account {
 
     @GetMapping("/api/database/users")
     public ResponseEntity<List<DTO_Account>> getUsers(HttpSession session) {
-        List<Account> userList = accountService.findAll();
+        List<Account> userList = serviceAccount.findAll();
 
         Account user = (Account) session.getAttribute("user");
         if (user == null) { System.out.println("No session"); }
@@ -53,7 +53,7 @@ public class Controller_Rest_Account {
         Account user = (Account) session.getAttribute("user");
 //        System.out.println(user);
 //        session.invalidate();
-        user = accountService.findOne(user.getId());
+        user = serviceAccount.findOne(user.getId());
         return user;
     }
 
@@ -62,7 +62,7 @@ public class Controller_Rest_Account {
         Account user = (Account) session.getAttribute("user");
 //        System.out.println(user);
 //        session.invalidate();
-        user = accountService.findOne(user.getId());
+        user = serviceAccount.findOne(user.getId());
         return user;
     }
 
@@ -72,9 +72,9 @@ public class Controller_Rest_Account {
         if (user != null) { System.out.println("Already logged in"); }
 
         try {
-            Account account = accountService.findOneByMailAddress(accountRequest.getMailAddress());
+            Account account = serviceAccount.findOneByMailAddress(accountRequest.getMailAddress());
             if (account != null) { System.out.println("[x] Mail exists:" + accountRequest.getUsername()); return null; }
-            account = accountService.findOneByUsername(accountRequest.getUsername());
+            account = serviceAccount.findOneByUsername(accountRequest.getUsername());
             if (account != null) { System.out.println("[x] Username exists:" + accountRequest.getUsername()); return null; }
 
             account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
@@ -82,12 +82,12 @@ public class Controller_Rest_Account {
             Shelf shelf_WantToRead = new Shelf("WantToRead", true);
             Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
             Shelf shelf_Read = new Shelf("Read", true);
-            shelfService.save(shelf_WantToRead);
-            shelfService.save(shelf_CurrentlyReading);
-            shelfService.save(shelf_Read);
+            serviceShelf.save(shelf_WantToRead);
+            serviceShelf.save(shelf_CurrentlyReading);
+            serviceShelf.save(shelf_Read);
             account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
 
-            accountService.save(account);
+            serviceAccount.save(account);
 
             session.setAttribute("user", account);
             return account;
@@ -104,7 +104,7 @@ public class Controller_Rest_Account {
 
         if(DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return new ResponseEntity("Invalid login data", HttpStatus.BAD_REQUEST); }
 
-        Account loggedAccount = accountService.login(DTOAccountLogin.getUsername(), DTOAccountLogin.getPassword());
+        Account loggedAccount = serviceAccount.login(DTOAccountLogin.getUsername(), DTOAccountLogin.getPassword());
         if (loggedAccount == null)  { return new ResponseEntity<>("Account does not exist!", HttpStatus.NOT_FOUND); }
 
         session.setAttribute("user", loggedAccount);
@@ -115,7 +115,7 @@ public class Controller_Rest_Account {
     public Account myaccount(HttpSession session){
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return null; }
-        user = accountService.findOne(user.getId());
+        user = serviceAccount.findOne(user.getId());
         return user;
     }
 
@@ -132,7 +132,7 @@ public class Controller_Rest_Account {
     public ResponseEntity<String> updateUser(@RequestBody DTO_AccountUpdate newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = accountService.findOne(user.getId());
+        user = serviceAccount.findOne(user.getId());
 
         if (!newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(user.getFirstName()))                user.setFirstName(newInfo.getFirstName());
         if (!newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(user.getLastName()))                   user.setLastName(newInfo.getLastName());
@@ -141,7 +141,7 @@ public class Controller_Rest_Account {
         if (!newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(user.getDescription()))          user.setDescription(newInfo.getDescription());
         if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(user.getProfilePicture())) user.setProfilePicture(newInfo.getProfilePicture());
 
-        accountService.save(user);
+        serviceAccount.save(user);
         return ResponseEntity.ok("User info updated.");
     }
 
@@ -149,12 +149,12 @@ public class Controller_Rest_Account {
     public ResponseEntity<String> updatePassword(@RequestBody DTO_AccountUpdatePass newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = accountService.findOne(user.getId());
+        user = serviceAccount.findOne(user.getId());
 
         if (!newInfo.getMail().isEmpty()     && !newInfo.getMail().equals(user.getMailAddress()))  user.setMailAddress(newInfo.getMail());
         if (!newInfo.getPassword().isEmpty() && !newInfo.getPassword().equals(user.getPassword())) user.setPassword(newInfo.getPassword());
 
-        accountService.save(user);
+        serviceAccount.save(user);
         return ResponseEntity.ok("User info updated.");
     }
 

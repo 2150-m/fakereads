@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import wpproject.project.dto.DTO_BookGenre;
 import wpproject.project.model.BookGenre;
-import wpproject.project.service.BookGenreService;
+import wpproject.project.service.Service_BookGenre;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 public class Controller_Rest_BookGenre {
     @Autowired
-    private BookGenreService genreService;
+    private Service_BookGenre genreService;
 
     @GetMapping("/api/database/genres")
     public ResponseEntity<List<DTO_BookGenre>> getGenres(HttpSession session) {
