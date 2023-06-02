@@ -2,11 +2,12 @@ INSERT INTO SHELF (name, is_primary) VALUES
 ('CustomShelf01', false);
 
 INSERT INTO ACCOUNT (first_name, last_name, username, mail_address, password, date_of_birth, profile_picture, description, account_role) VALUES
-('Marko',  'Markovic',   'markomarkovic', 'marko@gmail.com',  'sifra123',    DATE '1990-03-23', 'pic1.jpg', 'opis1', 0),
-('Nikola', 'Nikolic',    'nikola123',     'nikola@gmail.com', 'jedandvatri', DATE '2000-05-02', 'pic2.jpg', 'opis2', 0),
-('Pera',   'Peric',      'pera123',       'pera@gmail.com',   '123456890',   DATE '1980-03-02', 'pic3.jpg', 'opis3', 0),
-('Dusan',  'Dusic',      'dusan666',      'dusan@gmail.com',  '666666',      DATE '2006-06-06', 'pic4.jpg', 'opis4', 0),
-('Stefan', 'Stefanovic', 'stefaaa',       'stefan@gmail.com', 'killme123',   DATE '2001-04-04', 'pic5.jpg', 'opis5', 0);
+('Marko',  'Markovic',   'markomarkovic', 'marko@gmail.com',    'sifra123',    DATE '1990-03-23', 'pic1.jpg',  'opis1', 0),
+('Nikola', 'Nikolic',    'nikola123',     'nikola@gmail.com',   'jedandvatri', DATE '2000-05-02', 'pic2.jpg',  'opis2', 0),
+('Pera',   'Peric',      'pera123',       'pera@gmail.com',     '123456890',   DATE '1980-03-02', 'pic3.jpg',  'opis3', 0),
+('Dusan',  'Dusic',      'dusan666',      'dusan@gmail.com',    '666666',      DATE '2006-06-06', 'pic4.jpg',  'opis4', 0),
+('Stefan', 'Stefanovic', 'stefaaa',       'stefan@gmail.com',   'killme123',   DATE '2001-04-04', 'pic5.jpg',  'opis5', 0),
+('Admin',  'Adminovic',  'lmao123',       'bigboss@gmail.com',  'bigboss123',  DATE '1700-03-23', 'admin.jpg', 'admin', 2);
 
 
 INSERT INTO ACCOUNTS_SHELVES (account_id, shelf_id) VALUES
