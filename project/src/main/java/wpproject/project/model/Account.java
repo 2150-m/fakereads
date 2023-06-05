@@ -153,15 +153,16 @@ public class Account implements Serializable {
     public String toString() {
         return "Account{" +
                 "id=" + id +
-                ", ime='" + firstName + '\'' +
-                ", prezime='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", username='" + username + '\'' +
                 ", mailAddress='" + mailAddress + '\'' +
                 ", password='" + password + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
                 ", profilePicture='" + profilePicture + '\'' +
                 ", description='" + description + '\'' +
-                ", uloga=" + accountRole +
+                ", accountRole=" + accountRole +
+                //", shelves=" + shelves +
                 '}';
     }
 }

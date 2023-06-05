@@ -28,7 +28,7 @@ public class Controller_Rest_Account {
 
     @GetMapping("/api")
     public String welcome() {
-        return "Hello from api";
+        return "hello from api";
     }
 
     @GetMapping("/api/database/users")
@@ -36,7 +36,7 @@ public class Controller_Rest_Account {
         List<Account> userList = serviceAccount.findAll();
 
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { System.out.println("No session"); }
+        if (user == null) { System.err.println("No session"); }
         else              { System.out.println(user);         }
 
         List<DTO_Account> dtos = new ArrayList<>();
@@ -50,32 +50,24 @@ public class Controller_Rest_Account {
 
     @GetMapping("/api/database/user/username={username}")
     public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-//        System.out.println(user);
-//        session.invalidate();
-        user = serviceAccount.findOne(user.getId());
-        return user;
+        return serviceAccount.findOneByUsername(username);
     }
 
     @GetMapping("/api/database/user/{id}")
     public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-//        System.out.println(user);
-//        session.invalidate();
-        user = serviceAccount.findOne(user.getId());
-        return user;
+        return serviceAccount.findOne(id);
     }
 
     @PostMapping("/api/user/register")
     public Account registerAccount(@RequestBody DTO_AccountRegister accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user != null) { System.out.println("Already logged in"); }
+        if (user != null) { System.err.println("[x] already logged in"); }
 
         try {
             Account account = serviceAccount.findOneByMailAddress(accountRequest.getMailAddress());
-            if (account != null) { System.out.println("[x] Mail exists:" + accountRequest.getUsername()); return null; }
+            if (account != null) { System.err.println("[x] can't register, mail exists:" + accountRequest.getMailAddress()); return null; }
             account = serviceAccount.findOneByUsername(accountRequest.getUsername());
-            if (account != null) { System.out.println("[x] Username exists:" + accountRequest.getUsername()); return null; }
+            if (account != null) { System.err.println("[x] can't register, username exists:" + accountRequest.getUsername()); return null; }
 
             account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
 
@@ -92,7 +84,7 @@ public class Controller_Rest_Account {
             session.setAttribute("user", account);
             return account;
         } catch (Exception e) {
-            System.out.println("Failed to register: " + e.getMessage());
+            System.err.println("[x] failed to register: " + e.getMessage());
             return null;
         }
     }
@@ -163,7 +155,38 @@ public class Controller_Rest_Account {
         return updatePassword(newInfo, session);
     }
 
+    @PostMapping("/api/user/admin/addauthor")
+    public Account admin_addAuthor(@RequestBody DTO_AccountAuthorNew DTOAccountAuthorNew, HttpSession session){
 
-    // TODO: add admin stuff
+        // must be logged in
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { System.err.println("[x] you have to be logged in"); return null; }
 
+        // must be admin
+        user = serviceAccount.findOne(user.getId());
+        if (user.getAccountRole() != Account_Role.ADMINISTRATOR) { System.err.println("[x] not admin: " + user); return null; }
+
+        try {
+            // check if exists by mail/username
+            if (serviceAccount.findOneByMailAddress(DTOAccountAuthorNew.getMailAddress()) != null) { System.err.println("[x] can't add new user (author), mail exists:"     + DTOAccountAuthorNew.getMailAddress()); return null; }
+            if (serviceAccount.findOneByUsername(DTOAccountAuthorNew.getUsername()) != null)       { System.err.println("[x] can't add new user (author), username exists:" + DTOAccountAuthorNew.getUsername());    return null; }
+
+            Account newAccount = new Account(
+                DTOAccountAuthorNew.getFirstName(),
+                DTOAccountAuthorNew.getLastName(),
+                DTOAccountAuthorNew.getUsername(),
+                DTOAccountAuthorNew.getMailAddress(),
+                DTOAccountAuthorNew.getPassword()
+            );
+
+            newAccount.setAccountRole(Account_Role.AUTHOR);
+
+            serviceAccount.save(newAccount);
+
+            return newAccount;
+        } catch (Exception e) {
+            System.err.println("[x] failed to add new user (author): " + e.getMessage());
+            return null;
+        }
+    }
 }
