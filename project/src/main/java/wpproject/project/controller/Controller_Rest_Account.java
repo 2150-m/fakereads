@@ -30,6 +30,8 @@ public class Controller_Rest_Account {
     private Service_BookReview serviceBookReview;
     @Autowired
     private Service_BookReview reviewService;
+    @Autowired
+    private Service_AccountAuthor serviceAccountAuthor;
 
     @PostMapping("/api/user/register")
     public Account registerAccount(@RequestBody DTO_AccountRegister accountRequest, HttpSession session) {
@@ -67,10 +69,15 @@ public class Controller_Rest_Account {
         Account user = (Account) session.getAttribute("user");
         if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
-        if(DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return new ResponseEntity("Invalid login data", HttpStatus.BAD_REQUEST); }
+        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return ResponseEntity.badRequest().body("Invalid login data"); }
 
         Account loggedAccount = serviceAccount.login(DTOAccountLogin.getUsername(), DTOAccountLogin.getPassword());
         if (loggedAccount == null)  { return new ResponseEntity<>("Account does not exist!", HttpStatus.NOT_FOUND); }
+
+        user = serviceAccount.findOneByUsername(DTOAccountLogin.getUsername());
+        if (user != null && user.getAccountRole() == Account_Role.AUTHOR) {
+            if (!serviceAccountAuthor.findById(user.getId()).isAccountActivated()) { return ResponseEntity.badRequest().body("This author account is not activated."); }
+        }
 
         session.setAttribute("user", loggedAccount);
         return ResponseEntity.ok("Successfully logged in: " + loggedAccount.getUsername());

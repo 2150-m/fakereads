@@ -14,7 +14,7 @@ public class DTO_Account {
     private String lastName;
     private String username;
     private String mailAddress;
-    private String password;
+    private String password; // TODO: anonymous users should not be able to see this
     private LocalDate dateOfBirth;
     private String profilePicture;
     private String description;

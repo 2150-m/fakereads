@@ -68,6 +68,18 @@ public class Account implements Serializable {
         this.accountRole = Account_Role.READER;
     }
 
+    public Account(Account account) {
+        this.firstName = account.getFirstName();
+        this.lastName = account.getLastName();
+        this.username = account.getUsername();
+        this.mailAddress = account.getMailAddress();
+        this.password = account.getPassword();
+        this.dateOfBirth = account.getDateOfBirth();
+        this.profilePicture = account.getProfilePicture();
+        this.description = account.getDescription();
+        this.accountRole = account.getAccountRole();
+    }
+
     public Account(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, Account_Role accountRole) {
         this.firstName = firstName;
         this.lastName = lastName;

@@ -38,10 +38,6 @@ public class Controller_Rest_Anon {
     public ResponseEntity<List<DTO_Account>> getUsers(HttpSession session) {
         List<Account> userList = serviceAccount.findAll();
 
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { System.err.println("No session"); }
-        else              { System.out.println(user);         }
-
         List<DTO_Account> dtos = new ArrayList<>();
         for (Account u : userList) {
             DTO_Account dto = new DTO_Account(u);

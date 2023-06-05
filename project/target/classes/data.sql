@@ -13,7 +13,7 @@ INSERT INTO ACCOUNT (first_name, last_name, username, mail_address, password, da
 INSERT INTO ACCOUNTS_SHELVES (account_id, shelf_id) VALUES
 (1, 1);
 
-INSERT INTO ACCOUNT_AUTHOR (id, account_activated) VALUES (2, true);
+INSERT INTO ACCOUNT_AUTHOR (id, account_activated) VALUES (2, false);
 
 INSERT INTO BOOK (title, cover_photo, release_date, description, num_of_pages, rating, isbn) VALUES
 ('Harry Potter', 'book_harrypoter.png', DATE '1986-10-02', 'harry potterz',               230, 10, 'ISBN-1234'),
