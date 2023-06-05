@@ -3,7 +3,7 @@ INSERT INTO SHELF (name, is_primary) VALUES
 
 INSERT INTO ACCOUNT (first_name, last_name, username, mail_address, password, date_of_birth, profile_picture, description, account_role) VALUES
 ('Marko',  'Markovic',   'marko',   'marko@gmail.com',    'sifra123',    DATE '1990-03-23', 'pic1.jpg',  'opis1', 0),
-('Nikola', 'Nikolic',    'nikola',  'nikola@gmail.com',   'jedandvatri', DATE '2000-05-02', 'pic2.jpg',  'opis2', 0),
+('Nikola', 'Nikolic',    'nikola',  'nikola@gmail.com',   'jedandvatri', DATE '2000-05-02', 'pic2.jpg',  'opis2', 1),
 ('Pera',   'Peric',      'pera',    'pera@gmail.com',     '123456890',   DATE '1980-03-02', 'pic3.jpg',  'opis3', 0),
 ('Dusan',  'Dusic',      'dusan',   'dusan@gmail.com',    '666666',      DATE '2006-06-06', 'pic4.jpg',  'opis4', 0),
 ('Stefan', 'Stefanovic', 'stefan',  'stefan@gmail.com',   '333111333',   DATE '2001-04-04', 'pic5.jpg',  'opis5', 0),

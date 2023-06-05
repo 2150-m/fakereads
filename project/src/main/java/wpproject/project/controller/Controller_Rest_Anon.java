@@ -184,7 +184,7 @@ public class Controller_Rest_Anon {
         return user.getShelves();
     }
 
-    @GetMapping("/api/database/books")
+    @GetMapping("/api/database/items")
     public ResponseEntity<List<DTO_ShelfItem>> getItems(HttpSession session) {
         List<ShelfItem> shelfItems = serviceShelfItem.findAll();
 
@@ -197,7 +197,7 @@ public class Controller_Rest_Anon {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/book/{id}")
+    @GetMapping("/api/database/item/{id}")
     public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
         ShelfItem item = (ShelfItem) session.getAttribute("shelfItem");
         System.out.println(item);
@@ -205,7 +205,7 @@ public class Controller_Rest_Anon {
         return serviceShelfItem.findOne(id);
     }
 
-    @GetMapping("/api/database/book/title={title}")
+    @GetMapping("/api/database/item/title={title}")
     public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {
         ShelfItem item = (ShelfItem) session.getAttribute("shelfItem");
         System.out.println(item);
@@ -213,21 +213,18 @@ public class Controller_Rest_Anon {
         return serviceShelfItem.findByBook(serviceBook.findOne(title));
     }
 
-    // TODO: has a server error
-    @GetMapping("/api/database/book/search={search}")
+    @GetMapping("/api/database/item/search={search}")
     public ResponseEntity<List<DTO_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
-        List<ShelfItem> items = serviceShelfItem.findAll();
+        if (search.isEmpty()) { return null; }
 
         List<DTO_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem i : items) {
+        for (ShelfItem i : serviceShelfItem.findAll()) {
             // search by title / description
-            if (i.getBook().getTitle().contains(search) || i.getBook().getDescription().contains(search)) {
+            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase())) {
                 DTO_ShelfItem dto = new DTO_ShelfItem(i); dtos.add(dto);
             }
         }
 
         return ResponseEntity.ok(dtos);
     }
-
-
 }
