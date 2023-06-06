@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 // TODO: cleanup: useless imports from all files
-// TODO: cleanup: all print functions
+// TODO: cleanup: remove all print functions (move all messages to front end)
 // TODO: cleanup: cleanup all DTOs, ne sme user da dira polja koja ne sme
 
 @SpringBootApplication

@@ -2,21 +2,17 @@ package wpproject.project.controller;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import wpproject.project.dto.DTO_Post_AccountAuthor;
-import wpproject.project.dto.DTO_View_AccountActivationRequest;
-import wpproject.project.model.Account;
-import wpproject.project.model.AccountActivationRequest;
-import wpproject.project.model.AccountAuthor;
-import wpproject.project.model.Account_Role;
+import org.springframework.web.bind.annotation.*;
+import wpproject.project.dto.*;
+import wpproject.project.model.*;
 import wpproject.project.service.Service_Account;
 import wpproject.project.service.Service_AccountActivationRequest;
 import wpproject.project.service.Service_AccountAuthor;
+import wpproject.project.service.Service_BookGenre;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +25,8 @@ public class Controller_Rest_AccountAdmin {
     private Service_AccountAuthor serviceAccountAuthor;
     @Autowired
     private Service_AccountActivationRequest serviceAccountActivationRequest;
+    @Autowired
+    private Service_BookGenre serviceBookGenre;
 
     private Boolean isAdmin(HttpSession session) {
         // must be logged in
@@ -41,7 +39,6 @@ public class Controller_Rest_AccountAdmin {
 
         return true;
     }
-
 
     @PostMapping("/api/user/admin/addauthor")
     public AccountAuthor admin_addAuthor(@RequestBody DTO_Post_AccountAuthor DTOAccountAuthorNew, HttpSession session){
@@ -91,9 +88,73 @@ public class Controller_Rest_AccountAdmin {
         return ResponseEntity.ok(dtos);
     }
 
-    // TODO: approve/reject activation request / activate author ... reject -> send mail reason
+    @PostMapping("/api/user/admin/activation/{id}/accept")
+    public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
 
-    // TODO: add new genre
+        // check if admin
+        if (!isAdmin(session)) { return null; }
+
+        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
+        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
+
+        // save as approved
+        aar.setStatus(AccountActivationRequest_Status.APPROVED);
+        serviceAccountActivationRequest.save(aar);
+
+        // set is activated for author
+        AccountAuthor accountAuthor = aar.getAuthor();
+        accountAuthor.setAccountActivated(true);
+        serviceAccountAuthor.save(accountAuthor);
+
+        // TODO: send mail that account has been activated --- send password
+        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
+
+        return ResponseEntity.ok().body("accepted activation request");
+    }
+
+    @PostMapping("/api/user/admin/activation/{id}/reject")
+    public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
+
+        // check if admin
+        if (!isAdmin(session)) { return null; }
+
+        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
+        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
+
+        // save as rejected
+        aar.setStatus(AccountActivationRequest_Status.REJECTED);
+        serviceAccountActivationRequest.save(aar);
+
+        // set account as not activated
+        AccountAuthor accountAuthor = aar.getAuthor();
+        accountAuthor.setAccountActivated(false);
+        serviceAccountAuthor.save(accountAuthor);
+
+        // TODO: send mail -> reason for rejection
+        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
+
+        return ResponseEntity.ok().body("rejected activation request");
+    }
+
+    @PostMapping("/api/user/admin/addgenre")
+    public ResponseEntity<String> addGenre(@RequestBody DTO_Post_BookGenre dtoPostBookGenre, HttpSession session) {
+
+        // check if admin
+        if (!isAdmin(session)) { return null; }
+
+        try {
+            BookGenre bookGenre = serviceBookGenre.findOne(dtoPostBookGenre.getName());
+            if (bookGenre != null) { return ResponseEntity.badRequest().body("book genre exists"); }
+
+            BookGenre genre = new BookGenre(dtoPostBookGenre.getName());
+            serviceBookGenre.save(genre);
+
+            return ResponseEntity.ok().body("added new genre");
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body("failed to add genre: " + e.getMessage());
+        }
+    }
 
     // TODO: add new book
 

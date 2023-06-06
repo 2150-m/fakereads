@@ -220,7 +220,6 @@ public class Controller_Rest_Anon {
         return ResponseEntity.ok(dtos);
     }
 
-    // TODO: send activation request for author (mail, phone, msg)
     @PostMapping("/api/database/activation/{id}")
     public AccountActivationRequest sendActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_AccountActivationRequest dtoPostAccountActivationRequest, HttpSession session) {
 
