@@ -1,15 +1,15 @@
 package wpproject.project.dto;
 
+import wpproject.project.model.Account;
 import wpproject.project.model.Account_Role;
 
 import java.time.LocalDate;
 
-public class DTO_AccountAuthorNew {
-
+public class DTO_View_AccountNoShelves {
     private Long id;
     private String firstName;
     private String lastName;
-    private  String username;
+    private String username;
     private String mailAddress;
     private String password;
     private LocalDate dateOfBirth;
@@ -17,27 +17,19 @@ public class DTO_AccountAuthorNew {
     private String description;
     private Account_Role accountRole;
 
-    public DTO_AccountAuthorNew(
-        String firstName,
-        String lastName,
-        String username,
-        String mailAddress,
-        String password,
-        LocalDate dateOfBirth,
-        String profilePicture,
-        String description,
-        Account_Role accountRole
-    ) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = username;
-        this.mailAddress = mailAddress;
-        this.password = password;
-        this.dateOfBirth = dateOfBirth;
-        this.profilePicture = profilePicture;
-        this.description = description;
-        this.accountRole = accountRole;
+    public DTO_View_AccountNoShelves() {}
+
+    public DTO_View_AccountNoShelves(Account account) {
+        this.id = account.getId();
+        this.firstName = account.getFirstName();
+        this.lastName = account.getLastName();
+        this.username = account.getUsername();
+        this.mailAddress = account.getMailAddress();
+        this.password = account.getPassword();
+        this.dateOfBirth = account.getDateOfBirth();
+        this.profilePicture = account.getProfilePicture();
+        this.description = account.getDescription();
+        this.accountRole = account.getAccountRole();
     }
 
     public Long getId() { return id; }
@@ -59,5 +51,5 @@ public class DTO_AccountAuthorNew {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public Account_Role getAccountRole() { return accountRole; }
-    public void setAccountRole(Account_Role accountRole) {this.accountRole = accountRole; }
+    public void setAccountRole(Account_Role accountRole) { this.accountRole = accountRole; }
 }

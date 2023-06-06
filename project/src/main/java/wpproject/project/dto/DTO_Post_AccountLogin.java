@@ -1,12 +1,14 @@
 package wpproject.project.dto;
 
-public class DTO_AccountLogin {
+public class DTO_Post_AccountLogin {
 
     private Long id;
     private String username;
     private String password;
 
-    public DTO_AccountLogin(String username, String password) {
+    public DTO_Post_AccountLogin() {}
+
+    public DTO_Post_AccountLogin(String username, String password) {
         this.username = username;
         this.password = password;
     }

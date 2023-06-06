@@ -7,14 +7,22 @@ import wpproject.project.model.AccountAuthor;
 import wpproject.project.repository.Repository_Account;
 import wpproject.project.repository.Repository_AccountAuthor;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class Service_AccountAuthor {
     @Autowired
     private Repository_AccountAuthor repositoryAccountAuthor;
-    @Autowired
-    private Repository_Account repositoryAccount;
+
+    public AccountAuthor findOne(Long id) {
+        Optional<AccountAuthor> accountAuthor = repositoryAccountAuthor.findById(id);
+        return accountAuthor.orElse(null);
+    }
+
+    public List<AccountAuthor> findAll() {
+        return repositoryAccountAuthor.findAll();
+    }
 
     public AccountAuthor save(AccountAuthor author) {
         return repositoryAccountAuthor.save(author);

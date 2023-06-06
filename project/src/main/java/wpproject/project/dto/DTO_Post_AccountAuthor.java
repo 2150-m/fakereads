@@ -1,12 +1,11 @@
 package wpproject.project.dto;
 
-import wpproject.project.model.Account;
 import wpproject.project.model.Account_Role;
 
 import java.time.LocalDate;
 
-public class DTO_AccountNoShelves {
-    private Long id;
+public class DTO_Post_AccountAuthor {
+
     private String firstName;
     private String lastName;
     private String username;
@@ -17,23 +16,30 @@ public class DTO_AccountNoShelves {
     private String description;
     private Account_Role accountRole;
 
-    public DTO_AccountNoShelves() {}
+    public DTO_Post_AccountAuthor() {}
 
-    public DTO_AccountNoShelves(Account account) {
-        this.id = account.getId();
-        this.firstName = account.getFirstName();
-        this.lastName = account.getLastName();
-        this.username = account.getUsername();
-        this.mailAddress = account.getMailAddress();
-        this.password = account.getPassword();
-        this.dateOfBirth = account.getDateOfBirth();
-        this.profilePicture = account.getProfilePicture();
-        this.description = account.getDescription();
-        this.accountRole = account.getAccountRole();
+    public DTO_Post_AccountAuthor(
+        String firstName,
+        String lastName,
+        String username,
+        String mailAddress,
+        String password,
+        LocalDate dateOfBirth,
+        String profilePicture,
+        String description,
+        Account_Role accountRole
+    ) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.mailAddress = mailAddress;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+        this.profilePicture = profilePicture;
+        this.description = description;
+        this.accountRole = accountRole;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public String getLastName() { return lastName; }
@@ -51,5 +57,5 @@ public class DTO_AccountNoShelves {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
     public Account_Role getAccountRole() { return accountRole; }
-    public void setAccountRole(Account_Role accountRole) { this.accountRole = accountRole; }
+    public void setAccountRole(Account_Role accountRole) {this.accountRole = accountRole; }
 }

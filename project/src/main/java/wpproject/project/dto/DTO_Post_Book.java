@@ -1,10 +1,8 @@
 package wpproject.project.dto;
 
-import wpproject.project.model.Book;
-
 import java.time.LocalDate;
 
-public class DTO_Book {
+public class DTO_Post_Book {
     private Long id;
     private String title;
     private String coverPhoto;
@@ -13,25 +11,15 @@ public class DTO_Book {
     private int numOfPages;
     private String isbn;
 
-    public DTO_Book() {}
+    public DTO_Post_Book() {}
 
-    public DTO_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn) {
+    public DTO_Post_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn) {
         this.title = title;
         this.coverPhoto = coverPhoto;
         this.releaseDate = releaseDate;
         this.description = description;
         this.numOfPages = numOfPages;
         this.isbn = isbn;
-    }
-
-    public DTO_Book(Book book) {
-        this.id = book.getId();
-        this.title = book.getTitle();
-        this.coverPhoto = book.getCoverPhoto();
-        this.releaseDate = book.getReleaseDate();
-        this.description = book.getDescription();
-        this.numOfPages = book.getNumOfPages();
-        this.isbn = book.getIsbn();
     }
 
     public Long getId() { return id; }

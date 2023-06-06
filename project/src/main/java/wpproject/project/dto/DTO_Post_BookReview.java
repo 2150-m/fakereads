@@ -1,11 +1,13 @@
 package wpproject.project.dto;
 
-public class DTO_BookReviewNew {
+public class DTO_Post_BookReview {
     private Long id;
     private double rating;
     private String text;
 
-    public DTO_BookReviewNew(double rating, String text) {
+    public DTO_Post_BookReview() {}
+
+    public DTO_Post_BookReview(double rating, String text) {
         this.rating = rating;
         this.text = text;
     }

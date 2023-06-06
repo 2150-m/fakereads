@@ -2,7 +2,7 @@ package wpproject.project.dto;
 
 import java.time.LocalDate;
 
-public class DTO_AccountUpdate {
+public class DTO_Post_AccountUpdate {
     private String firstName;
     private String lastName;
     private String username;
@@ -10,7 +10,9 @@ public class DTO_AccountUpdate {
     private String profilePicture;
     private String description;
 
-    public DTO_AccountUpdate(String firstName, String lastName, String username, LocalDate dateOfBirth, String profilePicture, String description) {
+    public DTO_Post_AccountUpdate() {}
+
+    public DTO_Post_AccountUpdate(String firstName, String lastName, String username, LocalDate dateOfBirth, String profilePicture, String description) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.username = username;

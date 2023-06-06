@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import wpproject.project.dto.DTO_Book;
+import wpproject.project.dto.DTO_Post_Book;
 import wpproject.project.model.Account;
 import wpproject.project.model.Account_Role;
 import wpproject.project.model.Book;
@@ -28,7 +28,7 @@ public class Controller_Rest_AccountAuthor {
     private Service_Account serviceAccount;
 
     @PostMapping("/api/database/book/add")
-    public ResponseEntity<String> addItem(@RequestBody DTO_Book DTOBook, HttpSession session) {
+    public ResponseEntity<String> addItem(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { System.err.println("[x] you have to be logged in"); return null; }
 

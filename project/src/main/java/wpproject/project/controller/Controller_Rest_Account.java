@@ -12,7 +12,6 @@ import wpproject.project.service.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +33,7 @@ public class Controller_Rest_Account {
     private Service_AccountAuthor serviceAccountAuthor;
 
     @PostMapping("/api/user/register")
-    public Account registerAccount(@RequestBody DTO_AccountRegister accountRequest, HttpSession session) {
+    public Account registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user != null) { System.err.println("[x] already logged in"); return null; }
 
@@ -65,7 +64,7 @@ public class Controller_Rest_Account {
     }
 
     @PostMapping("/api/user/login")
-    public ResponseEntity<String> login(@RequestBody DTO_AccountLogin DTOAccountLogin, HttpSession session){
+    public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
         Account user = (Account) session.getAttribute("user");
         if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
@@ -100,7 +99,7 @@ public class Controller_Rest_Account {
     }
 
     @PutMapping("/api/user/myaccount/update")
-    public ResponseEntity<String> updateUser(@RequestBody DTO_AccountUpdate newInfo, HttpSession session) {
+    public ResponseEntity<String> updateUser(@RequestBody DTO_Post_AccountUpdate newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = serviceAccount.findOne(user.getId());
@@ -117,7 +116,7 @@ public class Controller_Rest_Account {
     }
 
     @PutMapping("/api/user/myaccount/update/password")
-    public ResponseEntity<String> updatePassword(@RequestBody DTO_AccountUpdatePass newInfo, HttpSession session) {
+    public ResponseEntity<String> updatePassword(@RequestBody DTO_Post_AccountUpdatePass newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = serviceAccount.findOne(user.getId());
@@ -130,12 +129,12 @@ public class Controller_Rest_Account {
     }
 
     @PutMapping("/api/user/myaccount/update/mail")
-    public ResponseEntity<String> updateMail(@RequestBody DTO_AccountUpdatePass newInfo, HttpSession session) {
+    public ResponseEntity<String> updateMail(@RequestBody DTO_Post_AccountUpdatePass newInfo, HttpSession session) {
         return updatePassword(newInfo, session);
     }
 
     @PutMapping("/api/user/update/review/book_id={id}")
-    public ResponseEntity<String> updateReview(@PathVariable(name = "id") Long bookId, @RequestBody DTO_BookReviewNew newReviewDTO, HttpSession session) {
+    public ResponseEntity<String> updateReview(@PathVariable(name = "id") Long bookId, @RequestBody DTO_Post_BookReview newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = serviceAccount.findOne(user.getId());
@@ -162,7 +161,7 @@ public class Controller_Rest_Account {
     }
 
     @PutMapping("/api/user/update/review/book_isbn={isbn}")
-    public ResponseEntity<String> updateReview(@PathVariable(name = "isbn") String isbn, @RequestBody DTO_BookReviewNew newReviewDTO, HttpSession session) {
+    public ResponseEntity<String> updateReview(@PathVariable(name = "isbn") String isbn, @RequestBody DTO_Post_BookReview newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
         user = serviceAccount.findOne(user.getId());
@@ -188,7 +187,7 @@ public class Controller_Rest_Account {
         return ResponseEntity.badRequest().body("Could not find a book with the ISBN " + isbn + " in this user's account.");
     }
 
-    private ResponseEntity<String> addNewReview(Account user, ShelfItem i, DTO_BookReviewNew newReviewDTO) {
+    private ResponseEntity<String> addNewReview(Account user, ShelfItem i, DTO_Post_BookReview newReviewDTO) {
         BookReview newReview = new BookReview(newReviewDTO.getRating(), newReviewDTO.getText(), LocalDate.now(), user);
         i.getBookReviews().add(newReview);
         serviceBookReview.save(newReview);
@@ -273,7 +272,7 @@ public class Controller_Rest_Account {
     }
 
     @PostMapping("/api/user/add/book/{bookId}/shelf/name={shelfName}")
-    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_BookReviewNew review, HttpSession session) {
+    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -289,7 +288,7 @@ public class Controller_Rest_Account {
     }
 
     @PostMapping("/api/user/add/book/isbn={isbn}/shelf/name={shelfName}")
-    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_BookReviewNew review, HttpSession session) {
+    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
@@ -304,7 +303,7 @@ public class Controller_Rest_Account {
         return userAddBook(user, targetItem, shelfName, review);
     }
 
-    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_BookReviewNew review) {
+    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_Post_BookReview review) {
         Shelf targetShelf = null;
         for (Shelf s : user.getShelves()) {
             if (s.getName().equalsIgnoreCase(shelfName)) {
@@ -365,7 +364,7 @@ public class Controller_Rest_Account {
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
-    private String addReview(Account user, ShelfItem item, DTO_BookReviewNew review) {
+    private String addReview(Account user, ShelfItem item, DTO_Post_BookReview review) {
         BookReview newReview = new BookReview(review.getRating(), review.getText(), LocalDate.now(), user);
         reviewService.save(newReview);
         item.getBookReviews().add(newReview);

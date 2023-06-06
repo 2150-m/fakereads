@@ -4,6 +4,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+// TODO: cleanup: useless imports from all files
+// TODO: cleanup: all print functions
+// TODO: cleanup: cleanup all DTOs, ne sme user da dira polja koja ne sme
+
 @SpringBootApplication
 public abstract class Application implements CommandLineRunner {
 	public static void main(String[] args) {

@@ -4,13 +4,15 @@ import wpproject.project.model.BookReview;
 
 import java.time.LocalDate;
 
-public class DTO_BookReview {
+public class DTO_View_BookReview {
     private double rating;
     private String text;
     private LocalDate reviewDate;
     private String author;
 
-    public DTO_BookReview(BookReview bookReview) {
+    public DTO_View_BookReview() {}
+
+    public DTO_View_BookReview(BookReview bookReview) {
         this.rating = bookReview.getRating();
         this.text = bookReview.getText();
         this.reviewDate = bookReview.getReviewDate();

@@ -4,20 +4,22 @@ import wpproject.project.model.BookReview;
 
 import java.time.LocalDate;
 
-public class DTO_BookReviewNoShelves {
+public class DTO_View_BookReviewNoShelves {
     private Long id;
     private double rating;
     private String text;
     private LocalDate reviewDate;
-    private DTO_AccountNoShelves account;
+    private DTO_View_AccountNoShelves account;
 
-    public DTO_BookReviewNoShelves(BookReview review) {
+    public DTO_View_BookReviewNoShelves() {}
+
+    public DTO_View_BookReviewNoShelves(BookReview review) {
         this.id = review.getId();
         this.rating = review.getRating();
         this.text = review.getText();
         this.reviewDate = review.getReviewDate();
         if (review.getAccount() != null) {
-            this.account = new DTO_AccountNoShelves(review.getAccount());
+            this.account = new DTO_View_AccountNoShelves(review.getAccount());
         }
     }
 
@@ -29,6 +31,6 @@ public class DTO_BookReviewNoShelves {
     public void setText(String text) { this.text = text; }
     public LocalDate getReviewDate() { return reviewDate; }
     public void setReviewDate(LocalDate reviewDate) { this.reviewDate = reviewDate; }
-    public DTO_AccountNoShelves getAccount() { return account; }
-    public void setAccount(DTO_AccountNoShelves account) { this.account = account; }
+    public DTO_View_AccountNoShelves getAccount() { return account; }
+    public void setAccount(DTO_View_AccountNoShelves account) { this.account = account; }
 }

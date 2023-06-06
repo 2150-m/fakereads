@@ -6,14 +6,14 @@ import wpproject.project.model.BookGenre;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DTO_BookGenre {
+public class DTO_View_BookGenre {
     protected Long id;
     protected String name;
     private List<Book> books = new ArrayList<>(); // If included, creates an infinite tree in the JSON view
 
-    public DTO_BookGenre() {}
+    public DTO_View_BookGenre() {}
 
-    public DTO_BookGenre(BookGenre genre) {
+    public DTO_View_BookGenre(BookGenre genre) {
         this.id = genre.getId();
         this.name = genre.getName();
         this.books = genre.getBooks();
