@@ -1,6 +1,11 @@
 package wpproject.project.dto;
 
+import wpproject.project.model.Book;
+import wpproject.project.model.BookGenre;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DTO_Post_Book {
     private String title;
@@ -9,6 +14,7 @@ public class DTO_Post_Book {
     private String description;
     private int numOfPages;
     private String isbn;
+    private List<String> genreNames = new ArrayList<>();
 
     public DTO_Post_Book() {}
 
@@ -19,6 +25,16 @@ public class DTO_Post_Book {
         this.description = description;
         this.numOfPages = numOfPages;
         this.isbn = isbn;
+    }
+
+    public DTO_Post_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn, List<String> genreNames) {
+        this.title = title;
+        this.coverPhoto = coverPhoto;
+        this.releaseDate = releaseDate;
+        this.description = description;
+        this.numOfPages = numOfPages;
+        this.isbn = isbn;
+        this.genreNames = genreNames;
     }
 
     public String getTitle() { return title; }
@@ -34,5 +50,13 @@ public class DTO_Post_Book {
     public String getIsbn() { return isbn; }
     public void setIsbn(String isbn) {
         this.isbn = isbn;
+    }
+
+    public List<String> getGenreNames() {
+        return genreNames;
+    }
+
+    public void setGenres(List<String> genreNames) {
+        this.genreNames = genreNames;
     }
 }

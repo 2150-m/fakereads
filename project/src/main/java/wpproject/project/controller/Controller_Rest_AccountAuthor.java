@@ -36,6 +36,8 @@ public class Controller_Rest_AccountAuthor {
         if (user.getAccountRole() != Account_Role.AUTHOR) { System.err.println("[x] not author: " + user); return null; }
 
         try {
+            // TODO: addgenres for the item
+
             if (serviceBook.findByIsbn(DTOBook.getIsbn()) != null) {
                 return ResponseEntity.badRequest().body("A book with the same ISBN (" + DTOBook.getIsbn() + ") is already in the database.");
             }

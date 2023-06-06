@@ -7,14 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wpproject.project.dto.*;
 import wpproject.project.model.*;
-import wpproject.project.service.Service_Account;
-import wpproject.project.service.Service_AccountActivationRequest;
-import wpproject.project.service.Service_AccountAuthor;
-import wpproject.project.service.Service_BookGenre;
+import wpproject.project.service.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class Controller_Rest_AccountAdmin {
@@ -27,6 +25,10 @@ public class Controller_Rest_AccountAdmin {
     private Service_AccountActivationRequest serviceAccountActivationRequest;
     @Autowired
     private Service_BookGenre serviceBookGenre;
+    @Autowired
+    private Service_Book serviceBook;
+    @Autowired
+    private Service_ShelfItem serviceShelfItem;
 
     private Boolean isAdmin(HttpSession session) {
         // must be logged in
@@ -42,8 +44,6 @@ public class Controller_Rest_AccountAdmin {
 
     @PostMapping("/api/user/admin/addauthor")
     public AccountAuthor admin_addAuthor(@RequestBody DTO_Post_AccountAuthor DTOAccountAuthorNew, HttpSession session){
-
-        // check if admin
         if (!isAdmin(session)) { return null; }
 
         try {
@@ -73,8 +73,6 @@ public class Controller_Rest_AccountAdmin {
 
     @GetMapping("/api/user/admin/activations")
     public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
-
-        // check if admin
         if (!isAdmin(session)) { return null; }
 
         List<AccountActivationRequest> userList = serviceAccountActivationRequest.findAll();
@@ -90,9 +88,7 @@ public class Controller_Rest_AccountAdmin {
 
     @PostMapping("/api/user/admin/activation/{id}/accept")
     public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
-
-        // check if admin
-        if (!isAdmin(session)) { return null; }
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
         AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
         if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
@@ -114,9 +110,7 @@ public class Controller_Rest_AccountAdmin {
 
     @PostMapping("/api/user/admin/activation/{id}/reject")
     public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
-
-        // check if admin
-        if (!isAdmin(session)) { return null; }
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
         AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
         if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
@@ -138,9 +132,7 @@ public class Controller_Rest_AccountAdmin {
 
     @PostMapping("/api/user/admin/addgenre")
     public ResponseEntity<String> addGenre(@RequestBody DTO_Post_BookGenre dtoPostBookGenre, HttpSession session) {
-
-        // check if admin
-        if (!isAdmin(session)) { return null; }
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
         try {
             BookGenre bookGenre = serviceBookGenre.findOne(dtoPostBookGenre.getName());
@@ -156,13 +148,105 @@ public class Controller_Rest_AccountAdmin {
         }
     }
 
-    // TODO: add new book
+    @PostMapping("/api/user/admin/additem")
+    public ResponseEntity<String> addItem(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
-    // TODO: delete book (ONLY IF NO REVIEWS)
+        try {
+            if (serviceBook.findByIsbn(DTOBook.getIsbn()) != null) {
+                return ResponseEntity.badRequest().body("A book with the same ISBN (" + DTOBook.getIsbn() + ") is already in the database.");
+            }
 
-    // TODO: edit book
+            Book book = new Book(DTOBook.getTitle(), DTOBook.getCoverPhoto(), LocalDate.now(), DTOBook.getDescription(), DTOBook.getNumOfPages(), 0, DTOBook.getIsbn());
+            serviceBook.save(book);
 
-    // TODO: update unactivated author profile
+            ShelfItem item = new ShelfItem(book);
+            serviceShelfItem.save(item);
 
+            return ResponseEntity.ok(book.getTitle().toUpperCase() + " has been added to the database.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not add the item: " + e.getMessage());
+        }
+    }
 
+    @DeleteMapping("/api/user/admin/removeitem/{id}")
+    public ResponseEntity<String> removeItem(@PathVariable("id") Long id, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        try {
+            ShelfItem item = serviceShelfItem.findOne(id);
+            if (item == null) { return ResponseEntity.badRequest().body("The item doesn't exist."); }
+
+            serviceShelfItem.remove(item); // TODO: doesn't work
+            // saving done in the service class
+            return ResponseEntity.ok("Successfully removed the item.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Could not remove the item: " + e.getMessage());
+        }
+    }
+
+    // TODO: when removing an item, remove the associated book too
+
+    @PutMapping("/api/user/admin/update/item/{id}")
+    public ResponseEntity<String> updateItem(@PathVariable("id") Long itemId, @RequestBody DTO_Post_Book newInfo, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        ShelfItem item = serviceShelfItem.findOne(itemId);
+        if (item == null) { return ResponseEntity.badRequest().body("This item doesn't exist."); }
+
+        Book targetBook = item.getBook();
+
+        if (!newInfo.getTitle().isEmpty()) { targetBook.setTitle(newInfo.getTitle()); }
+        if (newInfo.getReleaseDate() != null) { targetBook.setReleaseDate(newInfo.getReleaseDate()); }
+        if (newInfo.getNumOfPages() > 0) { targetBook.setNumOfPages(newInfo.getNumOfPages()); }
+        if (!newInfo.getIsbn().isEmpty() && !newInfo.getIsbn().equals(targetBook.getIsbn())) {
+            Book book = serviceBook.findByIsbn(newInfo.getIsbn());
+            if (book != null) { return ResponseEntity.badRequest().body("A book with this ISBN already exists."); }
+            targetBook.setIsbn(newInfo.getIsbn());
+        }
+
+        targetBook.setDescription(newInfo.getDescription());
+        targetBook.setCoverPhoto(newInfo.getCoverPhoto());
+
+        targetBook.setBookGenres(new ArrayList<BookGenre>());
+        for (String genreName : newInfo.getGenreNames()) {
+            BookGenre genre = serviceBookGenre.findOne(genreName);
+            System.out.println(serviceBookGenre.findOne(genreName));
+            if (genre == null || genre.getName().isEmpty()) {
+                return ResponseEntity.badRequest().body("Genre " + genreName + " does not exist.");
+            }
+            targetBook.getBookGenres().add(genre);
+        }
+
+        serviceBook.save(targetBook);
+        return ResponseEntity.ok("Successfully updated the item/book.");
+    }
+
+    @PutMapping("/api/user/admin/update/author/{id}")
+    public ResponseEntity<String> updateUnactivated(@PathVariable("id") Long id, @RequestBody DTO_Post_AccountAuthorUpdate newInfo, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        AccountAuthor author = serviceAccountAuthor.findOne(id);
+        if (author == null) { return ResponseEntity.badRequest().body("This author doesn't exist."); }
+
+        if (author.isAccountActivated()) { return ResponseEntity.badRequest().body("Admins can not edit activated author accounts."); }
+
+        if (!newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(author.getFirstName()))
+            author.setFirstName(newInfo.getFirstName());
+        if (!newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(author.getLastName()))
+            author.setLastName(newInfo.getLastName());
+        if (!newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(author.getUsername()))
+            author.setUsername(newInfo.getUsername());
+        if (newInfo.getDateOfBirth() != null && !newInfo.getDateOfBirth().equals(author.getDateOfBirth()))
+            author.setDateOfBirth(newInfo.getDateOfBirth());
+        if (!newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(author.getDescription()))
+            author.setDescription(newInfo.getDescription());
+        if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(author.getProfilePicture()))
+            author.setProfilePicture(newInfo.getProfilePicture());
+
+        // TODO: unified author save system?
+        serviceAccount.save(author);
+        serviceAccountAuthor.save(author);
+        return ResponseEntity.ok("Author info updated.");
+    }
 }

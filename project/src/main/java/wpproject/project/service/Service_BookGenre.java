@@ -6,6 +6,7 @@ import wpproject.project.model.Book;
 import wpproject.project.model.BookGenre;
 import wpproject.project.repository.Repository_Genre;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +29,7 @@ public class Service_BookGenre {
         return genre.orElse(null);
     }
 
-    public BookGenre save(BookGenre book) {
-        return repositoryGenre.save(book);
+    public BookGenre save(BookGenre genre) {
+        return repositoryGenre.save(genre);
     }
 }

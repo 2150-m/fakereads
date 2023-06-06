@@ -180,12 +180,11 @@ public class Controller_Rest_Anon {
     public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
         List<ShelfItem> shelfItems = serviceShelfItem.findAll();
 
-        ShelfItem item = (ShelfItem) session.getAttribute("shelfItem");
-        if (item == null) { System.out.println("No session"); }
-        else              { System.out.println(item);         }
-
         List<DTO_View_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem b : shelfItems) { DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b); dtos.add(dto); }
+        for (ShelfItem b : shelfItems) {
+            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
+            dtos.add(dto);
+        }
         return ResponseEntity.ok(dtos);
     }
 

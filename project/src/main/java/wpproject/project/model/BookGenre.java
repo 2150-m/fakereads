@@ -14,9 +14,9 @@ import java.util.Set;
 public class BookGenre implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
     @Column
-    protected String name;
+    private String name;
 
     @ManyToMany(mappedBy = "bookGenres")
 //  @JsonBackReference

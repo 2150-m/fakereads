@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // TODO: cleanup: remove all print functions (move all messages to front end)
 // TODO: cleanup: cleanup all DTOs, ne sme user da dira polja koja ne sme
 
+// TODO: deletemapping
+
 @SpringBootApplication
 public abstract class Application implements CommandLineRunner {
 	public static void main(String[] args) {

@@ -37,13 +37,16 @@ INSERT INTO AUTHORS_BOOKS (account_author_id, book_id) VALUES
 --INSERT INTO BOOK_REVIEW (id, rating, text, review_date) VALUES
 --(35, 8, 'tekst', DATE '2012-12-12');
 
-INSERT INTO SHELF_ITEM (id, book_id) VALUES
-(10, 1);
+INSERT INTO SHELF_ITEM (book_id) VALUES
+(1),
+(2),
+(3),
+(4);
 
 --INSERT INTO SHELF_ITEM_REVIEW (shelf_item_id, book_review_id) VALUES
 --(10, 35);
 
-INSERT INTO SHELF_AND_ITEMS (shelf_id, shelf_item_id) VALUES (1, 10);
+--INSERT INTO SHELF_AND_ITEMS (shelf_id, shelf_item_id) VALUES (1, 10);
 
 INSERT INTO ACCOUNT_ACTIVATION_REQUEST (mail_address, phone_number, message, request_date, status) VALUES
 ('mail@mail.com', '124', 'poruka', DATE '1900-01-18', 1);
