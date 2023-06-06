@@ -15,7 +15,6 @@ public class BookGenre implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
-
     @Column
     protected String name;
 

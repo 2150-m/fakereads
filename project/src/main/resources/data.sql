@@ -21,15 +21,15 @@ INSERT INTO BOOK (title, cover_photo, release_date, description, num_of_pages, r
 ('Knjiga 3',     'knjiga_03.png',       DATE '1986-10-02', 'Ovo je definitivno knjiga 3', 300,  7, 'ISBN-4444'),
 ('Knjiga 4',     'knjiga_04.png',       DATE '1986-10-02', 'Ovo je definitivno knjiga 4', 500,  6, 'ISBN-5423');
 
-INSERT INTO BOOK_GENRE (id, name) VALUES
-(6, 'Horor'),
-(1, 'Action'),
-(2, 'Fiction'),
-(3, 'Tail'),
-(4, 'Drama');
+INSERT INTO BOOK_GENRE (name) VALUES
+('Horor'),
+('Action'),
+('Fiction'),
+('Tail'),
+('Drama');
 
 INSERT INTO BOOKS_GENRES (book_genre_id, book_id) VALUES
-(6, 1);
+(3, 1);
 
 INSERT INTO AUTHORS_BOOKS (account_author_id, book_id) VALUES
 (2, 1);
