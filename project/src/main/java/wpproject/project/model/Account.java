@@ -1,5 +1,6 @@
 package wpproject.project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import wpproject.project.configuration.DatabaseConfiguration;
@@ -52,7 +53,31 @@ public class Account implements Serializable {
     private List<Shelf> shelves = new ArrayList<>();
 
     public Account() {
-        this("", "", "", "", "", LocalDate.MIN, "", "", Account_Role.READER);
+        this("", "", "", "", "", LocalDate.MIN, "default.jpg", "bio", Account_Role.READER);
+    }
+
+    public Account(String firstName, String lastName, String username, String mailAddress, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.username = username;
+        this.mailAddress = mailAddress;
+        this.password = password;
+        this.dateOfBirth = LocalDate.of(1970, 1, 1);
+        this.profilePicture = "default.jpg";
+        this.description = "bio";
+        this.accountRole = Account_Role.READER;
+    }
+
+    public Account(Account account) {
+        this.firstName = account.getFirstName();
+        this.lastName = account.getLastName();
+        this.username = account.getUsername();
+        this.mailAddress = account.getMailAddress();
+        this.password = account.getPassword();
+        this.dateOfBirth = account.getDateOfBirth();
+        this.profilePicture = account.getProfilePicture();
+        this.description = account.getDescription();
+        this.accountRole = account.getAccountRole();
     }
 
     public Account(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, Account_Role accountRole) {
@@ -127,6 +152,8 @@ public class Account implements Serializable {
     public void setAccountRole(Account_Role accountRole) {
         this.accountRole = accountRole;
     }
+
+//    @JsonIgnore
     public List<Shelf> getShelves() {
         return shelves;
     }
@@ -138,15 +165,16 @@ public class Account implements Serializable {
     public String toString() {
         return "Account{" +
                 "id=" + id +
-                ", ime='" + firstName + '\'' +
-                ", prezime='" + lastName + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", username='" + username + '\'' +
                 ", mailAddress='" + mailAddress + '\'' +
                 ", password='" + password + '\'' +
-                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
                 ", profilePicture='" + profilePicture + '\'' +
                 ", description='" + description + '\'' +
-                ", uloga=" + accountRole +
+                ", accountRole=" + accountRole +
+                //", shelves=" + shelves +
                 '}';
     }
 }

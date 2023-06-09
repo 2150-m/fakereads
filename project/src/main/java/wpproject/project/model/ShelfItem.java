@@ -9,10 +9,12 @@ import java.util.List;
 
 @Entity
 public class ShelfItem implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    private Book book;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "SHELF_ITEM_REVIEW",
@@ -21,9 +23,6 @@ public class ShelfItem implements Serializable {
     )
 //    @JsonBackReference
     private List<BookReview> bookReviews = new ArrayList<>();
-
-    @ManyToOne
-    private Book book;
 
     public ShelfItem() {}
     public ShelfItem(Book book) {
