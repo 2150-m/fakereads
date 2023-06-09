@@ -3,10 +3,12 @@ package wpproject.project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wpproject.project.model.Book;
+import wpproject.project.model.BookReview;
 import wpproject.project.model.ShelfItem;
 import wpproject.project.repository.Repository_Book;
 import wpproject.project.repository.Repository_ShelfItem;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,5 +34,9 @@ public class Service_ShelfItem {
 
     public ShelfItem save(ShelfItem item) {
         return repositoryShelfItem.save(item);
+    }
+
+    public void remove(ShelfItem i) {
+        repositoryShelfItem.delete(i);
     }
 }

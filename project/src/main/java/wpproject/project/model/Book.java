@@ -42,8 +42,7 @@ public class Book implements Serializable {
     @Column
     private String isbn;
 
-    public Book() {
-    }
+    public Book() {}
 
     public Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, double rating, String isbn) {
         this.title = title;

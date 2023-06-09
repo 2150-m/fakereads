@@ -42,4 +42,19 @@ public class AccountActivationRequest implements Serializable {
         this.status = status;
         this.author = author;
     }
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getMailAddress() { return mailAddress; }
+    public void setMailAddress(String mailAddress) { this.mailAddress = mailAddress; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+    public LocalDate getRequestDate() { return requestDate; }
+    public void setRequestDate(LocalDate requestDate) { this.requestDate = requestDate; }
+    public AccountActivationRequest_Status getStatus() { return status; }
+    public void setStatus(AccountActivationRequest_Status status) { this.status = status; }
+    public AccountAuthor getAuthor() { return author; }
+    public void setAuthor(AccountAuthor author) { this.author = author; }
 }
