@@ -1,3 +1,3 @@
 package wpproject.project.model;
 
-enum AccountActivationRequest_Status { WAITING, APPROVED, REJECTED }
+public enum AccountActivationRequest_Status { WAITING, APPROVED, REJECTED }
