@@ -3,6 +3,7 @@ package wpproject.project.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import wpproject.project.model.Book;
+import wpproject.project.model.ShelfItem;
 import wpproject.project.repository.Repository_Book;
 
 import java.util.List;
@@ -34,5 +35,9 @@ public class Service_Book {
 
     public Book save(Book book) {
         return repositoryBook.save(book);
+    }
+
+    public void remove(Book b) {
+        repositoryBook.delete(b);
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class Service_AccountAuthor {
+public class Service_AccountAuthor extends Service_Account {
     @Autowired
     private Repository_AccountAuthor repositoryAccountAuthor;
 
@@ -20,11 +20,12 @@ public class Service_AccountAuthor {
         return accountAuthor.orElse(null);
     }
 
-    public List<AccountAuthor> findAll() {
+    public List<AccountAuthor> findAllAuthors() {
         return repositoryAccountAuthor.findAll();
     }
 
     public AccountAuthor save(AccountAuthor author) {
+        repositoryAccount.save(author);
         return repositoryAccountAuthor.save(author);
     }
 

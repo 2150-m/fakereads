@@ -29,6 +29,8 @@ public class Controller_Rest_AccountAdmin {
     private Service_Book serviceBook;
     @Autowired
     private Service_ShelfItem serviceShelfItem;
+    @Autowired
+    private Service_Shelf serviceShelf;
 
     private Boolean isAdmin(HttpSession session) {
         // must be logged in
@@ -61,9 +63,16 @@ public class Controller_Rest_AccountAdmin {
 
             newAuthor.setAccountRole(Account_Role.AUTHOR);
 
-            serviceAccount.save(newAuthor);
-            serviceAccountAuthor.save(newAuthor);
+            Shelf shelf_WantToRead = new Shelf("WantToRead", true);
+            Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
+            Shelf shelf_Read = new Shelf("Read", true);
+            serviceShelf.save(shelf_WantToRead);
+            serviceShelf.save(shelf_CurrentlyReading);
+            serviceShelf.save(shelf_Read);
+            newAuthor.getShelves().addAll(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
 
+//            serviceAccount.save(newAuthor);
+            serviceAccountAuthor.save(newAuthor);
             return newAuthor;
         } catch (Exception e) {
             System.err.println("[x] failed to add new user (author): " + e.getMessage());
@@ -177,15 +186,14 @@ public class Controller_Rest_AccountAdmin {
             ShelfItem item = serviceShelfItem.findOne(id);
             if (item == null) { return ResponseEntity.badRequest().body("The item doesn't exist."); }
 
-            serviceShelfItem.remove(item); // TODO: doesn't work
-            // saving done in the service class
+            serviceShelfItem.remove(item);
+            serviceBook.remove(item.getBook());
+
             return ResponseEntity.ok("Successfully removed the item.");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Could not remove the item: " + e.getMessage());
         }
     }
-
-    // TODO: when removing an item, remove the associated book too
 
     @PutMapping("/api/user/admin/update/item/{id}")
     public ResponseEntity<String> updateItem(@PathVariable("id") Long itemId, @RequestBody DTO_Post_Book newInfo, HttpSession session) {
@@ -244,8 +252,7 @@ public class Controller_Rest_AccountAdmin {
         if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(author.getProfilePicture()))
             author.setProfilePicture(newInfo.getProfilePicture());
 
-        // TODO: unified author save system?
-        serviceAccount.save(author);
+//        serviceAccount.save(author);
         serviceAccountAuthor.save(author);
         return ResponseEntity.ok("Author info updated.");
     }

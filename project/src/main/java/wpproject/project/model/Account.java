@@ -62,7 +62,7 @@ public class Account implements Serializable {
         this.username = username;
         this.mailAddress = mailAddress;
         this.password = password;
-        this.dateOfBirth = LocalDate.MIN;
+        this.dateOfBirth = LocalDate.of(1970, 1, 1);
         this.profilePicture = "default.jpg";
         this.description = "bio";
         this.accountRole = Account_Role.READER;

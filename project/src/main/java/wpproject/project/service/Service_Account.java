@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class Service_Account {
     @Autowired
-    private Repository_Account repositoryAccount;
+    protected Repository_Account repositoryAccount;
 
     public Account findOneByUsername(String username) {
         Optional<Account> account = repositoryAccount.findByUsername(username);

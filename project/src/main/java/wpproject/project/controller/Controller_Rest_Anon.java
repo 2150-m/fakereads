@@ -53,6 +53,19 @@ public class Controller_Rest_Anon {
         return serviceAccount.findOne(id);
     }
 
+    @GetMapping("/api/database/authors")
+    public ResponseEntity<List<DTO_View_AccountAuthor>> getAuthors(HttpSession session) {
+        List<AccountAuthor> userList = serviceAccountAuthor.findAllAuthors();
+
+        List<DTO_View_AccountAuthor> dtos = new ArrayList<>();
+        for (AccountAuthor u : userList) {
+            DTO_View_AccountAuthor dto = new DTO_View_AccountAuthor(new Account(u.getFirstName(), u.getLastName(), u.getUsername(), u.getMailAddress(), u.getPassword(), u.getDateOfBirth(), u.getMailAddress(), u.getDescription(), u.getAccountRole()), u);
+            dtos.add(dto);
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/api/database/genres")
     public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
         List<BookGenre> genreList = serviceBookGenre.findAll();
@@ -190,21 +203,37 @@ public class Controller_Rest_Anon {
 
     @GetMapping("/api/database/item/{id}")
     public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
-        ShelfItem item = (ShelfItem) session.getAttribute("shelfItem");
-        System.out.println(item);
-        session.invalidate();
         return serviceShelfItem.findOne(id);
     }
 
     @GetMapping("/api/database/item/title={title}")
     public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {
-        ShelfItem item = (ShelfItem) session.getAttribute("shelfItem");
-        System.out.println(item);
-        session.invalidate();
         return serviceShelfItem.findByBook(serviceBook.findOne(title));
     }
 
-    @GetMapping("/api/database/item/search={search}")
+    @GetMapping("/api/database/books")
+    public ResponseEntity<List<DTO_View_Book>> getBooks(HttpSession session) {
+        List<Book> books = serviceBook.findAll();
+
+        List<DTO_View_Book> dtos = new ArrayList<>();
+        for (Book b : books) {
+            DTO_View_Book dto = new DTO_View_Book(b);
+            dtos.add(dto);
+        }
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/database/book/{id}")
+    public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
+        return serviceBook.findOne(id);
+    }
+
+    @GetMapping("/api/database/book/title={title}")
+    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
+        return serviceBook.findOne(title);
+    }
+
+    @GetMapping("/api/database/book/search={search}")
     public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
         if (search.isEmpty()) { return null; }
 
