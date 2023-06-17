@@ -51,11 +51,9 @@ public class DTO_Post_Book {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
-
     public List<String> getGenreNames() {
         return genreNames;
     }
-
     public void setGenres(List<String> genreNames) {
         this.genreNames = genreNames;
     }

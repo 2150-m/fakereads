@@ -34,7 +34,7 @@ public class Service_Account {
     //#
 
     public Account login(String username, String password) {
-        Account account = repositoryAccount.getByUsername(username);
+        Account account = repositoryAccount.getByUsername(username).orElse(null);
         if(account == null || !account.getPassword().equals(password)) { return null; }
         return  account;
     }
