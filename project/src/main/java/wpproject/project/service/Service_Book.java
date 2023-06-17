@@ -14,30 +14,28 @@ public class Service_Book {
     @Autowired
     private Repository_Book repositoryBook;
 
-    public Book findOne(String title) {
-        Optional<Book> book = repositoryBook.findByTitle(title);
-        return book.orElse(null);
-    }
+    //#
+    //# ESSENTIAL
+    //#
 
-    public Book findOne(Long id) {
-        Optional<Book> book = repositoryBook.findById(id);
-        return book.orElse(null);
-    }
-
-    public Book findByIsbn(String isbn) {
-        Optional<Book> book = repositoryBook.findByIsbn(isbn);
-        return book.orElse(null);
-    }
-
+    public Book findOne(String title) { return repositoryBook.findByTitle(title).orElse(null); }
+    public Book findOne(Long id) { return repositoryBook.findById(id).orElse(null); }
+    public Book findByIsbn(String isbn) { return repositoryBook.findByIsbn(isbn).orElse(null); }
     public List<Book> findAll() {
         return repositoryBook.findAll();
     }
-
     public Book save(Book book) {
         return repositoryBook.save(book);
     }
-
     public void remove(Book b) {
         repositoryBook.delete(b);
     }
+
+    //#
+    //# FUNCTIONAL
+    //#
+
+
+
+
 }

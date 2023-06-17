@@ -239,20 +239,13 @@ public class Controller_Rest_AccountAdmin {
 
         if (author.isAccountActivated()) { return ResponseEntity.badRequest().body("Admins can not edit activated author accounts."); }
 
-        if (!newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(author.getFirstName()))
-            author.setFirstName(newInfo.getFirstName());
-        if (!newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(author.getLastName()))
-            author.setLastName(newInfo.getLastName());
-        if (!newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(author.getUsername()))
-            author.setUsername(newInfo.getUsername());
-        if (newInfo.getDateOfBirth() != null && !newInfo.getDateOfBirth().equals(author.getDateOfBirth()))
-            author.setDateOfBirth(newInfo.getDateOfBirth());
-        if (!newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(author.getDescription()))
-            author.setDescription(newInfo.getDescription());
-        if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(author.getProfilePicture()))
-            author.setProfilePicture(newInfo.getProfilePicture());
+        if (newInfo.getFirstName() != null && !newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(author.getFirstName()))  author.setFirstName(newInfo.getFirstName());
+        if (newInfo.getLastName() != null && !newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(author.getLastName()))  author.setLastName(newInfo.getLastName());
+        if (newInfo.getUsername() != null && !newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(author.getUsername()))  author.setUsername(newInfo.getUsername());
+        if (newInfo.getDateOfBirth() != null && newInfo.getDateOfBirth() != null && !newInfo.getDateOfBirth().equals(author.getDateOfBirth()))  author.setDateOfBirth(newInfo.getDateOfBirth());
+        if (newInfo.getDescription() != null && !newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(author.getDescription()))  author.setDescription(newInfo.getDescription());
+        if (newInfo.getProfilePicture() != null && !newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(author.getProfilePicture()))  author.setProfilePicture(newInfo.getProfilePicture());
 
-//        serviceAccount.save(author);
         serviceAccountAuthor.save(author);
         return ResponseEntity.ok("Author info updated.");
     }

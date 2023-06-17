@@ -15,16 +15,19 @@ public class Service_AccountActivationRequest {
     @Autowired
     private Repository_AccountActivationRequest repositoryAccountActivationRequest;
 
-    public AccountActivationRequest save(AccountActivationRequest accountActivationRequest) {
-        return repositoryAccountActivationRequest.save(accountActivationRequest);
-    }
+    //#
+    //# ESSENTIAL
+    //#
 
-    public AccountActivationRequest findById(Long id) {
-        Optional<AccountActivationRequest> account = repositoryAccountActivationRequest.findById(id);
-        return account.orElse(null);
-    }
-
+    public AccountActivationRequest save(AccountActivationRequest accountActivationRequest) { return repositoryAccountActivationRequest.save(accountActivationRequest); }
+    public AccountActivationRequest findById(Long id) { return repositoryAccountActivationRequest.findById(id).orElse(null); }
     public List<AccountActivationRequest> findAll() {
         return repositoryAccountActivationRequest.findAll();
     }
+
+    //#
+    //# FUNCTIONAL
+    //#
+
+
 }

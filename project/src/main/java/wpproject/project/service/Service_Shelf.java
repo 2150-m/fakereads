@@ -13,17 +13,17 @@ public class Service_Shelf {
     @Autowired
     private Repository_Shelf repositoryShelf;
 
+    //#
+    //# ESSENTIAL
+    //#
+
     public Shelf findOne(String name) {
         Shelf shelf = repositoryShelf.findByName(name);
         if (shelf != null) { return shelf; }
         return null;
     }
 
-    public Shelf findOne(Long id) {
-        Optional<Shelf> shelf = repositoryShelf.findById(id);
-        return shelf.orElse(null);
-    }
-
+    public Shelf findOne(Long id) { return repositoryShelf.findById(id).orElse(null); }
     public List<Shelf> findAll() {
         return repositoryShelf.findAll();
     }
@@ -37,9 +37,16 @@ public class Service_Shelf {
     public Shelf save(Shelf shelf) {
         return repositoryShelf.save(shelf);
     }
-
     public List<Shelf> save(List<Shelf> shelves) {
         return repositoryShelf.saveAll(shelves);
     }
+
+
+    //#
+    //# FUNCTIONAL
+    //#
+
+
+
 
 }
