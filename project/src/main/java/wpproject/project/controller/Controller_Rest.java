@@ -43,7 +43,7 @@ public class Controller_Rest {
     // TODO: rasporediti svaki kurac u odredjeni service
     // TODO: stavi da svi kurcevi returnaju response entity nema type
 
-    @PostMapping("/api/user/register")
+    @PostMapping("/api/myaccount/register")
     public Account registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user != null) { System.err.println("[x] already logged in"); return null; }
@@ -74,7 +74,7 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/user/login")
+    @PostMapping("/api/myaccount/login")
     public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
         Account user = (Account) session.getAttribute("user");
         if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
@@ -93,14 +93,14 @@ public class Controller_Rest {
         return ResponseEntity.ok("Successfully logged in: " + loggedAccount.getUsername());
     }
 
-    @GetMapping("/api/user/myaccount")
+    @GetMapping("/api/myaccount")
     public Account myaccount(HttpSession session){
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return null; }
         return serviceAccount.findOne(user.getId());
     }
 
-    @PostMapping("/api/user/logout")
+    @PostMapping("/api/myaccount/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("Can't log out: already logged out."); }
@@ -109,7 +109,7 @@ public class Controller_Rest {
         return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
     }
 
-    @PutMapping("/api/user/myaccount/update")
+    @PutMapping("/api/myaccount/update")
     public ResponseEntity<String> updateUser(@RequestBody DTO_Post_AccountUpdate newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -126,7 +126,7 @@ public class Controller_Rest {
         return ResponseEntity.ok("User info updated.");
     }
 
-    @PutMapping("/api/user/myaccount/update/password")
+    @PutMapping("/api/myaccount/update/passormail")
     public ResponseEntity<String> updatePassword(@RequestBody DTO_Post_AccountUpdatePass newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -139,12 +139,8 @@ public class Controller_Rest {
         return ResponseEntity.ok("User info updated.");
     }
 
-    @PutMapping("/api/user/myaccount/update/mail")
-    public ResponseEntity<String> updateMail(@RequestBody DTO_Post_AccountUpdatePass newInfo, HttpSession session) {
-        return updatePassword(newInfo, session);
-    }
 
-    @PutMapping("/api/user/update/review/book_id={id}")
+    @PutMapping("/api/myaccount/update/review/book_id={id}")
     public ResponseEntity<String> updateReview(@PathVariable(name = "id") Long bookId, @RequestBody DTO_Post_BookReview newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -171,7 +167,7 @@ public class Controller_Rest {
         return ResponseEntity.badRequest().body("Review update failed.");
     }
 
-    @PutMapping("/api/user/update/review/book_isbn={isbn}")
+    @PutMapping("/api/myaccount/update/review/book_isbn={isbn}")
     public ResponseEntity<String> updateReview(@PathVariable(name = "isbn") String isbn, @RequestBody DTO_Post_BookReview newReviewDTO, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -205,7 +201,7 @@ public class Controller_Rest {
         return ResponseEntity.ok("Review added.");
     }
 
-    @PostMapping("/api/user/add/shelf")
+    @PostMapping("/api/myaccount/shelves/add")
     public ResponseEntity<String> addShelf(@RequestBody String newShelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -230,7 +226,7 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/user/remove/shelf/{id}")
+    @PostMapping("/api/myaccount/shelves/remove/{id}")
     public ResponseEntity<String> removeShelfID(@PathVariable(name = "id") Long id, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -246,7 +242,7 @@ public class Controller_Rest {
         return removeShelf(user, shelf);
     }
 
-    @PostMapping("/api/user/remove/shelf/name={name}")
+    @PostMapping("/api/myaccount/shelves/remove/name={name}")
     public ResponseEntity<String> removeShelfName(@PathVariable(name = "name") String name, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
@@ -282,7 +278,7 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/user/add/book/{bookId}/shelf/name={shelfName}")
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
     public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
@@ -298,7 +294,7 @@ public class Controller_Rest {
         return userAddBook(user, targetItem, shelfName, review);
     }
 
-    @PostMapping("/api/user/add/book/isbn={isbn}/shelf/name={shelfName}")
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
     public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
@@ -393,7 +389,7 @@ public class Controller_Rest {
         return "\nReview posted.";
     }
 
-    @PostMapping("/api/user/remove/book/{bookId}/shelf/name={shelfName}")
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
     public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
@@ -401,7 +397,7 @@ public class Controller_Rest {
         return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
     }
 
-    @PostMapping("/api/user/remove/book/isbn={isbn}/shelf/name={shelfName}")
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
     public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
@@ -498,7 +494,7 @@ public class Controller_Rest {
         return true;
     }
 
-    @PostMapping("/api/user/admin/addauthor")
+    @PostMapping("/api/admin/addauthor")
     public AccountAuthor admin_addAuthor(@RequestBody DTO_Post_AccountAuthor DTOAccountAuthorNew, HttpSession session){
         if (!isAdmin(session)) { return null; }
 
@@ -534,7 +530,7 @@ public class Controller_Rest {
         }
     }
 
-    @GetMapping("/api/user/admin/activations")
+    @GetMapping("/api/admin/activations")
     public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
         if (!isAdmin(session)) { return null; }
 
@@ -549,7 +545,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/api/user/admin/activation/{id}/accept")
+    @PostMapping("/api/admin/activation/{id}/accept")
     public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -571,7 +567,7 @@ public class Controller_Rest {
         return ResponseEntity.ok().body("accepted activation request");
     }
 
-    @PostMapping("/api/user/admin/activation/{id}/reject")
+    @PostMapping("/api/admin/activation/{id}/reject")
     public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -593,7 +589,7 @@ public class Controller_Rest {
         return ResponseEntity.ok().body("rejected activation request");
     }
 
-    @PostMapping("/api/user/admin/addgenre")
+    @PostMapping("/api/admin/addgenre")
     public ResponseEntity<String> addGenre(@RequestBody DTO_Post_BookGenre dtoPostBookGenre, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -611,7 +607,7 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/user/admin/additem")
+    @PostMapping("/api/admin/additem")
     public ResponseEntity<String> addItemAdmin(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -632,7 +628,7 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/database/book/add")
+    @PostMapping("/api/books/add")
     public ResponseEntity<String> addItem(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { System.err.println("[x] you have to be logged in"); return null; }
@@ -659,7 +655,7 @@ public class Controller_Rest {
         }
     }
 
-    @DeleteMapping("/api/user/admin/removeitem/{id}")
+    @DeleteMapping("/api/admin/removeitem/{id}")
     public ResponseEntity<String> removeItem(@PathVariable("id") Long id, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -676,7 +672,7 @@ public class Controller_Rest {
         }
     }
 
-    @PutMapping("/api/user/admin/update/item/{id}")
+    @PutMapping("/api/admin/update/item/{id}")
     public ResponseEntity<String> updateItem(@PathVariable("id") Long itemId, @RequestBody DTO_Post_Book newInfo, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -711,7 +707,7 @@ public class Controller_Rest {
         return ResponseEntity.ok("Successfully updated the item/book.");
     }
 
-    @PutMapping("/api/user/admin/update/author/{id}")
+    @PutMapping("/api/admin/update/author/{id}")
     public ResponseEntity<String> updateUnactivated(@PathVariable("id") Long id, @RequestBody DTO_Post_AccountAuthorUpdate newInfo, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -731,7 +727,7 @@ public class Controller_Rest {
         return ResponseEntity.ok("Author info updated.");
     }
 
-    @GetMapping("/api/database/users")
+    @GetMapping("/api/users")
     public ResponseEntity<List<DTO_View_Account>> getUsers(HttpSession session) {
         List<Account> userList = serviceAccount.findAll();
 
@@ -744,17 +740,17 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/user/username={username}")
+    @GetMapping("/api/users/username={username}")
     public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
         return serviceAccount.findOneByUsername(username);
     }
 
-    @GetMapping("/api/database/user/{id}")
+    @GetMapping("/api/users/{id}")
     public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
         return serviceAccount.findOne(id);
     }
 
-    @GetMapping("/api/database/authors")
+    @GetMapping("/api/authors")
     public ResponseEntity<List<DTO_View_AccountAuthor>> getAuthors(HttpSession session) {
         List<AccountAuthor> userList = serviceAccountAuthor.findAllAuthors();
 
@@ -767,7 +763,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/genres")
+    @GetMapping("/api/genres")
     public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
         List<BookGenre> genreList = serviceBookGenre.findAll();
 
@@ -781,7 +777,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/genre/{id}")
+    @GetMapping("/api/genres/{id}")
     public BookGenre getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
         BookGenre genre = (BookGenre) session.getAttribute("genre");
         System.out.println(genre);
@@ -789,7 +785,7 @@ public class Controller_Rest {
         return serviceBookGenre.findOne(id);
     }
 
-    @GetMapping("/api/database/genre/name={name}")
+    @GetMapping("/api/genres/name={name}")
     public BookGenre getGenre(@PathVariable(name = "name") String name, HttpSession session) {
         BookGenre genre = (BookGenre) session.getAttribute("genre");
         System.out.println(genre);
@@ -797,7 +793,7 @@ public class Controller_Rest {
         return serviceBookGenre.findOne(name);
     }
 
-    @GetMapping("/api/database/reviews")
+    @GetMapping("/api/reviews")
     public ResponseEntity<List<DTO_View_BookReviewNoShelves>> getBookReviews(HttpSession session) {
         List<BookReview> bookReviews = serviceBookReview.findAll();
 
@@ -810,7 +806,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/review/{id}")
+    @GetMapping("/api/reviews/{id}")
     public BookReview getBookReview(@PathVariable(name = "id") Long id, HttpSession session) {
         BookReview bookReview = (BookReview) session.getAttribute("bookReview");
         System.out.println(bookReview);
@@ -818,7 +814,7 @@ public class Controller_Rest {
         return serviceBookReview.findOne(id);
     }
 
-    @GetMapping("/api/database/user/{userId}/shelf/{shelfId}")
+    @GetMapping("/api/users/{userId}/shelf/{shelfId}")
     public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
         Account user = serviceAccount.findOne(userID);
         if (user == null) { return null; }
@@ -832,7 +828,7 @@ public class Controller_Rest {
         return null;
     }
 
-    @GetMapping("/api/database/user/{userId}/shelf/name={shelfName}")
+    @GetMapping("/api/users/{userId}/shelf/name={shelfName}")
     public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfName") String shelfname, HttpSession session) {
         Account user = serviceAccount.findOne(userID);
         if (user == null) { return null; }
@@ -846,7 +842,7 @@ public class Controller_Rest {
         return null;
     }
 
-    @GetMapping("/api/database/user/username={userName}/shelf/{shelfId}")
+    @GetMapping("/api/users/username={userName}/shelf/{shelfId}")
     public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
         Account user = serviceAccount.findOneByUsername(username);
         if (user == null) { return null; }
@@ -860,7 +856,7 @@ public class Controller_Rest {
         return null;
     }
 
-    @GetMapping("/api/database/user/username={userName}/shelf/name={shelfName}")
+    @GetMapping("/api/users/username={userName}/shelf/name={shelfName}")
     public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
         Account user = serviceAccount.findOneByUsername(username);
         if (user == null) { return null; }
@@ -874,7 +870,7 @@ public class Controller_Rest {
         return null;
     }
 
-    @GetMapping("/api/database/user/{userId}/shelves")
+    @GetMapping("/api/users/{userId}/shelves")
     public List<Shelf> getUserShelves(@PathVariable(name = "userId") Long userID, HttpSession session) {
         Account user = serviceAccount.findOne(userID);
         if (user == null) { return null; }
@@ -882,7 +878,7 @@ public class Controller_Rest {
         return user.getShelves();
     }
 
-    @GetMapping("/api/database/user/username={userName}/shelves")
+    @GetMapping("/api/users/username={userName}/shelves")
     public List<Shelf> getUserShelves(@PathVariable(name = "userName") String username, HttpSession session) {
         Account user = serviceAccount.findOneByUsername(username);
         if (user == null) { return null; }
@@ -890,7 +886,7 @@ public class Controller_Rest {
         return user.getShelves();
     }
 
-    @GetMapping("/api/database/items")
+    @GetMapping("/api/items")
     public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
         List<ShelfItem> shelfItems = serviceShelfItem.findAll();
 
@@ -902,17 +898,17 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/item/{id}")
+    @GetMapping("/api/items/{id}")
     public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
         return serviceShelfItem.findOne(id);
     }
 
-    @GetMapping("/api/database/item/title={title}")
+    @GetMapping("/api/items/title={title}")
     public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {
         return serviceShelfItem.findByBook(serviceBook.findOne(title));
     }
 
-    @GetMapping("/api/database/books")
+    @GetMapping("/api/books")
     public ResponseEntity<List<DTO_View_Book>> getBooks(HttpSession session) {
         List<Book> books = serviceBook.findAll();
 
@@ -924,17 +920,17 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/database/book/{id}")
+    @GetMapping("/api/books/{id}")
     public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
         return serviceBook.findOne(id);
     }
 
-    @GetMapping("/api/database/book/title={title}")
+    @GetMapping("/api/books/title={title}")
     public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
         return serviceBook.findOne(title);
     }
 
-    @GetMapping("/api/database/book/search={search}")
+    @GetMapping("/api/books/search={search}")
     public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
         if (search.isEmpty()) { return null; }
 
@@ -949,7 +945,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/api/database/activation/{id}")
+    @PostMapping("/api/sendactivation/{id}")
     public AccountActivationRequest sendActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_AccountActivationRequest dtoPostAccountActivationRequest, HttpSession session) {
 
         AccountAuthor aa = serviceAccountAuthor.findOne(id);
