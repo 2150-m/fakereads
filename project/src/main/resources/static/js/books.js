@@ -4,19 +4,14 @@ let btn = document.getElementById("btn_search");
 
 let div_books = document.getElementById("div_books");
 
-function makeTableHeader(clm1, clm2) {
+function makeTableRow(clm1, clm2) {
     let tr = document.createElement("tr");
-    let th1 = document.createElement("th"); th1.innerHTML = clm1; tr.append(th1);
-    let th2 = document.createElement("th"); th2.innerHTML = clm2; tr.append(th2);
+    let th = document.createElement("th"); th.innerHTML = clm1; tr.append(th);
+    let td = document.createElement("td"); td.innerHTML = clm2; tr.append(td);
     return tr
 }
 
-function makeTableRow(clm1, clm2) {
-    let tr = document.createElement("tr");
-    let td1 = document.createElement("td"); td1.innerHTML = clm1; tr.append(td1);
-    let td2 = document.createElement("td"); td2.innerHTML = clm2; tr.append(td2);
-    return tr
-}
+
 
 async function loadbooks() {
     const response = await fetch("/api/books");
@@ -30,12 +25,14 @@ async function loadbooks() {
 
 
         let span = document.createElement("span");
-        span.style = "display: inline-block";
+        span.className = "book";
 
         // TABLE
         let table = document.createElement("table");
 
-        table.append(makeTableHeader("STAVKA", "VREDNOST"));
+        let img = document.createElement("img");
+        img.src = obj.coverPhoto;
+
         table.append(makeTableRow("TITLE: ",        obj.title));
         table.append(makeTableRow("PHOTO",          obj.coverPhoto));
         table.append(makeTableRow("RELEASE DATE: ", obj.releaseDate));
@@ -45,6 +42,7 @@ async function loadbooks() {
         table.append(makeTableRow("RATING: ",       obj.rating));
         table.append(makeTableRow("GENRES: ",       obj.genres));
         span.append(table);
+        span.append(img);
         // span.append(p1);
         // span.append(p2);
         // span.append(p3);

@@ -17,3 +17,26 @@
     margin: 0;
     padding: 0;
 }
+
+.book {
+    display: inline-block;
+    background-color: #202020;
+}
+
+.book table {
+    display: inline-block;
+}
+
+.book img  {
+    display: inline-block;
+    max-height: 165px;
+    max-width: 120px;
+}
+
+.book th, .book td {
+    font-size: medium;
+}
+
+.book th {
+    text-align: right;
+}
