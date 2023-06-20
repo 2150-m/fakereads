@@ -16,10 +16,10 @@ INSERT INTO ACCOUNT (first_name, last_name, username, mail_address, password, da
 --INSERT INTO ACCOUNT_AUTHOR (id, account_activated) VALUES (2, false);
 
 INSERT INTO BOOK (title, cover_photo, release_date, description, num_of_pages, rating, isbn) VALUES
-('Harry Potter', 'covers/harry.png',      DATE '1986-10-02', 'harry potterz',               230, 0, 'ISBN-1234'),
-('LOTR',         'covers/lotr.png',       DATE '1986-10-02', 'Ovo je definitivno knjiga 2', 100, 0, 'ISBN-3334'),
-('Knjiga 3',     'covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 3', 300, 0, 'ISBN-4444'),
-('Knjiga 4',     'covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 4', 500, 0, 'ISBN-5423');
+('Harry Potter', '/covers/harry.png',      DATE '1986-10-02', 'harry potterz',               230, 0, 'ISBN-1234'),
+('LOTR',         '/covers/lotr.png',       DATE '1986-10-02', 'Ovo je definitivno knjiga 2', 100, 0, 'ISBN-3334'),
+('Knjiga 3',     '/covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 3', 300, 0, 'ISBN-4444'),
+('Knjiga 4',     '/covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 4', 500, 0, 'ISBN-5423');
 
 
 INSERT INTO BOOK_GENRE (name) VALUES
