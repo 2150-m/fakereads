@@ -11,8 +11,6 @@ function makeTableRow(clm1, clm2) {
     return tr
 }
 
-
-
 async function loadbooks() {
     const response = await fetch("/api/books");
     const jsonData = await response.json();
@@ -34,9 +32,9 @@ async function loadbooks() {
         img.src = obj.coverPhoto;
 
         table.append(makeTableRow("TITLE: ",        obj.title));
-        table.append(makeTableRow("PHOTO",          obj.coverPhoto));
+        //table.append(makeTableRow("PHOTO",          obj.coverPhoto));
         table.append(makeTableRow("RELEASE DATE: ", obj.releaseDate));
-        table.append(makeTableRow("DESC: ",         obj.description));
+        table.append(makeTableRow("DESCRIPTION: ",  obj.description));
         table.append(makeTableRow("NUM OF PAGES: ", obj.numOfPages));
         table.append(makeTableRow("ISBN: ",         obj.isbn));
         table.append(makeTableRow("RATING: ",       obj.rating));
@@ -61,3 +59,5 @@ async function loadbooks() {
 }
 
 loadbooks();
+
+
