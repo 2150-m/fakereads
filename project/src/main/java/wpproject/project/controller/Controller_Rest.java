@@ -930,14 +930,30 @@ public class Controller_Rest {
         return serviceBook.findOne(title);
     }
 
+
     @GetMapping("/api/books/search={search}")
+    public ResponseEntity<List<DTO_View_Book>> searchBooks(@PathVariable(name = "search") String search, HttpSession session) {
+        if (search.isEmpty()) { return null; }
+
+        List<DTO_View_Book> dtos = new ArrayList<>();
+        for (Book i : serviceBook.findAll()) {
+            // search by title / description
+            if (i.getTitle().toLowerCase().contains(search.toLowerCase()) || i.getDescription().toLowerCase().contains(search.toLowerCase())) {
+                DTO_View_Book dto = new DTO_View_Book(i); dtos.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/items/search={search}")
     public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
         if (search.isEmpty()) { return null; }
 
         List<DTO_View_ShelfItem> dtos = new ArrayList<>();
         for (ShelfItem i : serviceShelfItem.findAll()) {
             // search by title / description
-            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase())) {
+            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase()) || i.getBook().getDescription().toLowerCase().contains(search.toLowerCase())) {
                 DTO_View_ShelfItem dto = new DTO_View_ShelfItem(i); dtos.add(dto);
             }
         }
