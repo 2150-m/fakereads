@@ -1,0 +1,44 @@
+#loginform {
+    background-color: transparent;
+}
+
+#btn_login {
+    display: block;
+    color: rgb(218, 219, 220);
+    background-color: rgb(54, 57, 63);
+    border-width: 0px;
+    font-size: 40px;
+    margin: 3px auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+::placeholder {
+    color: rgb(114, 118, 122);
+    opacity: 1;
+}
+
+#txt_username, #txt_password {
+    color: white;
+    background-color: rgb(64, 68, 75);
+    font-size: 40px;
+    border-style: solid;
+    border-width: thick;
+    border-color: rgb(64, 68, 75);
+    border-radius: 25px;
+    display: block;
+    margin: 9px auto;
+    padding: 10px;
+}
+
+#loginform {
+    border-radius: 30px;
+    border: solid rgb(64, 68, 75) 1px;
+    background-color: transparent;
+    margin: 30px auto;
+    width: 800px;
+    padding: 5px;
+}

@@ -1,0 +1,19 @@
+#div_books {
+
+
+}
+
+
+#div_books span {
+    border: 1px solid white;
+    margin: 10px;
+    padding: 3px;
+}
+
+
+
+#div_books span p {
+    display: block;
+    margin: 0;
+    padding: 0;
+}

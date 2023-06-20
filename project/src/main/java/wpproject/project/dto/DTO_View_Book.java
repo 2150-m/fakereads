@@ -44,12 +44,6 @@ public class DTO_View_Book {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
-    public List<BookGenre> getGenreNames() {
-        return genres;
-    }
-    public void setGenres(List<BookGenre> genres) {
-        this.genres = genres;
-    }
     public double getRating() {
         return rating;
     }

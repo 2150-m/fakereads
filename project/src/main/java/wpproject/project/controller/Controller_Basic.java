@@ -6,17 +6,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import wpproject.project.service.Service_Account;
 
 @Controller
-public class Controller_Basic_Account {
+public class Controller_Basic {
     @Autowired
     private Service_Account serviceAccount;
 
-    @GetMapping("/home")
-    public String home() {
-        return "index.html";
-    }
+    // @GetMapping("/home")
+    // public String home() { return "index.html"; }
 
-    @GetMapping("/")
-    public String nothing() {
-        return "redirect:/home";
-    }
+    // @GetMapping("/")
+    // public String nothing() {
+    //    return "redirect:/home";
+    // }
+
+
 }
