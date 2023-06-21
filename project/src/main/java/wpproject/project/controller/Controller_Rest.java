@@ -43,7 +43,60 @@ public class Controller_Rest {
     // TODO: rasporediti svaki kurac u odredjeni service
     // TODO: stavi da svi kurcevi returnaju response entity nema type
 
-    @PostMapping("/api/myaccount/register")
+
+    // TODO: DONE REQ
+
+    @GetMapping("/api/items")
+    public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
+        List<ShelfItem> shelfItems = serviceShelfItem.findAll();
+
+        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
+        for (ShelfItem b : shelfItems) {
+            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
+            dtos.add(dto);
+        }
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/items/{id}")
+    public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
+        return serviceShelfItem.findOne(id);
+    }
+
+    @PostMapping("/api/login")
+    public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
+        Account user = (Account) session.getAttribute("user");
+        if (user != null) { return ResponseEntity.badRequest().body("already logged in"); }
+
+        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return ResponseEntity.badRequest().body("invlaid login data"); }
+
+        Account account = serviceAccount.findOneByUsername(DTOAccountLogin.getUsername());
+        if (account == null) { account = serviceAccount.findOneByMailAddress((DTOAccountLogin.getUsername())); }
+        if (account == null) { return ResponseEntity.badRequest().body("account not found"); }
+        if (!account.getPassword().equals(DTOAccountLogin.getPassword())) { return ResponseEntity.badRequest().body("wrong password"); }
+
+        if (account != null && account.getAccountRole() == Account_Role.AUTHOR) {
+            if (!serviceAccountAuthor.findById(account.getId()).isAccountActivated()) { return ResponseEntity.badRequest().body("author account not activated"); }
+        }
+
+        session.setAttribute("user", account);
+        return new ResponseEntity<>("logged in as: " + account.getUsername(), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/myaccount")
+    public ResponseEntity<DTO_View_AccountAsAnon> myaccount(HttpSession session){
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return null; }
+
+        DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(serviceAccount.findOne(user.getId()));
+        return ResponseEntity.ok(dto);
+    }
+
+
+
+    // TODO: ALL
+
+    @PostMapping("/api/register")
     public Account registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user != null) { System.err.println("[x] already logged in"); return null; }
@@ -74,33 +127,9 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/myaccount/login")
-    public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
-        Account user = (Account) session.getAttribute("user");
-        if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
 
-        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return ResponseEntity.badRequest().body("Invalid login data"); }
 
-        Account loggedAccount = serviceAccount.login(DTOAccountLogin.getUsername(), DTOAccountLogin.getPassword());
-        if (loggedAccount == null)  { return new ResponseEntity<>("Account does not exist!", HttpStatus.NOT_FOUND); }
-
-        user = serviceAccount.findOneByUsername(DTOAccountLogin.getUsername());
-        if (user != null && user.getAccountRole() == Account_Role.AUTHOR) {
-            if (!serviceAccountAuthor.findById(user.getId()).isAccountActivated()) { return ResponseEntity.badRequest().body("This author account is not activated."); }
-        }
-
-        session.setAttribute("user", loggedAccount);
-        return ResponseEntity.ok("Successfully logged in: " + loggedAccount.getUsername());
-    }
-
-    @GetMapping("/api/myaccount")
-    public Account myaccount(HttpSession session){
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return null; }
-        return serviceAccount.findOne(user.getId());
-    }
-
-    @PostMapping("/api/myaccount/logout")
+    @PostMapping("/api/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("Can't log out: already logged out."); }
@@ -108,6 +137,15 @@ public class Controller_Rest {
         session.invalidate();
         return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
     }
+
+
+
+
+
+
+
+
+
 
     @PutMapping("/api/myaccount/update")
     public ResponseEntity<String> updateUser(@RequestBody DTO_Post_AccountUpdate newInfo, HttpSession session) {
@@ -728,12 +766,12 @@ public class Controller_Rest {
     }
 
     @GetMapping("/api/users")
-    public ResponseEntity<List<DTO_View_Account>> getUsers(HttpSession session) {
+    public ResponseEntity<List<DTO_View_AccountAsAnon>> getUsers(HttpSession session) {
         List<Account> userList = serviceAccount.findAll();
 
-        List<DTO_View_Account> dtos = new ArrayList<>();
+        List<DTO_View_AccountAsAnon> dtos = new ArrayList<>();
         for (Account u : userList) {
-            DTO_View_Account dto = new DTO_View_Account(u);
+            DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(u);
             dtos.add(dto);
         }
 
@@ -886,22 +924,7 @@ public class Controller_Rest {
         return user.getShelves();
     }
 
-    @GetMapping("/api/items")
-    public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
-        List<ShelfItem> shelfItems = serviceShelfItem.findAll();
 
-        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem b : shelfItems) {
-            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
-            dtos.add(dto);
-        }
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/items/{id}")
-    public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceShelfItem.findOne(id);
-    }
 
     @GetMapping("/api/items/title={title}")
     public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {

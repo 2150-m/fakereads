@@ -10,32 +10,16 @@
         <link rel="stylesheet" href="/css/login.css">
     </head>
     <body>
+        <div id="navbar"></div>
 
         <div id="loginform">
-            <input type="text"     id="txt_username" placeholder="username"/>
+            <input type="text"     id="txt_username" placeholder="username / email"/>
             <input type="password" id="txt_password" placeholder="password"/>
-            <button id="btn_login" onclick="signIn();">Log In</button>
+            <button id="btn_login">LOG IN</button>
+            <p id="loginform_status"></p>
         </div>
-        
+
+        <script type="text/javascript" src="/js/navbar.js"></script>
+        <script type="text/javascript" src="/js/login.js"></script>
     </body>
-
-    <script>
-
-        var t1 = document.getElementById("username");
-        var t2 = document.getElementById("password");
-        var btn = document.getElementById("login");
-        
-        t1.focus();
-        t1.select();
-
-        function signIn() {
-            console.log("username: " + t1.value);
-            console.log("password: " + t2.value);
-        }
-
-        t1.addEventListener("keydown", function(event) { if (event.keyCode == 13) { t2.focus(); } }, false);
-        t2.addEventListener("keydown", function(event) { if (event.keyCode == 13) { btn.show(); btn.click(); } }, false);
-        
-
-    </script>
 </html>

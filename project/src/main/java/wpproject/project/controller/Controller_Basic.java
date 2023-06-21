@@ -30,4 +30,14 @@ public class Controller_Basic {
         return "item.html";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login.html";
+    }
+
+    @GetMapping("/myaccount")
+    public String myaccount() {
+        return "myaccount.html";
+    }
+
 }
