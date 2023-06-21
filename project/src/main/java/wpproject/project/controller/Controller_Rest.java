@@ -60,8 +60,8 @@ public class Controller_Rest {
     }
 
     @GetMapping("/api/items/{id}")
-    public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceShelfItem.findOne(id);
+    public ResponseEntity<DTO_View_ShelfItem> getItem(@PathVariable(name = "id") Long id, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_ShelfItem(serviceShelfItem.findOne(id)), HttpStatus.OK);
     }
 
     @PostMapping("/api/login")
@@ -87,7 +87,7 @@ public class Controller_Rest {
     @GetMapping("/api/myaccount")
     public ResponseEntity<DTO_View_AccountAsAnon> myaccount(HttpSession session){
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); }
+        if (user == null) { return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED); }
 
         DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(serviceAccount.findOne(user.getId()));
         return new ResponseEntity<>(dto, HttpStatus.OK);
@@ -125,29 +125,30 @@ public class Controller_Rest {
     @PostMapping("/api/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("Can't log out: already logged out."); }
+        if (user == null) { return new ResponseEntity<>("already logged out", HttpStatus.BAD_REQUEST); }
 
         session.invalidate();
-        return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
+        return new ResponseEntity<>("logged out: " + user.getUsername(), HttpStatus.OK);
     }
 
+    @GetMapping("/api/genres")
+    public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
+        List<DTO_View_BookGenre> dtos = new ArrayList<>();
+        for (BookGenre g : serviceBookGenre.findAll()) {
+            dtos.add(new DTO_View_BookGenre(g));
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/genres/{id}")
+    public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
+        return ResponseEntity.ok(new DTO_View_BookGenre(serviceBookGenre.findOne(id)));
+    }
 
     //
     // TODO: ALL
     //
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @PutMapping("/api/myaccount/update")
@@ -804,27 +805,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/genres")
-    public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
-        List<BookGenre> genreList = serviceBookGenre.findAll();
 
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        if (genre == null) { System.out.println("No session"); }
-        else               { System.out.println(genre);        }
-
-        List<DTO_View_BookGenre> dtos = new ArrayList<>();
-        for (BookGenre g : genreList) { DTO_View_BookGenre dto = new DTO_View_BookGenre(g); dtos.add(dto); }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/genres/{id}")
-    public BookGenre getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        System.out.println(genre);
-        session.invalidate();
-        return serviceBookGenre.findOne(id);
-    }
 
     @GetMapping("/api/genres/name={name}")
     public BookGenre getGenre(@PathVariable(name = "name") String name, HttpSession session) {

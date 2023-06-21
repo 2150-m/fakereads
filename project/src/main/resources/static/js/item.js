@@ -7,30 +7,46 @@ function makeTableRow(clm1, clm2) {
     return tr
 }
 
-function makeItem(json) {
-    let span = document.createElement("span");
-    span.className = "item";
+
+function makeReview(json) {
+
     let table = document.createElement("table");
-    table.append(makeTableRow("TITLE: ",        json.title));
-    //table.append(makeTableRow("PHOTO",          json.coverPhoto));
-    table.append(makeTableRow("RELEASE DATE: ", json.releaseDate));
-    table.append(makeTableRow("DESCRIPTION: ",  json.description));
-    table.append(makeTableRow("NUM OF PAGES: ", json.numOfPages));
-    table.append(makeTableRow("ISBN: ",         json.isbn));
-    table.append(makeTableRow("RATING: ",       json.rating));
-    table.append(makeTableRow("GENRES: ",       json.genres));
-    span.append(table);
-    let img = document.createElement("img");
-    img.src = json.coverPhoto;
-    span.append(img);
-    return span;
+    table.append(makeTableRow("RATING",  json.rating));
+    table.append(makeTableRow("TEXT",    json.text));
+    table.append(makeTableRow("DATE",    json.reviewDate));
+    table.append(makeTableRow("ACCOUNT", json.accountId));
+
+    return table;
 }
 
-async function getItem() {
+async function getBookAndReviews() {
     const response = await fetch("/api/items/" + item_id.value);
-    const jsonData = await response.json();
-    console.log(jsonData);
-    document.body.append(makeItem(jsonData.book))
+    const json = await response.json();
+    console.log(json);
+
+    let book = document.getElementById("book");
+
+    let table = document.createElement("table");
+    table.append(makeTableRow("TITLE: ",        json.book.title));
+    table.append(makeTableRow("RELEASE DATE: ", json.book.releaseDate));
+    table.append(makeTableRow("DESCRIPTION: ",  json.book.description));
+    table.append(makeTableRow("NUM OF PAGES: ", json.book.numOfPages));
+    table.append(makeTableRow("ISBN: ",         json.book.isbn));
+    table.append(makeTableRow("RATING: ",       json.book.rating));
+    table.append(makeTableRow("GENRES: ",       json.book.genres));
+    book.append(table);
+    let img = document.createElement("img");
+    img.src = json.book.coverPhoto;
+    book.append(img);
+
+
+    // TODO: display all reviews
+    let reviews = document.getElementById("reviews");
+
+    for (let i = 0; i < json.bookReviews.length; i++) {
+        reviews.append(makeReview(json.bookReviews[i]));
+    }
+    
 }
 
-getItem();
+getBookAndReviews();

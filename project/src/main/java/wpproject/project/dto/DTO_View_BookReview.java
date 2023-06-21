@@ -8,7 +8,7 @@ public class DTO_View_BookReview {
     private double rating;
     private String text;
     private LocalDate reviewDate;
-    private String author;
+    private Long accountId;
 
     public DTO_View_BookReview() {}
 
@@ -16,7 +16,7 @@ public class DTO_View_BookReview {
         this.rating = bookReview.getRating();
         this.text = bookReview.getText();
         this.reviewDate = bookReview.getReviewDate();
-        this.author = bookReview.getAccount().getUsername();
+        this.accountId = bookReview.getAccount().getId();
     }
 	
     public double getRating() { return rating; }
@@ -25,6 +25,6 @@ public class DTO_View_BookReview {
     public void setText(String text) { this.text = text; }
     public LocalDate getReviewDate() { return reviewDate; }
     public void setReviewDate(LocalDate reviewDate) { this.reviewDate = reviewDate; }
-    public String getAccount() { return author; }
-    public void setAccount(String author) { this.author = author; }
+    public Long getAccountId() { return accountId; }
+    public void setAccountId(Long accountId) { this.accountId = accountId; }
 }

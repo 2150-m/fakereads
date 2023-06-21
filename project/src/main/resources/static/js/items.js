@@ -4,8 +4,6 @@ let btn = document.getElementById("btn_search");
 
 let div_items = document.getElementById("div_items");
 
-
-
 function div_items_clear() {
     
     while (div_items.firstChild) {
