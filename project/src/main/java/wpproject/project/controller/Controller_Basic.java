@@ -1,10 +1,15 @@
 package wpproject.project.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import wpproject.project.dto.DTO_View_AccountAsAnon;
+import wpproject.project.model.Account;
 import wpproject.project.model.Shelf;
 import wpproject.project.model.ShelfItem;
 import wpproject.project.service.Service_Account;
@@ -52,8 +57,13 @@ public class Controller_Basic {
     public String login() { return "login.html"; }
 
     @GetMapping("/myaccount")
-    public String myaccount() {
-        return "myaccount.html";
+    public String myaccount(HttpSession session, Model model) {
+
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return "error.html"; }
+
+        model.addAttribute("user_id", user.getId());
+        return "user.html";
     }
 
     @GetMapping("/register")

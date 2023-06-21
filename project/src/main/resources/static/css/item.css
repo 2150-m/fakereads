@@ -2,28 +2,35 @@
     text-decoration: none;
 }
 
-.item {
-    display: inline-block;
-    margin: 10px;
+#book {
+
+}
+
+#book {
+    display: block;
+    margin: 10px auto;
     padding: 3px;
     background-color: #202020;
+    width: 800px;
 }
 
-.item table {
+#book table {
     display: inline-block;
+    padding: 3px;
+    background-color: #202020;
+    margin: 0 auto;
 }
 
-.item img  {
+#book img  {
     display: inline-block;
-    max-height: 165px;
-    max-width: 120px;
+    height: 300px;
+    width: 300px;
+    object-fit: contain;
+    background-color: #252525;
+    margin: 3px;
 }
 
-.item th, .item td {
+#book table th, #book table td {
     font-size: medium;
     color: white;
-}
-
-.item th {
-    text-align: right;
 }

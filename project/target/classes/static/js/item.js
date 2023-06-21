@@ -26,6 +26,11 @@ async function getBookAndReviews() {
 
     let book = document.getElementById("book");
 
+
+    let img = document.createElement("img");
+    img.src = json.book.coverPhoto;
+    book.append(img);
+
     let table = document.createElement("table");
     table.append(makeTableRow("TITLE: ",        json.book.title));
     table.append(makeTableRow("RELEASE DATE: ", json.book.releaseDate));
@@ -35,11 +40,7 @@ async function getBookAndReviews() {
     table.append(makeTableRow("RATING: ",       json.book.rating));
     table.append(makeTableRow("GENRES: ",       json.book.genres));
     book.append(table);
-    let img = document.createElement("img");
-    img.src = json.book.coverPhoto;
-    book.append(img);
-
-
+    
     // TODO: display all reviews
     let reviews = document.getElementById("reviews");
 

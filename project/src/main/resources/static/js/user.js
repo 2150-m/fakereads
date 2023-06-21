@@ -12,8 +12,16 @@ async function getUserAndShelves() {
     const json = await response.json();
     console.log(json);
     
-
     let user = document.getElementById("user");
+
+    let img = document.createElement("img");
+    img.src = json.profilePicture;
+    
+    let imgcont = document.createElement("div");
+    imgcont.id = "imgcont";
+    imgcont.append(img);
+
+    user.append(imgcont);
 
     let table = document.createElement("table");
     table.append(makeTableRow("FIRST NAME: ",    json.firstName));
@@ -25,12 +33,22 @@ async function getUserAndShelves() {
     table.append(makeTableRow("ACCOUNT ROLE: ",  json.accountRole));
     user.append(table);
 
-    let img = document.createElement("img");
-    img.src = json.profilePicture;
-    user.append(img);
+    
 
     // TODO: display shelves
     let shelves = document.getElementById("shelves");
+    
+    for (let i = 0; i < json.shelves.length; i++) {
+        let shelf = document.createElement("div");
+        shelf.className = "shelf";
+        let p = document.createElement("p");
+        p.innerHTML = json.shelves[i].name;
+        shelf.append(p);
+        items_populate(shelf, json.shelves[i].shelfItems);
+        shelves.append(shelf);
+    }
+    
+
     
 }
 

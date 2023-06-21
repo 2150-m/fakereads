@@ -18,6 +18,7 @@ body {
 }
 
 * {
+    color: white;
     background-color: transparent;
 }
 
@@ -27,13 +28,13 @@ body {
     padding: 5px;
     padding-bottom: 10px;
     box-shadow: 1px black;
-    border: 1px darkslategray solid;
+    border: 1px #404040 solid;
     background-color: transparent;
 }
 
 #navbar li {
     display: inline;
-    border: darkcyan 1px solid;
+    border: #505050 1px solid;
     padding: 5px;
     border-radius: 2px;
     margin: 0 3px;
@@ -51,7 +52,7 @@ body {
 #navbar li a {
     text-decoration: none;
     font-weight: bolder;
-    color: cyan;
+    color: white;
     padding: 3px;
     background-color: transparent;
     font-size: larger;

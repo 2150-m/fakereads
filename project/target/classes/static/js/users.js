@@ -23,6 +23,10 @@ function makeItem(json) {
     let span = document.createElement("span");
     span.className = "item";
     
+    let img = document.createElement("img");
+    img.src = json.profilePicture;
+    span.append(img);
+
     let table = document.createElement("table");
     table.append(makeTableRow("FIRST NAME: ",    json.firstName));
     table.append(makeTableRow("LAST NAME: ",     json.lastName));
@@ -31,12 +35,7 @@ function makeItem(json) {
     table.append(makeTableRow("DATE OF BIRTH: ", json.dateOfBirth));
     table.append(makeTableRow("DESCRITPION: ",   json.description));
     table.append(makeTableRow("ACCOUNT ROLE: ",  json.accountRole));
-
     span.append(table);
-    let img = document.createElement("img");
-    img.src = json.profilePicture;
-    span.append(img);
-
 
     a.append(span);
     return a;

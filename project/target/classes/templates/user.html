@@ -8,6 +8,7 @@
 
         <title>USER</title>
         <link rel="stylesheet" href="/css/user.css">
+        <link rel="stylesheet" href="/css/items.css">
     </head>
     <body>
         <div id="navbar"></div>
@@ -15,8 +16,12 @@
         <input type="hidden" id="user_id" th:value="${user_id}"/>
 
         <div id="user"></div>
-        <div id="shelves"></div>
+        <div id="shelves_cont">
+            <p>SHELVES:</p>
+            <ul id="shelves"></ul>
+        </div>
 
+        <script type="text/javascript" src="/js/main.js"></script>
         <script type="text/javascript" src="/js/navbar.js"></script>
         <script type="text/javascript" src="/js/user.js"></script>
     </body>
