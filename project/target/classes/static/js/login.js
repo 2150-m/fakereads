@@ -1,7 +1,7 @@
 let txt_username = document.getElementById("txt_username");
 let txt_password = document.getElementById("txt_password");
 let btn_login = document.getElementById("btn_login");
-let loginform_status = document.getElementById("loginform_status");
+let p_status = document.getElementById("p_status");
 
 
 txt_username.focus();
@@ -24,7 +24,7 @@ async function api_login(v_username, v_password) {
     console.log(response);
 
     console.log(text);
-    loginform_status.innerHTML = text;
+    p_status.innerHTML = text;
 
     if (response.ok) {
         window.location.href = "myaccount";
@@ -41,8 +41,8 @@ function login() {
 
 btn_login.onclick = login;
 
-txt_username.addEventListener("keydown", function(event) { if (event.keyCode == 13) { txt_password.focus(); } }, false);
-txt_password.addEventListener("keydown", function(event) { if (event.keyCode == 13) { login(); } }, false);
+txt_username.addEventListener("keydown", function(event) { if (event.key == 'Enter') { txt_password.focus(); } }, false);
+txt_password.addEventListener("keydown", function(event) { if (event.key == 'Enter') { login(); } }, false);
 
 
 

@@ -7,7 +7,7 @@ INSERT INTO ACCOUNT (first_name, last_name, username, mail_address, password, da
 --('Pera',   'Peric',      'pera',    'pera@gmail.com',     '123456890',   DATE '1980-03-02', 'pic3.jpg',  'opis3', 0),
 --('Dusan',  'Dusic',      'dusan',   'dusan@gmail.com',    '666666',      DATE '2006-06-06', 'pic4.jpg',  'opis4', 0),
 --('Stefan', 'Stefanovic', 'stefan',  'stefan@gmail.com',   '333111333',   DATE '2001-04-04', 'pic5.jpg',  'opis5', 0),
-('Admin',  'Adminovic',  'bigboss', 'bigboss@gmail.com',  'bigboss123',  DATE '1700-03-23', 'admin.jpg', 'admin', 2);
+('Admin',  'Adminovic',  'bigboss', 'bigboss@gmail.com',  'bigboss123',  DATE '1700-03-23', '/avatars/admin.jpg', 'admin', 2);
 
 
 --INSERT INTO ACCOUNTS_SHELVES (account_id, shelf_id) VALUES

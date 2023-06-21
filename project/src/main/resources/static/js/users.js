@@ -1,5 +1,11 @@
+let div_items = document.getElementById("div_items");
 
-
+function div_items_clear() {
+    
+    while (div_items.firstChild) {
+        div_items.removeChild(div_items.lastChild);
+    }
+}
 
 function makeTableRow(clm1, clm2) {
     let tr = document.createElement("tr");
@@ -8,8 +14,15 @@ function makeTableRow(clm1, clm2) {
     return tr
 }
 
-function makeMyAccount(json) {
-    let myaccount = document.getElementById("myaccount");
+function makeItem(json) {
+
+    let a = document.createElement("a");
+    a.className = "item_link";
+    a.href = "/users/" + json.id;
+
+    let span = document.createElement("span");
+    span.className = "item";
+    
     let table = document.createElement("table");
     table.append(makeTableRow("FIRST NAME: ",    json.firstName));
     table.append(makeTableRow("LAST NAME: ",     json.lastName));
@@ -18,21 +31,31 @@ function makeMyAccount(json) {
     table.append(makeTableRow("DATE OF BIRTH: ", json.dateOfBirth));
     table.append(makeTableRow("DESCRITPION: ",   json.description));
     table.append(makeTableRow("ACCOUNT ROLE: ",  json.accountRole));
-    
-    // TODO: json.shelves
 
+    span.append(table);
     let img = document.createElement("img");
     img.src = json.profilePicture;
-    
-    myaccount.append(table);
-    myaccount.append(img);
+    span.append(img);
+
+
+    a.append(span);
+    return a;
 }
 
-async function api_myaccount() {
-    const response = await fetch("/api/myaccount");
+function div_items_populate(jsonData) {
+
+    for (let i = 0; i < jsonData.length; i++) {
+        div_items.append(makeItem(jsonData[i]));
+    }
+}
+
+async function loaditems() {
+    div_items_clear();
+
+    const response = await fetch("/api/users");
     const jsonData = await response.json();
-    console.log(jsonData);
-    makeMyAccount(jsonData);
+    div_items_populate(jsonData);
 }
 
-api_myaccount();
+loaditems();
+

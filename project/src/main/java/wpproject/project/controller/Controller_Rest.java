@@ -1,6 +1,7 @@
 package wpproject.project.controller;
 
 import jakarta.servlet.http.HttpSession;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,17 +67,17 @@ public class Controller_Rest {
     @PostMapping("/api/login")
     public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
         Account user = (Account) session.getAttribute("user");
-        if (user != null) { return ResponseEntity.badRequest().body("already logged in"); }
+        if (user != null) { return new ResponseEntity<>("already logged in", HttpStatus.BAD_REQUEST); }
 
-        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return ResponseEntity.badRequest().body("invlaid login data"); }
+        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return new ResponseEntity<>("invlaid login data", HttpStatus.BAD_REQUEST); }
 
         Account account = serviceAccount.findOneByUsername(DTOAccountLogin.getUsername());
         if (account == null) { account = serviceAccount.findOneByMailAddress((DTOAccountLogin.getUsername())); }
-        if (account == null) { return ResponseEntity.badRequest().body("account not found"); }
-        if (!account.getPassword().equals(DTOAccountLogin.getPassword())) { return ResponseEntity.badRequest().body("wrong password"); }
+        if (account == null) { return new ResponseEntity<>("account not found", HttpStatus.NOT_FOUND);  }
+        if (!account.getPassword().equals(DTOAccountLogin.getPassword())) { return new ResponseEntity<>("wrong password", HttpStatus.UNAUTHORIZED); }
 
         if (account != null && account.getAccountRole() == Account_Role.AUTHOR) {
-            if (!serviceAccountAuthor.findById(account.getId()).isAccountActivated()) { return ResponseEntity.badRequest().body("author account not activated"); }
+            if (!serviceAccountAuthor.findById(account.getId()).isAccountActivated()) { return new ResponseEntity<>("author account not activated", HttpStatus.UNAUTHORIZED);  }
         }
 
         session.setAttribute("user", account);
@@ -86,26 +87,22 @@ public class Controller_Rest {
     @GetMapping("/api/myaccount")
     public ResponseEntity<DTO_View_AccountAsAnon> myaccount(HttpSession session){
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return null; }
+        if (user == null) { return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); }
 
         DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(serviceAccount.findOne(user.getId()));
-        return ResponseEntity.ok(dto);
+        return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-
-
-    // TODO: ALL
-
     @PostMapping("/api/register")
-    public Account registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
+    public ResponseEntity<String> registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user != null) { System.err.println("[x] already logged in"); return null; }
+        if (user != null) { return new ResponseEntity<>("already logged in", HttpStatus.BAD_REQUEST); }
 
         try {
             Account account = serviceAccount.findOneByMailAddress(accountRequest.getMailAddress());
-            if (account != null) { System.err.println("[x] can't register, mail exists:" + accountRequest.getMailAddress()); return null; }
+            if (account != null) { return new ResponseEntity<>("mail exists: " + accountRequest.getMailAddress(), HttpStatus.CONFLICT); }
             account = serviceAccount.findOneByUsername(accountRequest.getUsername());
-            if (account != null) { System.err.println("[x] can't register, username exists:" + accountRequest.getUsername()); return null; }
+            if (account != null) { return new ResponseEntity<>("username exists: " + accountRequest.getUsername(), HttpStatus.CONFLICT); }
 
             account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
 
@@ -118,16 +115,12 @@ public class Controller_Rest {
             account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
 
             serviceAccount.save(account);
-
             session.setAttribute("user", account);
-            return account;
+            return new ResponseEntity<>("registered", HttpStatus.OK);
         } catch (Exception e) {
-            System.err.println("[x] failed to register: " + e.getMessage());
-            return null;
+            return new ResponseEntity<>("internal error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
     @PostMapping("/api/logout")
     public ResponseEntity<String> logout(HttpSession session) {
@@ -137,6 +130,16 @@ public class Controller_Rest {
         session.invalidate();
         return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
     }
+
+
+    //
+    // TODO: ALL
+    //
+
+
+
+
+
 
 
 

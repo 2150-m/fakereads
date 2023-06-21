@@ -40,4 +40,19 @@ public class Controller_Basic {
         return "myaccount.html";
     }
 
+    @GetMapping("/register")
+    public String register() {
+        return "register.html";
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        return "logout.html";
+    }
+
+    @GetMapping("/users")
+    public String users() {
+        return "users.html";
+    }
+
 }
