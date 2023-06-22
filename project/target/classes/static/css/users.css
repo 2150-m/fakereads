@@ -14,21 +14,29 @@
     width: fit-content;
     height: fit-content;
     background-color: #101010;
+    border: 1px solid white;
+    padding: 3px;
+    border-radius: 10px;
 }
 
 .user img {
-    display: inline-block;
-    width: 100px;
-    height: 150px;
+    display: block;
+    width: 250px;
+    height: 250px;
     object-fit: contain;
+    border: 3px solid white;
+    border-radius: 100px;
+    margin: 0 auto;
 }
 
-#users div {
-    width: 300px;
-    height: 300px;
+.user table {
+    border: 1px dashed white;
+    padding: 3px;
+    margin: 10px;
+    display: block;
+    
 }
 
-#users table {
-    display: inline-block;
+.user table {
     width: 500px;
 }
