@@ -33,6 +33,11 @@
     margin: 30px;
 }
 
+#user_activate {
+    display: block;
+    margin: 10px auto;
+}
+
 #shelves {
     
 }

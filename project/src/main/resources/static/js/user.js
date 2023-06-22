@@ -1,6 +1,33 @@
-let user_id = document.getElementById("user_id");
+let user_id = document.getElementById("user_id").value;
 
 
+async function sendActivation() {
+
+
+    let mail = document.getElementById("form_activation_mail").value;
+    let phone = document.getElementById("form_activation_phone").value;
+    let msg = document.getElementById("form_activation_msg").value;
+
+
+    const response = await fetch('/api/sendactivation/' + user_id, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({mailAddress: mail, phoneNumber: phone, message: msg})
+    });
+
+
+    if (response.ok) {
+        const text = await response.text();
+        document.getElementById("form_activation_status").innerHTML = text;
+
+        setTimeout(function() {
+            document.getElementById("form_activation_popup").style.display = "none";
+        }, 2000);
+    }
+}
 
 function displayUser(json) {
     document.getElementById("user_firstName").innerHTML   = json.firstName;
@@ -11,6 +38,28 @@ function displayUser(json) {
     document.getElementById("user_description").innerHTML = json.description;
     document.getElementById("user_accountRole").innerHTML = json.accountRole;
     document.getElementById("user_profilePicture").src    = json.profilePicture;
+
+    if (json.accountRole == "AUTHOR") {
+
+        let cont = document.getElementById("user_activate_cont");
+
+        let btn = document.getElementById("user_activate");
+        btn.onclick = function() {
+            form_activation_popup.style.display = "block";
+            cont.style.display = "none";
+
+            let b = document.getElementById("form_activation_btn");
+            b.onclick = function() {
+                sendActivation();
+
+
+                // document.getElementById("form_activation_popup").style.display = "none";
+            }
+        }
+
+        // show button cont
+        cont.style.display = "block";
+    }
 }
 
 async function addshelf() {
@@ -36,23 +85,15 @@ async function addshelf() {
 
 }
 
-
-
 function displayUserControls() {
 
-    // SHELF STUFF
-
-    // display shelf controls
-    let user_controls = document.getElementById("addshelf");
-    user_controls.style.display = "block"; // TODO: add none by default
     // hook button with function
     let btn = document.getElementById("addshelf_btn");        
     btn.onclick = addshelf;
-    // hook keydown event
-    // TODO: add keydown
 
-
-    // ADMIN STUFF
+    // display addshelf cont
+    let user_controls = document.getElementById("addshelf");
+    user_controls.style.display = "block"; // TODO: add none by default
 }
 
 async function removeShelf(id, div) {
@@ -95,7 +136,7 @@ function displayShelves(json, loggedIn = false) {
 }
 
 async function loadUser() {
-    const response_users_id = await fetch("/api/users/" + user_id.value);
+    const response_users_id = await fetch("/api/users/" + user_id);
     const response_users_id_json = await response_users_id.json();
     console.log(response_users_id_json);
     

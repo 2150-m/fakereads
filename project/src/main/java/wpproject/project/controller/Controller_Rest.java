@@ -174,6 +174,21 @@ public class Controller_Rest {
         return new ResponseEntity<>(new DTO_View_ShelfItem(serviceShelfItem.findOne(id)), HttpStatus.OK);
     }
 
+    @GetMapping("/api/items/search={search}")
+    public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
+        if (search.isEmpty()) { return null; }
+
+        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
+        for (ShelfItem i : serviceShelfItem.findAll()) {
+            // search by title / description
+            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase()) || i.getBook().getDescription().toLowerCase().contains(search.toLowerCase())) {
+                DTO_View_ShelfItem dto = new DTO_View_ShelfItem(i); dtos.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
     // GENRES
 
     @GetMapping("/api/genres")
@@ -426,6 +441,95 @@ public class Controller_Rest {
         return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + targetShelf.getName().toUpperCase() + ".");
     }
 
+
+    // ADMIN ACTIVATIONS
+
+
+    @PostMapping("/api/sendactivation/{id}")
+    public ResponseEntity<String> sendActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_AccountActivationRequest dtoPostAccountActivationRequest, HttpSession session) {
+
+        AccountAuthor aa = serviceAccountAuthor.findOne(id);
+        if (aa == null) { return new ResponseEntity<>("can't find author with id: " + id, HttpStatus.NOT_FOUND); }
+
+        try {
+            AccountActivationRequest aar = new AccountActivationRequest(
+                    dtoPostAccountActivationRequest.getMailAddress(),
+                    dtoPostAccountActivationRequest.getPhoneNumber(),
+                    dtoPostAccountActivationRequest.getMessage(),
+                    LocalDate.now(),
+                    AccountActivationRequest_Status.WAITING,
+                    aa
+            );
+
+            serviceAccountActivationRequest.save(aar);
+
+            return new ResponseEntity<>("activation request sent", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("failed to send activation req: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GetMapping("/api/admin/activations")
+    public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
+        if (!isAdmin(session)) { return null; }
+
+        List<AccountActivationRequest> userList = serviceAccountActivationRequest.findAll();
+
+        List<DTO_View_AccountActivationRequest> dtos = new ArrayList<>();
+        for (AccountActivationRequest u : userList) {
+            DTO_View_AccountActivationRequest dto = new DTO_View_AccountActivationRequest(u);
+            dtos.add(dto);
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PostMapping("/api/admin/activation/{id}/accept")
+    public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
+        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
+
+        // save as approved
+        aar.setStatus(AccountActivationRequest_Status.APPROVED);
+        serviceAccountActivationRequest.save(aar);
+
+        // set is activated for author
+        AccountAuthor accountAuthor = aar.getAuthor();
+        accountAuthor.setAccountActivated(true);
+        serviceAccountAuthor.save(accountAuthor);
+
+        // TODO: send mail that account has been activated --- send password
+        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
+
+        return ResponseEntity.ok().body("accepted activation request");
+    }
+
+    @PostMapping("/api/admin/activation/{id}/reject")
+    public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
+        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
+
+        // save as rejected
+        aar.setStatus(AccountActivationRequest_Status.REJECTED);
+        serviceAccountActivationRequest.save(aar);
+
+        // set account as not activated
+        AccountAuthor accountAuthor = aar.getAuthor();
+        accountAuthor.setAccountActivated(false);
+        serviceAccountAuthor.save(accountAuthor);
+
+        // TODO: send mail -> reason for rejection
+        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
+
+        return ResponseEntity.ok().body("rejected activation request");
+    }
+
+
     //
     // TODO: ALL
     //
@@ -523,12 +627,6 @@ public class Controller_Rest {
     }
 
 
-
-
-
-
-
-
     private String addReview(Account user, ShelfItem item, DTO_Post_BookReview review) {
         BookReview newReview = new BookReview(review.getRating(), review.getText(), LocalDate.now(), user);
         reviewService.save(newReview);
@@ -610,65 +708,6 @@ public class Controller_Rest {
             System.err.println("[x] failed to add new user (author): " + e.getMessage());
             return null;
         }
-    }
-
-    @GetMapping("/api/admin/activations")
-    public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
-        if (!isAdmin(session)) { return null; }
-
-        List<AccountActivationRequest> userList = serviceAccountActivationRequest.findAll();
-
-        List<DTO_View_AccountActivationRequest> dtos = new ArrayList<>();
-        for (AccountActivationRequest u : userList) {
-            DTO_View_AccountActivationRequest dto = new DTO_View_AccountActivationRequest(u);
-            dtos.add(dto);
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @PostMapping("/api/admin/activation/{id}/accept")
-    public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
-        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
-
-        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
-        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
-
-        // save as approved
-        aar.setStatus(AccountActivationRequest_Status.APPROVED);
-        serviceAccountActivationRequest.save(aar);
-
-        // set is activated for author
-        AccountAuthor accountAuthor = aar.getAuthor();
-        accountAuthor.setAccountActivated(true);
-        serviceAccountAuthor.save(accountAuthor);
-
-        // TODO: send mail that account has been activated --- send password
-        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
-
-        return ResponseEntity.ok().body("accepted activation request");
-    }
-
-    @PostMapping("/api/admin/activation/{id}/reject")
-    public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
-        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
-
-        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
-        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
-
-        // save as rejected
-        aar.setStatus(AccountActivationRequest_Status.REJECTED);
-        serviceAccountActivationRequest.save(aar);
-
-        // set account as not activated
-        AccountAuthor accountAuthor = aar.getAuthor();
-        accountAuthor.setAccountActivated(false);
-        serviceAccountAuthor.save(accountAuthor);
-
-        // TODO: send mail -> reason for rejection
-        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
-
-        return ResponseEntity.ok().body("rejected activation request");
     }
 
     @PostMapping("/api/admin/addgenre")
@@ -819,166 +858,6 @@ public class Controller_Rest {
 
 
 
-    @GetMapping("/api/reviews")
-    public ResponseEntity<List<DTO_View_BookReviewNoShelves>> getBookReviews(HttpSession session) {
-        List<BookReview> bookReviews = serviceBookReview.findAll();
-
-        BookReview bookReview = (BookReview) session.getAttribute("bookReview");
-        if (bookReview == null) { System.out.println("No session"); }
-        else                    { System.out.println(bookReview);         }
-
-        List<DTO_View_BookReviewNoShelves> dtos = new ArrayList<>();
-        for (BookReview b : bookReviews) { DTO_View_BookReviewNoShelves dto = new DTO_View_BookReviewNoShelves(b); dtos.add(dto); }
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/reviews/{id}")
-    public BookReview getBookReview(@PathVariable(name = "id") Long id, HttpSession session) {
-        BookReview bookReview = (BookReview) session.getAttribute("bookReview");
-        System.out.println(bookReview);
-        session.invalidate();
-        return serviceBookReview.findOne(id);
-    }
-
-    @GetMapping("/api/users/{userId}/shelf/{shelfId}")
-    public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
-        Account user = serviceAccount.findOne(userID);
-        if (user == null) { return null; }
-
-        for (Shelf s : user.getShelves()) {
-            if (s.getId().equals(shelfID)) {
-                return s;
-            }
-        }
-
-        return null;
-    }
-
-    @GetMapping("/api/users/{userId}/shelf/name={shelfName}")
-    public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfName") String shelfname, HttpSession session) {
-        Account user = serviceAccount.findOne(userID);
-        if (user == null) { return null; }
-
-        for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(shelfname)) {
-                return s;
-            }
-        }
-
-        return null;
-    }
-
-    @GetMapping("/api/users/username={userName}/shelf/{shelfId}")
-    public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
-        Account user = serviceAccount.findOneByUsername(username);
-        if (user == null) { return null; }
-
-        for (Shelf s : user.getShelves()) {
-            if (s.getId().equals(shelfID)) {
-                return s;
-            }
-        }
-
-        return null;
-    }
-
-    @GetMapping("/api/users/username={userName}/shelf/name={shelfName}")
-    public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
-        Account user = serviceAccount.findOneByUsername(username);
-        if (user == null) { return null; }
-
-        for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(shelfName)) {
-                return s;
-            }
-        }
-
-        return null;
-    }
-
-    @GetMapping("/api/users/{userId}/shelves")
-    public List<Shelf> getUserShelves(@PathVariable(name = "userId") Long userID, HttpSession session) {
-        Account user = serviceAccount.findOne(userID);
-        if (user == null) { return null; }
-
-        return user.getShelves();
-    }
-
-    @GetMapping("/api/users/username={userName}/shelves")
-    public List<Shelf> getUserShelves(@PathVariable(name = "userName") String username, HttpSession session) {
-        Account user = serviceAccount.findOneByUsername(username);
-        if (user == null) { return null; }
-
-        return user.getShelves();
-    }
-
-
-
-    @GetMapping("/api/items/title={title}")
-    public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {
-        return serviceShelfItem.findByBook(serviceBook.findOne(title));
-    }
-
-
-
-
-    @GetMapping("/api/books/search={search}")
-    public ResponseEntity<List<DTO_View_Book>> searchBooks(@PathVariable(name = "search") String search, HttpSession session) {
-        if (search.isEmpty()) { return null; }
-
-        List<DTO_View_Book> dtos = new ArrayList<>();
-        for (Book i : serviceBook.findAll()) {
-            // search by title / description
-            if (i.getTitle().toLowerCase().contains(search.toLowerCase()) || i.getDescription().toLowerCase().contains(search.toLowerCase())) {
-                DTO_View_Book dto = new DTO_View_Book(i); dtos.add(dto);
-            }
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/items/search={search}")
-    public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
-        if (search.isEmpty()) { return null; }
-
-        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem i : serviceShelfItem.findAll()) {
-            // search by title / description
-            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase()) || i.getBook().getDescription().toLowerCase().contains(search.toLowerCase())) {
-                DTO_View_ShelfItem dto = new DTO_View_ShelfItem(i); dtos.add(dto);
-            }
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @PostMapping("/api/sendactivation/{id}")
-    public AccountActivationRequest sendActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_AccountActivationRequest dtoPostAccountActivationRequest, HttpSession session) {
-
-        AccountAuthor aa = serviceAccountAuthor.findOne(id);
-        if (aa == null) { System.err.println("[x] account existn't"); return null; }
-
-        try {
-            AccountActivationRequest aar = new AccountActivationRequest(
-                    dtoPostAccountActivationRequest.getMailAddress(),
-                    dtoPostAccountActivationRequest.getPhoneNumber(),
-                    dtoPostAccountActivationRequest.getMessage(),
-                    LocalDate.now(),
-                    AccountActivationRequest_Status.WAITING,
-                    aa
-            );
-
-            serviceAccountActivationRequest.save(aar);
-
-            return aar;
-        } catch (Exception e) {
-            System.err.println("[x] failed to send activation req: " + e.getMessage());
-            return null;
-        }
-    }
-
-
-
 
 
 
@@ -1090,6 +969,122 @@ public class Controller_Rest {
 //
 //        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
 //    }
+
+    @GetMapping("/api/reviews")
+    public ResponseEntity<List<DTO_View_BookReviewNoShelves>> getBookReviews(HttpSession session) {
+        List<BookReview> bookReviews = serviceBookReview.findAll();
+
+        BookReview bookReview = (BookReview) session.getAttribute("bookReview");
+        if (bookReview == null) { System.out.println("No session"); }
+        else                    { System.out.println(bookReview);         }
+
+        List<DTO_View_BookReviewNoShelves> dtos = new ArrayList<>();
+        for (BookReview b : bookReviews) { DTO_View_BookReviewNoShelves dto = new DTO_View_BookReviewNoShelves(b); dtos.add(dto); }
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/reviews/{id}")
+    public BookReview getBookReview(@PathVariable(name = "id") Long id, HttpSession session) {
+        BookReview bookReview = (BookReview) session.getAttribute("bookReview");
+        System.out.println(bookReview);
+        session.invalidate();
+        return serviceBookReview.findOne(id);
+    }
+
+    @GetMapping("/api/users/{userId}/shelf/{shelfId}")
+    public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
+        Account user = serviceAccount.findOne(userID);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getId().equals(shelfID)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    @GetMapping("/api/users/{userId}/shelf/name={shelfName}")
+    public Shelf getUserShelf(@PathVariable(name = "userId") Long userID, @PathVariable(name = "shelfName") String shelfname, HttpSession session) {
+        Account user = serviceAccount.findOne(userID);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfname)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    @GetMapping("/api/users/username={userName}/shelf/{shelfId}")
+    public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfId") Long shelfID, HttpSession session) {
+        Account user = serviceAccount.findOneByUsername(username);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getId().equals(shelfID)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+    @GetMapping("/api/users/username={userName}/shelf/name={shelfName}")
+    public Shelf getUserShelf(@PathVariable(name = "userName") String username, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = serviceAccount.findOneByUsername(username);
+        if (user == null) { return null; }
+
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                return s;
+            }
+        }
+
+        return null;
+    }
+
+
+    @GetMapping("/api/users/{userId}/shelves")
+    public List<Shelf> getUserShelves(@PathVariable(name = "userId") Long userID, HttpSession session) {
+        Account user = serviceAccount.findOne(userID);
+        if (user == null) { return null; }
+
+        return user.getShelves();
+    }
+
+    @GetMapping("/api/users/username={userName}/shelves")
+    public List<Shelf> getUserShelves(@PathVariable(name = "userName") String username, HttpSession session) {
+        Account user = serviceAccount.findOneByUsername(username);
+        if (user == null) { return null; }
+
+        return user.getShelves();
+    }
+
+    @GetMapping("/api/items/title={title}")
+    public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {
+        return serviceShelfItem.findByBook(serviceBook.findOne(title));
+    }
+
+    @GetMapping("/api/books/search={search}")
+    public ResponseEntity<List<DTO_View_Book>> searchBooks(@PathVariable(name = "search") String search, HttpSession session) {
+        if (search.isEmpty()) { return null; }
+
+        List<DTO_View_Book> dtos = new ArrayList<>();
+        for (Book i : serviceBook.findAll()) {
+            // search by title / description
+            if (i.getTitle().toLowerCase().contains(search.toLowerCase()) || i.getDescription().toLowerCase().contains(search.toLowerCase())) {
+                DTO_View_Book dto = new DTO_View_Book(i); dtos.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+
 
 
 }

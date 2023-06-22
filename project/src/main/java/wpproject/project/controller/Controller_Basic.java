@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import wpproject.project.dto.DTO_View_AccountAsAnon;
 import wpproject.project.model.Account;
+import wpproject.project.model.Account_Role;
 import wpproject.project.model.Shelf;
 import wpproject.project.model.ShelfItem;
 import wpproject.project.service.Service_Account;
@@ -103,7 +104,11 @@ public class Controller_Basic {
 //    }
 
 
+    @GetMapping("/activations")
+    public String activations(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
 
-
-
+        return "activations.html";
+    }
 }
