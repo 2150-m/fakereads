@@ -69,6 +69,18 @@ public class DatabaseConfiguration {
     public boolean instantiate() {
 
         CreateAccount(
+                "pera",
+                "peric",
+                "pera",
+                "pera@gmail.com",
+                "123",
+                LocalDate.now(),
+                "/avatars/default.jpg",
+                "test account",
+                Account_Role.READER
+        );
+
+        CreateAccount(
                 "Big",
                 "Boss",
                 "snake",

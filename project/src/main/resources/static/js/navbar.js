@@ -38,7 +38,6 @@ async function load_dynamic() {
         span2.append(createLi("LOGIN",    "/login"));
         span2.append(createLi("REGISTER", "/register"));
     }
-
 }
 
 load_dynamic();
