@@ -112,6 +112,30 @@ public class Controller_Basic {
         return "activations.html";
     }
 
+    @GetMapping("/add")
+    public String add(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+
+        return "add.html";
+    }
+
+    @GetMapping("/add/books")
+    public String addBook(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+
+        return "add_books.html";
+    }
+
+    @GetMapping("/add/authors")
+    public String addAuthor(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+
+        return "add_authors.html";
+    }
+
     @GetMapping("/update")
     public String update(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
