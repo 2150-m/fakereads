@@ -1,5 +1,5 @@
 
-.item_link {
+.user_link {
     color: white;
     text-decoration: none;
     width: fit-content;
@@ -9,30 +9,26 @@
 }
 
 
-.item {
+.user {
     display: inline-block;
     width: fit-content;
     height: fit-content;
     background-color: #101010;
 }
 
-.item img {
+.user img {
     display: inline-block;
     width: 100px;
     height: 150px;
     object-fit: contain;
 }
 
-#div_items div {
+#users div {
     width: 300px;
     height: 300px;
 }
 
-#div_items table {
+#users table {
     display: inline-block;
     width: 500px;
-}
-
-#div_items item_link {
-
 }

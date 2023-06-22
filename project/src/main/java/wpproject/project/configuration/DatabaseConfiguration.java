@@ -4,9 +4,11 @@ import jakarta.persistence.Tuple;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import wpproject.project.model.Account;
+import wpproject.project.model.AccountAuthor;
 import wpproject.project.model.Account_Role;
 import wpproject.project.model.Shelf;
 import wpproject.project.repository.Repository_Account;
+import wpproject.project.repository.Repository_AccountAuthor;
 import wpproject.project.repository.Repository_Shelf;
 import wpproject.project.service.Service_Account;
 import wpproject.project.service.Service_Shelf;
@@ -22,22 +24,45 @@ public class DatabaseConfiguration {
     private Repository_Account repositoryAccount;
 
     @Autowired
+    private Repository_AccountAuthor repositoryAccountAuthor;
+
+    @Autowired
     private Repository_Shelf repositoryShelf;
 
     public void CreateAccount(String firstName, String lastName, String username, String mailAddress, String password, LocalDate dateOfBirth, String profilePicture, String description, Account_Role accountRole) {
 
+        if (accountRole == Account_Role.AUTHOR) {
+            Account a = new Account(firstName, lastName, username, mailAddress, password, dateOfBirth, profilePicture, description, accountRole);
+            AccountAuthor account = new AccountAuthor(a);
+            //repositoryAccount.save(a);
+            repositoryAccountAuthor.save(account);
 
-        Account account = new Account(firstName, lastName, username, mailAddress, password, dateOfBirth, profilePicture, description, accountRole);
-        repositoryAccount.save(account);
+            Shelf shelf_WantToRead = new Shelf("WantToRead", true);
+            Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
+            Shelf shelf_Read = new Shelf("Read", true);
 
-        Shelf shelf_WantToRead = new Shelf("WantToRead", true);
-        Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
-        Shelf shelf_Read = new Shelf("Read", true);
-        repositoryShelf.save(shelf_WantToRead);
-        repositoryShelf.save(shelf_CurrentlyReading);
-        repositoryShelf.save(shelf_Read);
+            account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
+            repositoryAccountAuthor.save(account);
 
-        account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
+            repositoryShelf.save(shelf_WantToRead);
+            repositoryShelf.save(shelf_CurrentlyReading);
+            repositoryShelf.save(shelf_Read);
+        }
+        else {
+            Account account = new Account(firstName, lastName, username, mailAddress, password, dateOfBirth, profilePicture, description, accountRole);
+            repositoryAccount.save(account);
+
+            Shelf shelf_WantToRead = new Shelf("WantToRead", true);
+            Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
+            Shelf shelf_Read = new Shelf("Read", true);
+
+            account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
+            repositoryAccount.save(account);
+
+            repositoryShelf.save(shelf_WantToRead);
+            repositoryShelf.save(shelf_CurrentlyReading);
+            repositoryShelf.save(shelf_Read);
+        }
     }
 
     @Bean
@@ -74,7 +99,7 @@ public class DatabaseConfiguration {
                 "ivoandric@gmail.com",
                 "123",
                 LocalDate.now(),
-                "/avatars/default.jpg",
+                "/avatars/ivo.jpg",
                 "pisem knjige mnogo :)",
                 Account_Role.AUTHOR
         );

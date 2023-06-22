@@ -147,12 +147,13 @@ public class Controller_Rest {
     // AUTHORS
 
     @GetMapping("/api/authors")
-    public ResponseEntity<List<DTO_View_AccountAuthor>> getAuthors(HttpSession session) {
-        List<AccountAuthor> userList = serviceAccountAuthor.findAllAuthors();
+    public ResponseEntity<List<DTO_View_AccountAuthorAsAnon>> getAuthors(HttpSession session) {
+        List<AccountAuthor> authors = serviceAccountAuthor.findAllAuthors();
 
-        List<DTO_View_AccountAuthor> dtos = new ArrayList<>();
-        for (AccountAuthor u : userList) {
-            DTO_View_AccountAuthor dto = new DTO_View_AccountAuthor(new Account(u.getFirstName(), u.getLastName(), u.getUsername(), u.getMailAddress(), u.getPassword(), u.getDateOfBirth(), u.getMailAddress(), u.getDescription(), u.getAccountRole()), u);
+        List<DTO_View_AccountAuthorAsAnon> dtos = new ArrayList<>();
+        for (AccountAuthor a : authors) {
+            DTO_View_AccountAuthorAsAnon dto = new DTO_View_AccountAuthorAsAnon(a);
+
             dtos.add(dto);
         }
 

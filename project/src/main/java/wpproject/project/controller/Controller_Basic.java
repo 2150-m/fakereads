@@ -75,6 +75,9 @@ public class Controller_Basic {
     @GetMapping("/users")
     public String users() { return "users.html"; }
 
+    @GetMapping("/authors")
+    public String authors() { return "authors.html"; }
+
     @GetMapping("/users/{id}")
     public String users_id(@PathVariable(name = "id") Long id, Model model) {
         model.addAttribute("user_id", id);
