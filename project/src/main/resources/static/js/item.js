@@ -16,7 +16,27 @@ function makeReview(json) {
     return table;
 }
 
-async function loadbook() {
+async function displayBookControls() {
+    const response = await fetch("/api/myaccount");
+    const json = await response.json();
+
+    if (response.ok) {
+        
+        // populate select box
+        for (let i = 0; i < json.shelves.length; i++) {
+            let option = document.createElement("option");
+            option.value = json.shelves[i].id;
+            option.innerHTML = json.shelves[i].name;
+        }
+
+
+        // display controls
+        let user_controls = document.getElementById("book_controls");
+        user_controls.style.display = "block"; // TODO: add none by default
+    }
+}
+
+async function loadBook() {
     const response = await fetch("/api/items/" + item_id.value);
     const json = await response.json();
     console.log(json);
@@ -30,6 +50,11 @@ async function loadbook() {
     document.getElementById("book_genres").innerHTML      = json.book.genres;
     document.getElementById("book_coverPhoto").src        = json.book.coverPhoto;
 
+
+    // check if logged in / display book controls
+    displayBookControls();
+
+
     // TODO: display all reviews
     let reviews = document.getElementById("reviews");
 
@@ -39,4 +64,4 @@ async function loadbook() {
     
 }
 
-loadbook();
+loadBook();
