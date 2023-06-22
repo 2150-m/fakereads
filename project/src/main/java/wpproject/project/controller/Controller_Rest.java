@@ -355,40 +355,34 @@ public class Controller_Rest {
         return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
-    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+    @PostMapping("/api/myaccount/shelves/{shelfId}/removebook/{bookId}")
+    public ResponseEntity<String> userRemoveBook(@PathVariable(name = "shelfId") Long shelfId, @PathVariable(name = "bookId") Long bookId, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
 
-        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
-    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
-
-        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
-    }
-
-    private ResponseEntity<String> userRemoveBook(Account user, Book book, String shelfName) {
         boolean doesExist = false;
         boolean inPrimaryShelf = false;
+        Shelf targetShelf = new Shelf();
         for (Shelf s : user.getShelves()) {
-            if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
+            if (!s.getId().equals(shelfId)) { continue; }
 
             doesExist = true;
             if (s.isPrimary()) { inPrimaryShelf = true; }
+            targetShelf = s;
             break;
         }
-        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find " + shelfName.toUpperCase() + " in this user's shelf list."); }
+        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find that shelf  in this user's shelf list."); }
 
+        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookId), targetShelf, inPrimaryShelf);
+    }
+
+    private ResponseEntity<String> userRemoveBook(Account user, Book book, Shelf targetShelf, boolean inPrimaryShelf) {
         String msg = "";
         ShelfItem targetItem = serviceShelfItem.findByBook(book);
 
-        if (!(shelfName.equalsIgnoreCase("read") || shelfName.equalsIgnoreCase("currentlyreading") || shelfName.equalsIgnoreCase("wanttoread"))) {
+        if (!(targetShelf.getName().equalsIgnoreCase("read") || targetShelf.getName().equalsIgnoreCase("currentlyreading") || targetShelf.getName().equalsIgnoreCase("wanttoread"))) {
             for (Shelf s : user.getShelves().subList(3, user.getShelves().size())) {
-                if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
+                if (!s.getId().equals(targetShelf.getId())) { continue; }
 
                 Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
                 while (iterator.hasNext()) {
@@ -407,7 +401,7 @@ public class Controller_Rest {
         }
 
         for (Shelf s : user.getShelves().subList(0, 3)) {
-            if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
+            if (!s.getId().equals(targetShelf.getId())) { continue; }
 
             Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
             while (iterator.hasNext()) {
@@ -416,7 +410,7 @@ public class Controller_Rest {
                     msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
 
                     // Remove the associated review
-                    if (shelfName.equalsIgnoreCase("Read")) {
+                    if (targetShelf.getName().equalsIgnoreCase("Read")) {
                         msg += removeReview(user, i, book);
                     }
 
@@ -428,14 +422,12 @@ public class Controller_Rest {
             }
         }
 
-        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + shelfName.toUpperCase() + ".");
+        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + targetShelf.getName().toUpperCase() + ".");
     }
-
 
     //
     // TODO: ALL
     //
-
 
     @PutMapping("/api/myaccount/update")
     public ResponseEntity<String> updateUser(@RequestBody DTO_Post_AccountUpdate newInfo, HttpSession session) {
@@ -1080,6 +1072,22 @@ public class Controller_Rest {
         }
 
         return addToShelf(user, targetItem, targetShelf, review);
+    }
+
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
+    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+
+        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
+    }
+
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
+    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+
+        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
     }
 
 
