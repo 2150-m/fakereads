@@ -1,5 +1,6 @@
 package wpproject.project.controller;
 
+import com.sun.net.httpserver.HttpsServer;
 import jakarta.servlet.http.HttpSession;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,25 +45,12 @@ public class Controller_Rest {
     // TODO: rasporediti svaki kurac u odredjeni service
     // TODO: stavi da svi kurcevi returnaju response entity nema type
 
+    // TODO: replace ResponseEntity.ok ResponseEntity.badRequest
+
 
     // TODO: DONE REQ
 
-    @GetMapping("/api/items")
-    public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
-        List<ShelfItem> shelfItems = serviceShelfItem.findAll();
-
-        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem b : shelfItems) {
-            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
-            dtos.add(dto);
-        }
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/items/{id}")
-    public ResponseEntity<DTO_View_ShelfItem> getItem(@PathVariable(name = "id") Long id, HttpSession session) {
-        return new ResponseEntity<>(new DTO_View_ShelfItem(serviceShelfItem.findOne(id)), HttpStatus.OK);
-    }
+    // MY ACCOUNT
 
     @PostMapping("/api/login")
     public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
@@ -131,19 +119,108 @@ public class Controller_Rest {
         return new ResponseEntity<>("logged out: " + user.getUsername(), HttpStatus.OK);
     }
 
+    // USERS
+
+    @GetMapping("/api/users")
+    public ResponseEntity<List<DTO_View_AccountAsAnon>> getUsers(HttpSession session) {
+        List<Account> userList = serviceAccount.findAll();
+
+        List<DTO_View_AccountAsAnon> dtos = new ArrayList<>();
+        for (Account u : userList) {
+            DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(u);
+            dtos.add(dto);
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/users/username={username}")
+    public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
+        return serviceAccount.findOneByUsername(username);
+    }
+
+    @GetMapping("/api/users/{id}")
+    public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
+        return serviceAccount.findOne(id);
+    }
+
+    // AUTHORS
+
+    @GetMapping("/api/authors")
+    public ResponseEntity<List<DTO_View_AccountAuthor>> getAuthors(HttpSession session) {
+        List<AccountAuthor> userList = serviceAccountAuthor.findAllAuthors();
+
+        List<DTO_View_AccountAuthor> dtos = new ArrayList<>();
+        for (AccountAuthor u : userList) {
+            DTO_View_AccountAuthor dto = new DTO_View_AccountAuthor(new Account(u.getFirstName(), u.getLastName(), u.getUsername(), u.getMailAddress(), u.getPassword(), u.getDateOfBirth(), u.getMailAddress(), u.getDescription(), u.getAccountRole()), u);
+            dtos.add(dto);
+        }
+
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    // ITEMS
+
+    @GetMapping("/api/items")
+    public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
+        List<ShelfItem> shelfItems = serviceShelfItem.findAll();
+
+        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
+        for (ShelfItem b : shelfItems) {
+            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
+            dtos.add(dto);
+        }
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/items/{id}")
+    public ResponseEntity<DTO_View_ShelfItem> getItem(@PathVariable(name = "id") Long id, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_ShelfItem(serviceShelfItem.findOne(id)), HttpStatus.OK);
+    }
+
+    // GENRES
+
     @GetMapping("/api/genres")
     public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
         List<DTO_View_BookGenre> dtos = new ArrayList<>();
         for (BookGenre g : serviceBookGenre.findAll()) {
             dtos.add(new DTO_View_BookGenre(g));
         }
-
-        return ResponseEntity.ok(dtos);
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     @GetMapping("/api/genres/{id}")
     public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
-        return ResponseEntity.ok(new DTO_View_BookGenre(serviceBookGenre.findOne(id)));
+        return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/genres/name={name}")
+    public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "name") String name, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(name)), HttpStatus.OK);
+    }
+
+    // BOOKS
+
+    @GetMapping("/api/books")
+    public ResponseEntity<List<DTO_View_Book>> getBooks(HttpSession session) {
+        List<Book> books = serviceBook.findAll();
+
+        List<DTO_View_Book> dtos = new ArrayList<>();
+        for (Book b : books) {
+            DTO_View_Book dto = new DTO_View_Book(b);
+            dtos.add(dto);
+        }
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/books/{id}")
+    public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
+        return serviceBook.findOne(id);
+    }
+
+    @GetMapping("/api/books/title={title}")
+    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
+        return serviceBook.findOne(title);
     }
 
     //
@@ -769,51 +846,15 @@ public class Controller_Rest {
         return ResponseEntity.ok("Author info updated.");
     }
 
-    @GetMapping("/api/users")
-    public ResponseEntity<List<DTO_View_AccountAsAnon>> getUsers(HttpSession session) {
-        List<Account> userList = serviceAccount.findAll();
-
-        List<DTO_View_AccountAsAnon> dtos = new ArrayList<>();
-        for (Account u : userList) {
-            DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(u);
-            dtos.add(dto);
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/users/username={username}")
-    public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
-        return serviceAccount.findOneByUsername(username);
-    }
-
-    @GetMapping("/api/users/{id}")
-    public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceAccount.findOne(id);
-    }
-
-    @GetMapping("/api/authors")
-    public ResponseEntity<List<DTO_View_AccountAuthor>> getAuthors(HttpSession session) {
-        List<AccountAuthor> userList = serviceAccountAuthor.findAllAuthors();
-
-        List<DTO_View_AccountAuthor> dtos = new ArrayList<>();
-        for (AccountAuthor u : userList) {
-            DTO_View_AccountAuthor dto = new DTO_View_AccountAuthor(new Account(u.getFirstName(), u.getLastName(), u.getUsername(), u.getMailAddress(), u.getPassword(), u.getDateOfBirth(), u.getMailAddress(), u.getDescription(), u.getAccountRole()), u);
-            dtos.add(dto);
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
 
 
 
-    @GetMapping("/api/genres/name={name}")
-    public BookGenre getGenre(@PathVariable(name = "name") String name, HttpSession session) {
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        System.out.println(genre);
-        session.invalidate();
-        return serviceBookGenre.findOne(name);
-    }
+
+
+
+
+
+
 
     @GetMapping("/api/reviews")
     public ResponseEntity<List<DTO_View_BookReviewNoShelves>> getBookReviews(HttpSession session) {
@@ -915,27 +956,7 @@ public class Controller_Rest {
         return serviceShelfItem.findByBook(serviceBook.findOne(title));
     }
 
-    @GetMapping("/api/books")
-    public ResponseEntity<List<DTO_View_Book>> getBooks(HttpSession session) {
-        List<Book> books = serviceBook.findAll();
 
-        List<DTO_View_Book> dtos = new ArrayList<>();
-        for (Book b : books) {
-            DTO_View_Book dto = new DTO_View_Book(b);
-            dtos.add(dto);
-        }
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/books/{id}")
-    public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceBook.findOne(id);
-    }
-
-    @GetMapping("/api/books/title={title}")
-    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
-        return serviceBook.findOne(title);
-    }
 
 
     @GetMapping("/api/books/search={search}")
