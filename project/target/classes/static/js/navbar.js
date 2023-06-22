@@ -30,9 +30,9 @@ async function load_dynamic() {
     const response = await fetch("/api/myaccount");
 
     if (response.ok) {
-        const jsonData = await response.json();
-        span2.append(createLi("MY ACCOUNT", "/myaccount"));
-        span2.append(createLi("LOGOUT",    "/logout"));
+        const myaccountjson = await response.json();
+        span2.append(createLi("MY ACCOUNT",                              "/myaccount"));
+        span2.append(createLi("LOGOUT (" + myaccountjson.username + ")", "/logout"));
     }
     else {
         span2.append(createLi("LOGIN",    "/login"));

@@ -37,10 +37,10 @@ async function api_addbook(itemjson) {
 
 async function displayBookControls(itemjson) {
     const response = await fetch("/api/myaccount");
-    const json = await response.json();
-
+    
     if (response.ok) {
         
+        const json = await response.json();
 
         // populate select box
         let options = document.getElementById("shelf");
@@ -64,28 +64,28 @@ async function displayBookControls(itemjson) {
 
 async function loadBook() {
     const response = await fetch("/api/items/" + item_id);
-    const json = await response.json();
-    console.log(json);
+    const itemjson = await response.json();
+    console.log(itemjson);
 
-    document.getElementById("book_title").innerHTML       = json.book.title;
-    document.getElementById("book_releaseDate").innerHTML = json.book.releaseDate;
-    document.getElementById("book_description").innerHTML = json.book.description;
-    document.getElementById("book_numOfPages").innerHTML  = json.book.numOfPages;
-    document.getElementById("book_isbn").innerHTML        = json.book.isbn;
-    document.getElementById("book_rating").innerHTML      = json.book.rating;
-    document.getElementById("book_genres").innerHTML      = json.book.genres;
-    document.getElementById("book_coverPhoto").src        = json.book.coverPhoto;
+    document.getElementById("book_title").innerHTML       = itemjson.book.title;
+    document.getElementById("book_releaseDate").innerHTML = itemjson.book.releaseDate;
+    document.getElementById("book_description").innerHTML = itemjson.book.description;
+    document.getElementById("book_numOfPages").innerHTML  = itemjson.book.numOfPages;
+    document.getElementById("book_isbn").innerHTML        = itemjson.book.isbn;
+    document.getElementById("book_rating").innerHTML      = itemjson.book.rating;
+    document.getElementById("book_genres").innerHTML      = itemjson.book.genres;
+    document.getElementById("book_coverPhoto").src        = itemjson.book.coverPhoto;
 
 
     // check if logged in / display book controls
-    displayBookControls(json);
+    displayBookControls(itemjson);
 
 
     // TODO: display all reviews
     let reviews = document.getElementById("reviews");
 
-    for (let i = 0; i < json.bookReviews.length; i++) {
-        reviews.append(makeReview(json.bookReviews[i]));
+    for (let i = 0; i < itemjson.bookReviews.length; i++) {
+        reviews.append(makeReview(itemjson.bookReviews[i]));
     }
     
 }

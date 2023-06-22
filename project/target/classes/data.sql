@@ -13,10 +13,10 @@ INSERT INTO SHELF (name, is_primary) VALUES
 --INSERT INTO ACCOUNT_AUTHOR (id, account_activated) VALUES (2, false);
 
 INSERT INTO BOOK (title, cover_photo, release_date, description, num_of_pages, rating, isbn) VALUES
-('Harry Potter', '/covers/harry.png',      DATE '1986-10-02', 'harry potterz',               230, 0, 'ISBN-1234'),
-('LOTR',         '/covers/lotr.png',       DATE '1986-10-02', 'Ovo je definitivno knjiga 2', 100, 0, 'ISBN-3334'),
-('Knjiga 3',     '/covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 3', 300, 0, 'ISBN-4444'),
-('Knjiga 4',     '/covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 4', 500, 0, 'ISBN-5423');
+('Harry Potter', '/covers/harry.png',      DATE '1986-10-02', 'hari poter i filozofski kamen', 230, 0, 'ISBN-1234'),
+('LOTR',         '/covers/lotr.png',       DATE '1986-10-02', 'kralj prstenova lmao',          100, 0, 'ISBN-3334'),
+('Knjiga 3',     '/covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 3',   300, 0, 'ISBN-4444'),
+('Knjiga 4',     '/covers/404.png',        DATE '1986-10-02', 'Ovo je definitivno knjiga 4',   500, 0, 'ISBN-5423');
 
 
 INSERT INTO BOOK_GENRE (name) VALUES
@@ -32,8 +32,8 @@ INSERT INTO BOOKS_GENRES (book_genre_id, book_id) VALUES
 --INSERT INTO AUTHORS_BOOKS (account_author_id, book_id) VALUES
 --(2, 1);
 
---INSERT INTO BOOK_REVIEW (id, rating, text, review_date) VALUES
---(35, 8, 'tekst', DATE '2012-12-12');
+-- INSERT INTO BOOK_REVIEW (id, rating, text, review_date) VALUES
+-- (1, 8, 'veri good boookk', DATE '2012-12-12');
 
 INSERT INTO SHELF_ITEM (book_id) VALUES
 (1),

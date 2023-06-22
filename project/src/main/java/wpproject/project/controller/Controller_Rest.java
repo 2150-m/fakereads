@@ -359,6 +359,7 @@ public class Controller_Rest {
     public ResponseEntity<String> userRemoveBook(@PathVariable(name = "shelfId") Long shelfId, @PathVariable(name = "bookId") Long bookId, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+        user = serviceAccount.findOne(user.getId());
 
         boolean doesExist = false;
         boolean inPrimaryShelf = false;

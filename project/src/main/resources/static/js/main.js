@@ -7,47 +7,83 @@ function items_clear(div_items) {
     }
 }
 
-function items_populate_makeitem_row(clm1, clm2) {
+function items_populate_makeitem_row(clm1, clm2, link = "") {
     let tr = document.createElement("tr");
-    let th = document.createElement("th"); th.innerHTML = clm1; tr.append(th);
-    let td = document.createElement("td"); td.innerHTML = clm2; tr.append(td);
+    let th = document.createElement("th");
+    th.innerHTML = clm1;
+    tr.append(th);
+    let td = document.createElement("td");
+    
+
+    if (link != "") {
+        let a = document.createElement("a");
+        a.innerHTML = clm2;
+        a.className = "item_link";
+        a.href = link;
+        td.append(a);
+    }
+    else {
+        td.innerHTML = clm2;
+    }
+    tr.append(td);
     return tr
 }
 
-function items_populate_makeitem(item) {
+async function removeBookFromShelf(element, shelfId, bookId) {
+    const response = await fetch('/api/myaccount/shelves/' + shelfId + '/removebook/' + bookId, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+    });
 
-    if (item.book != null) { item = item.book; }
-    
-    let a = document.createElement("a");
-    a.className = "item_link";
-    a.href = "/items/" + item.id;
+    const text = await response.text();
+    console.log(text);
+    if (response.ok) { element.parentNode.removeChild(element); }
+}
 
+function items_populate_makeitem(item, shelfId = 0) {
+
+    let i = item;
+    if (i.book != null) { i = item.book; }
 
     let span = document.createElement("span");
     span.className = "item";
     
     let img = document.createElement("img");
-    img.src = item.coverPhoto;
+    img.src = i.coverPhoto;
     span.append(img);
 
     let table = document.createElement("table");
-    table.append(items_populate_makeitem_row("TITLE: ",        item.title));
-    table.append(items_populate_makeitem_row("RELEASE DATE: ", item.releaseDate));
-    table.append(items_populate_makeitem_row("DESCRIPTION: ",  item.description));
-    table.append(items_populate_makeitem_row("NUM OF PAGES: ", item.numOfPages));
-    table.append(items_populate_makeitem_row("ISBN: ",         item.isbn));
-    table.append(items_populate_makeitem_row("RATING: ",       item.rating));
-    table.append(items_populate_makeitem_row("GENRES: ",       item.genres));
-    span.append(table);
+
     
-    a.append(span);
-    return a;
+    table.append(items_populate_makeitem_row("TITLE: ",        i.title, "/items/" + item.id));
+    table.append(items_populate_makeitem_row("RELEASE DATE: ", i.releaseDate));
+    table.append(items_populate_makeitem_row("DESCRIPTION: ",  i.description));
+    table.append(items_populate_makeitem_row("NUM OF PAGES: ", i.numOfPages));
+    table.append(items_populate_makeitem_row("ISBN: ",         i.isbn));
+    table.append(items_populate_makeitem_row("RATING: ",       i.rating));
+    table.append(items_populate_makeitem_row("GENRES: ",       i.genres));
+    span.append(table);
+
+    if (shelfId != 0) {
+        let button = document.createElement("button");
+        button.className = "item_remove";
+        button.innerHTML = "-";
+        button.onclick = function() { removeBookFromShelf(span, shelfId, item.id) }
+
+        span.append(button);
+    }
+    
+    
+    return span;
 }
 
-function items_populate(div_items, items) {
+function items_populate(div_items, items, shelfId = 0) {
 
     for (let i = 0; i < items.length; i++) {
-        div_items.append(items_populate_makeitem(items[i]));
+        div_items.append(items_populate_makeitem(items[i], shelfId));
     }
 }
 
