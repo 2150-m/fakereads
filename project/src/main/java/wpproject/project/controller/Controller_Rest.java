@@ -278,52 +278,35 @@ public class Controller_Rest {
 
     // SHELVES -> ADD BOOK
 
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
-    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+    @PostMapping("/api/myaccount/shelves/{shelfId}/addbook/{bookId}")
+    public ResponseEntity<String> addToShelfIdId(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfId") Long shelfID, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null) {
             return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
         }
         user = serviceAccount.findOne(user.getId());
 
-        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookId));
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookID));
         if (targetItem == null) {
             return ResponseEntity.badRequest().body("Book with this ID does not exist.");
         }
 
-        return userAddBook(user, targetItem, shelfName, review);
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
-    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = serviceAccount.findOne(user.getId());
-
-        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findByIsbn(isbn));
-        if (targetItem == null) {
-            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
-        }
-
-        return userAddBook(user, targetItem, shelfName, review);
-    }
-
-    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_Post_BookReview review) {
         Shelf targetShelf = null;
         for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(shelfName)) {
+            if (s.getId().equals(shelfID)) {
                 targetShelf = s;
                 break;
             }
         }
 
         if (targetShelf == null) {
-            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
+            return ResponseEntity.badRequest().body("Shelf with id " + shelfID + " does not exist.");
         }
 
+        return addToShelf(user, targetItem, targetShelf, review);
+    }
+
+    private ResponseEntity<String> addToShelf(Account user, ShelfItem targetItem, Shelf targetShelf, DTO_Post_BookReview review) {
         // contains() and object.equals(otherobject) don't work
         for (ShelfItem item : targetShelf.getShelfItems()) {
             if (item.getId().equals(targetItem.getId())) {
@@ -1042,7 +1025,61 @@ public class Controller_Rest {
         return removeShelf(user, shelf);
     }
 
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
+    public ResponseEntity<String> addToShelfNameId(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
 
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookId));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        Shelf targetShelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = s;
+                break;
+            }
+        }
+
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
+        }
+
+        return addToShelf(user, targetItem, targetShelf, review);
+    }
+
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
+    public ResponseEntity<String> addToShelfNameIsbn(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
+
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findByIsbn(isbn));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        Shelf targetShelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = s;
+                break;
+            }
+        }
+
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
+        }
+
+        return addToShelf(user, targetItem, targetShelf, review);
+    }
 
 
 }
