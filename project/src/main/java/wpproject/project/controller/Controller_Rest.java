@@ -134,11 +134,6 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/users/username={username}")
-    public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
-        return serviceAccount.findOneByUsername(username);
-    }
-
     @GetMapping("/api/users/{id}")
     public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
         return serviceAccount.findOne(id);
@@ -195,10 +190,7 @@ public class Controller_Rest {
         return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(id)), HttpStatus.OK);
     }
 
-    @GetMapping("/api/genres/name={name}")
-    public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "name") String name, HttpSession session) {
-        return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(name)), HttpStatus.OK);
-    }
+
 
     // BOOKS
 
@@ -219,10 +211,7 @@ public class Controller_Rest {
         return serviceBook.findOne(id);
     }
 
-    @GetMapping("/api/books/title={title}")
-    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
-        return serviceBook.findOne(title);
-    }
+
 
     // SHELVES
 
@@ -267,22 +256,6 @@ public class Controller_Rest {
         return removeShelf(user, shelf);
     }
 
-    @PostMapping("/api/myaccount/shelves/remove/name={name}")
-    public ResponseEntity<String> removeShelfName(@PathVariable(name = "name") String name, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
-        user = serviceAccount.findOne(user.getId());
-
-        Shelf shelf = null;
-        for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(name)) {
-                shelf = s;
-                break;
-            }
-        }
-        return removeShelf(user, shelf);
-    }
-
     private ResponseEntity<String> removeShelf(Account user, Shelf shelf) {
         if (shelf == null) { return ResponseEntity.badRequest().body("shelf does not exist"); }
         if (shelf.isPrimary()) { return ResponseEntity.badRequest().body("primary shelves can not be removed"); }
@@ -301,6 +274,102 @@ public class Controller_Rest {
         } catch (Exception e) {
             return new ResponseEntity<>("Could not remove the shelf" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // SHELVES -> ADD BOOK
+
+
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
+    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
+
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookId));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        return userAddBook(user, targetItem, shelfName, review);
+    }
+
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
+    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
+
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findByIsbn(isbn));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        return userAddBook(user, targetItem, shelfName, review);
+    }
+
+    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_Post_BookReview review) {
+        Shelf targetShelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = s;
+                break;
+            }
+        }
+
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
+        }
+
+        // contains() and object.equals(otherobject) don't work
+        for (ShelfItem item : targetShelf.getShelfItems()) {
+            if (item.getId().equals(targetItem.getId())) {
+                return ResponseEntity.badRequest().body("This book is already on " + targetShelf.getName().toUpperCase() + ".");
+            }
+        }
+
+        if (targetShelf.isPrimary()) {
+            // Remove the book from the other primary shelf (if it's on it)
+            outer:
+            for (Shelf shelf : user.getShelves().subList(0, 3)) {
+                if (shelf.getId().equals(targetShelf.getId())) { continue; }
+
+                Iterator<ShelfItem> iterator = shelf.getShelfItems().iterator();
+                while (iterator.hasNext()) {
+                    if (iterator.next().getId().equals(targetItem.getId())) {
+                        iterator.remove();
+                        break outer;
+                    }
+                }
+            }
+
+            targetShelf.getShelfItems().add(targetItem);
+            serviceShelf.save(targetShelf);
+
+            String msg = targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").";
+
+            if (targetShelf.getName().equalsIgnoreCase("Read") && review != null) {
+                msg += addReview(user, targetItem, review);
+            }
+
+            return ResponseEntity.ok().body(msg);
+        }
+
+        // Check if the item is in a primary shelf
+        for (Shelf shelf : user.getShelves().subList(0, 3)) {
+            for (ShelfItem item : shelf.getShelfItems()) {
+                if (item.getId().equals(targetItem.getId())) {
+                    targetShelf.getShelfItems().add(targetItem);
+                    serviceShelf.save(targetShelf);
+                    return ResponseEntity.ok().body(targetItem.getBook().getTitle().toUpperCase() + "(" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").");
+                }
+            }
+        }
+
+        return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
     }
 
     //
@@ -406,98 +475,6 @@ public class Controller_Rest {
 
 
 
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
-    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = serviceAccount.findOne(user.getId());
-
-        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookId));
-        if (targetItem == null) {
-            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
-        }
-
-        return userAddBook(user, targetItem, shelfName, review);
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
-    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = serviceAccount.findOne(user.getId());
-
-        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findByIsbn(isbn));
-        if (targetItem == null) {
-            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
-        }
-
-        return userAddBook(user, targetItem, shelfName, review);
-    }
-
-    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_Post_BookReview review) {
-        Shelf targetShelf = null;
-        for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(shelfName)) {
-                targetShelf = s;
-                break;
-            }
-        }
-
-        if (targetShelf == null) {
-            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
-        }
-
-        // contains() and object.equals(otherobject) don't work
-        for (ShelfItem item : targetShelf.getShelfItems()) {
-            if (item.getId().equals(targetItem.getId())) {
-                return ResponseEntity.badRequest().body("This book is already on " + targetShelf.getName().toUpperCase() + ".");
-            }
-        }
-
-        if (targetShelf.isPrimary()) {
-            // Remove the book from the other primary shelf (if it's on it)
-            outer:
-            for (Shelf shelf : user.getShelves().subList(0, 3)) {
-                if (shelf.getId().equals(targetShelf.getId())) { continue; }
-
-                Iterator<ShelfItem> iterator = shelf.getShelfItems().iterator();
-                while (iterator.hasNext()) {
-                    if (iterator.next().getId().equals(targetItem.getId())) {
-                        iterator.remove();
-                        break outer;
-                    }
-                }
-            }
-
-            targetShelf.getShelfItems().add(targetItem);
-            serviceShelf.save(targetShelf);
-
-            String msg = targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").";
-
-            if (targetShelf.getName().equalsIgnoreCase("Read") && review != null) {
-                msg += addReview(user, targetItem, review);
-            }
-
-            return ResponseEntity.ok().body(msg);
-        }
-
-        // Check if the item is in a primary shelf
-        for (Shelf shelf : user.getShelves().subList(0, 3)) {
-            for (ShelfItem item : shelf.getShelfItems()) {
-                if (item.getId().equals(targetItem.getId())) {
-                    targetShelf.getShelfItems().add(targetItem);
-                    serviceShelf.save(targetShelf);
-                    return ResponseEntity.ok().body(targetItem.getBook().getTitle().toUpperCase() + "(" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").");
-                }
-            }
-        }
-
-        return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
-    }
 
     private String addReview(Account user, ShelfItem item, DTO_Post_BookReview review) {
         BookReview newReview = new BookReview(review.getRating(), review.getText(), LocalDate.now(), user);
@@ -1022,6 +999,49 @@ public class Controller_Rest {
             return null;
         }
     }
+
+
+
+
+
+
+    // USELESS FOR NOW
+
+    @GetMapping("/api/users/username={username}")
+    public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
+        return serviceAccount.findOneByUsername(username);
+    }
+
+    @GetMapping("/api/genres/name={name}")
+    public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "name") String name, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(name)), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/books/title={title}")
+    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
+        return serviceBook.findOne(title);
+    }
+
+
+    // USELESS
+
+
+    @PostMapping("/api/myaccount/shelves/remove/name={name}")
+    public ResponseEntity<String> removeShelfName(@PathVariable(name = "name") String name, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+        user = serviceAccount.findOne(user.getId());
+
+        Shelf shelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(name)) {
+                shelf = s;
+                break;
+            }
+        }
+        return removeShelf(user, shelf);
+    }
+
 
 
 

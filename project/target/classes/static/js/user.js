@@ -80,10 +80,12 @@ function displaySheleves(json) {
         let shelf = document.createElement("div");
         shelf.className = "shelf";
 
-        let btn_remove  = document.createElement("button");
-        btn_remove.innerHTML = "-";
-        btn_remove.onclick = function() { removeShelf(json.shelves[i].id, shelf) }
-        shelf.append(btn_remove);
+        if (!json.shelves[i].primary) {
+            let btn_remove  = document.createElement("button");
+            btn_remove.innerHTML = "-";
+            btn_remove.onclick = function() { removeShelf(json.shelves[i].id, shelf) }
+            shelf.append(btn_remove);
+        }
 
         let p = document.createElement("p");
         p.innerHTML = json.shelves[i].name;
