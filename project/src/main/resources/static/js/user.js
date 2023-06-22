@@ -118,17 +118,20 @@ function displayShelves(json, loggedIn = false) {
         let shelf = document.createElement("div");
         shelf.className = "shelf";
 
+        // shelf
+        let p = document.createElement("h2");
+        p.innerHTML = json.shelves[i].name;
+        shelf.append(p);
+
+        // remove button
         if (!json.shelves[i].primary) {
             let btn_remove  = document.createElement("button");
-            btn_remove.innerHTML = "-";
+            btn_remove.innerHTML = "[x]";
             btn_remove.onclick = function() { removeShelf(json.shelves[i].id, shelf) }
             shelf.append(btn_remove);
         }
 
-        let p = document.createElement("p");
-        p.innerHTML = json.shelves[i].name;
-        shelf.append(p);
-
+        // items on shelf
         if (loggedIn) { items_populate(shelf, json.shelves[i].shelfItems, json.shelves[i].id); }
         else          { items_populate(shelf, json.shelves[i].shelfItems); }
         shelves.append(shelf);

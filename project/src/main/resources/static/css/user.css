@@ -38,6 +38,18 @@
     margin: 10px auto;
 }
 
-#shelves {
-    
+.shelf {
+    margin: 50px;
+}
+
+.shelf h2 {
+    display: inline;
+}
+
+.shelf button {
+    display: inline;
+    border: none;
+    color: red;
+    font-size: larger;
+    margin: 0 auto;
 }
