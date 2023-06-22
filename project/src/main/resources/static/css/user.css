@@ -42,14 +42,22 @@
     margin: 50px;
 }
 
-.shelf h2 {
+.shelf_head {
+    margin-bottom: 20px;
+}
+
+.shelf_head h2 {
     display: inline;
 }
 
-.shelf button {
+.shelf_remove {
     display: inline;
+    font-size: xx-large;
     border: none;
-    color: red;
-    font-size: larger;
+    color: white;
     margin: 0 auto;
+}
+
+.item_remove {
+    color: red;
 }

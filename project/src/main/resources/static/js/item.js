@@ -47,7 +47,7 @@ async function addbook_wReview(shelfId, bookId) {
     console.log(text);
     document.getElementById("shelf_status").innerHTML = text;
 
-    document.getElementById("form_postReview_popup").style.display = "block";
+    document.getElementById("form_postReview_popup").style.display = "none";
 }
 
 async function addbook(shelfId, bookId) {

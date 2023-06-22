@@ -1,28 +1,54 @@
 #book {
-    display: block;
     margin: 10px auto;
-    padding: 3px;
-    background-color: #202020;
-    width: 800px;
+    display: block;
+    width: fit-content;
+    border: 1px solid;
+    border-radius: 40px;
+    background: #151515;
 }
 
 #book table {
     display: inline-block;
-    padding: 3px;
-    background-color: #202020;
-    margin: 0 auto;
+    background: #101010;
+    border: 3px dotted;
+    padding: 10px;
+    margin: 30px;
 }
 
 #book img  {
     display: inline-block;
     height: 300px;
-    width: 300px;
+    width: 200px;
     object-fit: contain;
     background-color: #252525;
-    margin: 3px;
+    margin: 10px;
+    margin-left: 40px;
+    padding: 10px;
+    border: 2px solid white;
 }
 
 #book table th, #book table td {
     font-size: medium;
     color: white;
+}
+
+#book_controls {
+    border: 1px solid white;
+    width: 500px;
+    display: block;
+    margin: 0 auto;
+}
+
+#shelf {
+    margin: 10px;
+}
+
+#shelf_add {
+    background-color: transparent;
+    
+}
+
+#shelf_status {
+    text-align: center;
+    margin: 0;
 }
