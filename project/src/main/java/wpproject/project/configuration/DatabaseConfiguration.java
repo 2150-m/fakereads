@@ -93,8 +93,8 @@ public class DatabaseConfiguration {
         );
 
         CreateAccount(
+                "Scared",
                 "Mike",
-                "From Scranton Witch Project",
                 "scranton",
                 "scranton@gmail.com",
                 "123",
