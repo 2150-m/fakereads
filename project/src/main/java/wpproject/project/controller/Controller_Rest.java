@@ -469,7 +469,6 @@ public class Controller_Rest {
         }
     }
 
-
     @GetMapping("/api/admin/activations")
     public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
         if (!isAdmin(session)) { return null; }
@@ -528,41 +527,60 @@ public class Controller_Rest {
 
         return ResponseEntity.ok().body("rejected activation request");
     }
-
-
-    //
-    // TODO: ALL
-    //
+    
+    // MY ACCOUNT -> UPDATE
 
     @PutMapping("/api/myaccount/update")
     public ResponseEntity<String> updateUser(@RequestBody DTO_Post_AccountUpdate newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+
         user = serviceAccount.findOne(user.getId());
 
-        if (!newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(user.getFirstName()))                user.setFirstName(newInfo.getFirstName());
-        if (!newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(user.getLastName()))                   user.setLastName(newInfo.getLastName());
-        if (!newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(user.getUsername()))                   user.setUsername(newInfo.getUsername());
-        if (newInfo.getDateOfBirth() != null && !newInfo.getDateOfBirth().equals(user.getDateOfBirth()))             user.setDateOfBirth(newInfo.getDateOfBirth());
-        if (!newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(user.getDescription()))          user.setDescription(newInfo.getDescription());
-        if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(user.getProfilePicture())) user.setProfilePicture(newInfo.getProfilePicture());
+        boolean failed = false;
 
-        serviceAccount.save(user);
-        return ResponseEntity.ok("User info updated.");
+        if (newInfo.getFirstName() != null      && !newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(user.getFirstName()))                user.setFirstName(newInfo.getFirstName());
+        if (newInfo.getLastName() != null       && !newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(user.getLastName()))                   user.setLastName(newInfo.getLastName());
+        if (newInfo.getUsername() != null       && !newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(user.getUsername()))                   user.setUsername(newInfo.getUsername());
+        if (newInfo.getDateOfBirth() != null    && !newInfo.getDateOfBirth().equals(user.getDateOfBirth()))                                                 user.setDateOfBirth(newInfo.getDateOfBirth());
+        if (newInfo.getDescription() != null    && !newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(user.getDescription()))          user.setDescription(newInfo.getDescription());
+        if (newInfo.getProfilePicture() != null && !newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(user.getProfilePicture())) user.setProfilePicture(newInfo.getProfilePicture());
+
+        // update mail
+        if (newInfo.getMailAddress() != null && !newInfo.getMailAddress().isEmpty()) {
+
+            if (newInfo.getPassword().equals(user.getPassword())) { // current password must match
+                user.setMailAddress(newInfo.getMailAddress());
+            }
+            else {
+                failed = true;
+            }
+        }
+
+        // update password
+        if (newInfo.getNewPassword() != null && !newInfo.getNewPassword().isEmpty()) {
+
+            if (newInfo.getPassword().equals(user.getPassword())) { // current password must match
+                user.setPassword(newInfo.getNewPassword());
+            }
+            else {
+                failed = true;
+            }
+        }
+
+
+        if (failed) {
+            return new ResponseEntity<>("must enter current password to update mail/password", HttpStatus.FORBIDDEN);
+        }
+        else {
+            serviceAccount.save(user);
+            return new ResponseEntity<>("account updated", HttpStatus.OK);
+        }
     }
 
-    @PutMapping("/api/myaccount/update/passormail")
-    public ResponseEntity<String> updatePassword(@RequestBody DTO_Post_AccountUpdatePass newInfo, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = serviceAccount.findOne(user.getId());
-
-        if (!newInfo.getMail().isEmpty()     && !newInfo.getMail().equals(user.getMailAddress()))  user.setMailAddress(newInfo.getMail());
-        if (!newInfo.getPassword().isEmpty() && !newInfo.getPassword().equals(user.getPassword())) user.setPassword(newInfo.getPassword());
-
-        serviceAccount.save(user);
-        return ResponseEntity.ok("User info updated.");
-    }
+    //
+    // TODO: ALL
+    //
 
 
     @PutMapping("/api/myaccount/update/review/book_id={id}")

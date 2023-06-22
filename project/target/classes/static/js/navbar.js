@@ -37,6 +37,7 @@ async function load_dynamic() {
         }
 
         span2.append(createLi("MY ACCOUNT",                              "/myaccount"));
+        span2.append(createLi("UPDATE ACCOUNT",                          "/update"));
         span2.append(createLi("LOGOUT (" + myaccountjson.username + ")", "/logout"));
         
     }

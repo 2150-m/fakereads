@@ -111,4 +111,12 @@ public class Controller_Basic {
 
         return "activations.html";
     }
+
+    @GetMapping("/update")
+    public String update(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return "error.html"; }
+
+        return "update.html";
+    }
 }
