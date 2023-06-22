@@ -485,7 +485,7 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @PostMapping("/api/admin/activation/{id}/accept")
+    @PostMapping("/api/admin/activations/{id}/accept")
     public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
@@ -507,7 +507,7 @@ public class Controller_Rest {
         return ResponseEntity.ok().body("accepted activation request");
     }
 
-    @PostMapping("/api/admin/activation/{id}/reject")
+    @PostMapping("/api/admin/activations/{id}/reject")
     public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
         if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
 
