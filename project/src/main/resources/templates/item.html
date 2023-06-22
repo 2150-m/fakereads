@@ -10,9 +10,21 @@
         <link rel="stylesheet" href="/css/item.css">
     </head>
     <body>
-        <div id="navbar"></div>
 
         <input type="hidden" id="item_id" th:value="${item_id}"/>
+
+
+        <div id="navbar"></div>
+
+        <div class="popup" id="form_postReview_popup" style="display: none;">
+            <div class="form" id="form_postReview">
+                <table>
+                    <tr><th>RATING:</th><td><input id="form_postReview_rating" type="range" min="1" max="10" value="10"></td></tr>
+                    <tr><th>TEXT:</th><td><input   id="form_postReview_text" type="text" class="txtfld" placeholder="message"/></td></tr>
+                </table>
+                <button id="form_postReview_btn">[POST REVIEW AND ADD TO READ]</button>
+            </div>
+        </div>
 
         <div id="book">
             <img id="book_coverPhoto" src="/covers/404.png">

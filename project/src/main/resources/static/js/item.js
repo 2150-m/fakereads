@@ -16,11 +16,35 @@ function makeReview(json) {
     return table;
 }
 
-async function api_addbook(itemjson) {
 
-    var selectedShelfId = document.getElementById("shelf").value;
 
-    const response = await fetch('/api/myaccount/shelves/' + selectedShelfId + '/addbook/' + itemjson.book.id, {
+async function addbook_wReview(shelfId, bookId) {
+
+    let v_rating = document.getElementById("form_postReview_rating").value;
+    let v_text = document.getElementById("form_postReview_text").value;
+
+    const response = await fetch('/api/myaccount/shelves/' + shelfId + '/addbook/' + bookId, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            rating: v_rating,
+            text: v_text,
+        })
+    });
+
+    const text = await response.text();
+    console.log(text);
+    document.getElementById("shelf_status").innerHTML = text;
+
+    document.getElementById("form_postReview_popup").style.display = "block";
+}
+
+async function addbook(shelfId, bookId) {
+
+    const response = await fetch('/api/myaccount/shelves/' + shelfId + '/addbook/' + bookId, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -28,14 +52,33 @@ async function api_addbook(itemjson) {
         }
     });
 
-
     const text = await response.text();
-
+    console.log(text);
     document.getElementById("shelf_status").innerHTML = text;
-
 }
 
-async function displayBookControls(itemjson) {
+async function addToShelf(bookId) {
+
+    let sel = document.getElementById("shelf");
+    var selectedShelfName = sel.options[sel.selectedIndex].name;
+    let selectedShelfId = sel.value;
+
+    if (selectedShelfName.toUpperCase() == "READ") {
+        document.getElementById("form_postReview_popup").style.display = "block";
+
+
+        let btn_postReview = document.getElementById("form_postReview_btn");
+        btn_postReview.onclick = function() {
+            addbook_wReview(selectedShelfId, bookId);
+        }
+    }
+    else {
+        addbook(selectedShelfId, bookId);
+    }
+}
+
+
+async function displayBookControls(bookId) {
     const response = await fetch("/api/myaccount");
     
     if (response.ok) {
@@ -47,18 +90,18 @@ async function displayBookControls(itemjson) {
         for (let i = 0; i < json.shelves.length; i++) {
             let option = document.createElement("option");
             option.value = json.shelves[i].id;
+            option.name = json.shelves[i].name;
             option.innerHTML = json.shelves[i].name;
             options.append(option);
         }
 
         // add to shelf button
         let btn = document.getElementById("shelf_add");
-        btn.onclick = function() { api_addbook(itemjson); }
+        btn.onclick = function() { addToShelf(bookId); }
 
 
         // display controls
-        let user_controls = document.getElementById("book_controls");
-        user_controls.style.display = "block"; // TODO: add none by default
+        document.getElementById("book_controls").style.display = "block"; // TODO: add none by default
     }
 }
 
@@ -78,7 +121,7 @@ async function loadBook() {
 
 
     // check if logged in / display book controls
-    displayBookControls(itemjson);
+    displayBookControls(itemjson.book.id);
 
 
     // TODO: display all reviews
