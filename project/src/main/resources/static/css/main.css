@@ -58,3 +58,11 @@ body {
     font-size: larger;
     border-color: transparent;
 }
+
+h1 {
+    text-align: center;
+    text-decoration: underline;
+    border-bottom: 3px white dotted;
+    margin: 10px auto;
+    width: 50%;
+}

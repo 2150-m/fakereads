@@ -8,13 +8,18 @@
 
         <title>Log In</title>
         <link rel="stylesheet" href="/css/login.css">
+        <link rel="stylesheet" href="/css/form.css">
     </head>
     <body>
         <div id="navbar"></div>
 
-        <div id="form_login">
-            <input type="text"     id="txt_username" placeholder="username / email"/>
-            <input type="password" id="txt_password" placeholder="password"/>
+        <h1>LOGIN</h1>
+
+        <div class="form" id="form_login">
+            <table>
+                <tr><th>USERNAME / EMAIL:</th><td><input type="text" id="txt_username" placeholder="username / email"/></td></tr>
+                <tr><th>PASSWORD:</th><td><input         type="text" id="txt_password" placeholder="password"/></td></tr>
+            </table>
             <button id="btn_login">LOG IN</button>
             <p id="p_status">...</p>
         </div>

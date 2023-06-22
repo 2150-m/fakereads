@@ -1,19 +1,27 @@
 let item_id = document.getElementById("item_id").value;
 
-function makeTableRow(clm1, clm2) {
-    let tr = document.createElement("tr");
-    let th = document.createElement("th"); th.innerHTML = clm1; tr.append(th);
-    let td = document.createElement("td"); td.innerHTML = clm2; tr.append(td);
-    return tr
+function td(text) {
+    let td = document.createElement("td");
+    td.innerHTML = text;
+    return td;
+}
+
+function td_a(json) {
+    let td = document.createElement("td");
+    let a = document.createElement("a");
+    a.innerHTML = json.accountId;
+    a.href = "/users/" + json.accountId;
+    td.append(a);
+    return td;
 }
 
 function makeReview(json) {
-    let table = document.createElement("table");
-    table.append(makeTableRow("RATING",  json.rating));
-    table.append(makeTableRow("TEXT",    json.text));
-    table.append(makeTableRow("DATE",    json.reviewDate));
-    table.append(makeTableRow("ACCOUNT", json.accountId));
-    return table;
+    let tr = document.createElement("tr");
+    tr.append(td(json.rating));
+    tr.append(td(json.text));
+    tr.append(td(json.reviewDate));
+    tr.append(td_a(json));
+    return tr;
 }
 
 
