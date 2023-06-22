@@ -1074,21 +1074,21 @@ public class Controller_Rest {
         return addToShelf(user, targetItem, targetShelf, review);
     }
 
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
-    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
-
-        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
-    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
-
-        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
-    }
+//    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
+//    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+//        Account user = (Account) session.getAttribute("user");
+//        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+//
+//        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
+//    }
+//
+//    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
+//    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+//        Account user = (Account) session.getAttribute("user");
+//        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+//
+//        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
+//    }
 
 
 }

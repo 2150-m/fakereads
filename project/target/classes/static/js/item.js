@@ -1,4 +1,4 @@
-let item_id = document.getElementById("item_id");
+let item_id = document.getElementById("item_id").value;
 
 function makeTableRow(clm1, clm2) {
     let tr = document.createElement("tr");
@@ -16,8 +16,54 @@ function makeReview(json) {
     return table;
 }
 
-async function loadbook() {
-    const response = await fetch("/api/items/" + item_id.value);
+async function api_addbook(itemjson) {
+
+    var selectedShelfId = document.getElementById("shelf").value;
+
+    const response = await fetch('/api/myaccount/shelves/' + selectedShelfId + '/addbook/' + itemjson.book.id, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+    });
+
+
+    const text = await response.text();
+
+    document.getElementById("shelf_status").innerHTML = text;
+
+}
+
+async function displayBookControls(itemjson) {
+    const response = await fetch("/api/myaccount");
+    const json = await response.json();
+
+    if (response.ok) {
+        
+
+        // populate select box
+        let options = document.getElementById("shelf");
+        for (let i = 0; i < json.shelves.length; i++) {
+            let option = document.createElement("option");
+            option.value = json.shelves[i].id;
+            option.innerHTML = json.shelves[i].name;
+            options.append(option);
+        }
+
+        // add to shelf button
+        let btn = document.getElementById("shelf_add");
+        btn.onclick = function() { api_addbook(itemjson); }
+
+
+        // display controls
+        let user_controls = document.getElementById("book_controls");
+        user_controls.style.display = "block"; // TODO: add none by default
+    }
+}
+
+async function loadBook() {
+    const response = await fetch("/api/items/" + item_id);
     const json = await response.json();
     console.log(json);
 
@@ -30,6 +76,11 @@ async function loadbook() {
     document.getElementById("book_genres").innerHTML      = json.book.genres;
     document.getElementById("book_coverPhoto").src        = json.book.coverPhoto;
 
+
+    // check if logged in / display book controls
+    displayBookControls(json);
+
+
     // TODO: display all reviews
     let reviews = document.getElementById("reviews");
 
@@ -39,4 +90,4 @@ async function loadbook() {
     
 }
 
-loadbook();
+loadBook();

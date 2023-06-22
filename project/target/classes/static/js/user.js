@@ -74,7 +74,7 @@ async function removeShelf(id, div) {
     if (response.ok) {  div.parentNode.removeChild(div); }
 }
 
-function displaySheleves(json) {
+function displayShelves(json) {
     let shelves = document.getElementById("shelves");
     for (let i = 0; i < json.shelves.length; i++) {
         let shelf = document.createElement("div");
@@ -107,8 +107,8 @@ async function loadUser() {
     // check if logged in / display controls for user
     displayUserControls();
 
-    // display shelf for user
-    displaySheleves(json);
+    // display shelves for user
+    displayShelves(json);
 }
 
 loadUser();
