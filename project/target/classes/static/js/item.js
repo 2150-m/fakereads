@@ -7,40 +7,29 @@ function makeTableRow(clm1, clm2) {
     return tr
 }
 
-
 function makeReview(json) {
-
     let table = document.createElement("table");
     table.append(makeTableRow("RATING",  json.rating));
     table.append(makeTableRow("TEXT",    json.text));
     table.append(makeTableRow("DATE",    json.reviewDate));
     table.append(makeTableRow("ACCOUNT", json.accountId));
-
     return table;
 }
 
-async function getBookAndReviews() {
+async function loadbook() {
     const response = await fetch("/api/items/" + item_id.value);
     const json = await response.json();
     console.log(json);
 
-    let book = document.getElementById("book");
+    document.getElementById("book_title").innerHTML       = json.book.title;
+    document.getElementById("book_releaseDate").innerHTML = json.book.releaseDate;
+    document.getElementById("book_description").innerHTML = json.book.description;
+    document.getElementById("book_numOfPages").innerHTML  = json.book.numOfPages;
+    document.getElementById("book_isbn").innerHTML        = json.book.isbn;
+    document.getElementById("book_rating").innerHTML      = json.book.rating;
+    document.getElementById("book_genres").innerHTML      = json.book.genres;
+    document.getElementById("book_coverPhoto").src        = json.book.coverPhoto;
 
-
-    let img = document.createElement("img");
-    img.src = json.book.coverPhoto;
-    book.append(img);
-
-    let table = document.createElement("table");
-    table.append(makeTableRow("TITLE: ",        json.book.title));
-    table.append(makeTableRow("RELEASE DATE: ", json.book.releaseDate));
-    table.append(makeTableRow("DESCRIPTION: ",  json.book.description));
-    table.append(makeTableRow("NUM OF PAGES: ", json.book.numOfPages));
-    table.append(makeTableRow("ISBN: ",         json.book.isbn));
-    table.append(makeTableRow("RATING: ",       json.book.rating));
-    table.append(makeTableRow("GENRES: ",       json.book.genres));
-    book.append(table);
-    
     // TODO: display all reviews
     let reviews = document.getElementById("reviews");
 
@@ -50,4 +39,4 @@ async function getBookAndReviews() {
     
 }
 
-getBookAndReviews();
+loadbook();

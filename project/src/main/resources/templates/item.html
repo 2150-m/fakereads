@@ -14,7 +14,26 @@
 
         <input type="hidden" id="item_id" th:value="${item_id}"/>
 
-        <div id="book"></div>
+        <div id="book">
+            <img id="book_coverPhoto" src="/covers/404.png">
+            <table>
+                <tr><th>TITLE:</th><td        id="book_title">...</td></tr>
+                <tr><th>RELEASE DATE:</th><td id="book_releaseDate">...</td></tr>
+                <tr><th>DESCRIPTION:</th><td  id="book_description">...</td></tr>
+                <tr><th>NUM OF PAGES:</th><td id="book_numOfPages">...</td></tr>
+                <tr><th>ISBN:</th><td         id="book_isbn">...</td></tr>
+                <tr><th>RATING:</th><td       id="book_rating">...</td></tr>
+                <tr><th>GENRES:</th><td       id="book_genres">...</td></tr>
+            </table>
+        </div>
+
+        <div id="book_controls">
+            <select name="shelves" id="select_shelf">
+                <option value="volvo">Volvo</option>
+            </select>
+            <button></button>
+        </div>
+
         <div id="reviews"></div>
 
 
