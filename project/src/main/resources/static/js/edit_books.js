@@ -88,7 +88,7 @@ function populateTable(item, idNum) {
     table.append(createItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
     table.append(createItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
     table.append(createItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
-    table.append(createItem("GENRES: ",       i.genres, idNum, "genres", "text"));
+    table.append(createItem("GENRES: ",       i.bookGenres, idNum, "genres", "text"));
     span.append(table);
 
     let button = document.createElement("button");
