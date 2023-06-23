@@ -527,7 +527,7 @@ public class Controller_Rest {
 
         return ResponseEntity.ok().body("rejected activation request");
     }
-    
+
     // MY ACCOUNT -> UPDATE
 
     @PutMapping("/api/myaccount/update")
@@ -693,13 +693,17 @@ public class Controller_Rest {
     }
 
     @PostMapping("/api/admin/addauthor")
-    public AccountAuthor admin_addAuthor(@RequestBody DTO_Post_AccountAuthor DTOAccountAuthorNew, HttpSession session){
+    public ResponseEntity<?> admin_addAuthor(@RequestBody DTO_Post_AccountAuthor DTOAccountAuthorNew, HttpSession session){
         if (!isAdmin(session)) { return null; }
 
         try {
             // check if exists by mail/username
-            if (serviceAccount.findOneByMailAddress(DTOAccountAuthorNew.getMailAddress()) != null) { System.err.println("[x] can't add new user (author), mail exists:"     + DTOAccountAuthorNew.getMailAddress()); return null; }
-            if (serviceAccount.findOneByUsername(DTOAccountAuthorNew.getUsername()) != null)       { System.err.println("[x] can't add new user (author), username exists:" + DTOAccountAuthorNew.getUsername());    return null; }
+            if (serviceAccount.findOneByMailAddress(DTOAccountAuthorNew.getMailAddress()) != null) {
+                return new ResponseEntity<>("[x] can't add new user (author), mail exists:" + DTOAccountAuthorNew.getMailAddress(), HttpStatus.BAD_REQUEST);
+            }
+            if (serviceAccount.findOneByUsername(DTOAccountAuthorNew.getUsername()) != null) {
+                return new ResponseEntity<>("[x] can't add new user (author), username exists:" + DTOAccountAuthorNew.getUsername(), HttpStatus.BAD_REQUEST);
+            }
 
             AccountAuthor newAuthor = new AccountAuthor(new Account(
                     DTOAccountAuthorNew.getFirstName(),
@@ -721,10 +725,9 @@ public class Controller_Rest {
 
 //            serviceAccount.save(newAuthor);
             serviceAccountAuthor.save(newAuthor);
-            return newAuthor;
+            return new ResponseEntity<>(newAuthor, HttpStatus.OK);
         } catch (Exception e) {
-            System.err.println("[x] failed to add new user (author): " + e.getMessage());
-            return null;
+            return new ResponseEntity<>("[x] failed to add new user (author): " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
