@@ -112,12 +112,12 @@ public class Controller_Basic {
         return "activations.html";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/manage")
     public String add(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
 
-        return "add.html";
+        return "manage.html";
     }
 
     @GetMapping("/add/books")

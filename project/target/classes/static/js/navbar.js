@@ -14,7 +14,7 @@ function createLi(text, link) {
 }
 
 span1.append(createLi("HOME",    "/home"));
-span1.append(createLi("ITEMS",   "/items"));
+span1.append(createLi("BOOKS",   "/items"));
 span1.append(createLi("USERS",   "/users"));
 span1.append(createLi("AUTHORS", "/authors"));
 span1.append(createLi("GENRES",  "/genres"));
@@ -34,7 +34,7 @@ async function load_dynamic() {
         
         if (myaccountjson.accountRole == "ADMINISTRATOR") {
             span2.append(createLi("ACTIVATIONS", "/activations"));
-            span2.append(createLi("ADD", "/add"));
+            span2.append(createLi("MANAGE", "/manage"));
         }
 
         span2.append(createLi("MY ACCOUNT",                              "/myaccount"));
