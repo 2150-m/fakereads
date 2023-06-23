@@ -4,6 +4,7 @@ let iReleaseDate = document.getElementById("release_date");
 let iISBN = document.getElementById("isbn");
 let iNumOfPages = document.getElementById("num_of_pages");
 let iPhoto = document.getElementById("photo");
+let iGenres = document.getElementById("genres_select");
 let btnAdd = document.getElementById("btn_add");
 let p_status = document.getElementById("p_status");
 
@@ -26,7 +27,7 @@ async function fetchGenres() {
     }
 }
 
-async function apiAdd(vTitle, vDescription, vReleaseDate, vISBN, vNumOfPages, vPhoto) {
+async function apiAdd(vTitle, vDescription, vReleaseDate, vISBN, vNumOfPages, vPhoto, vGenres) {
     const response = await fetch('/api/admin/additem', {
         method: 'POST',
         headers: {
@@ -39,7 +40,8 @@ async function apiAdd(vTitle, vDescription, vReleaseDate, vISBN, vNumOfPages, vP
             releaseDate: vReleaseDate,
             isbn: vISBN,
             numOfPages: vNumOfPages,
-            coverPhoto: vPhoto
+            coverPhoto: vPhoto,
+            bookGenres: vGenres
         })
     });
 
@@ -56,7 +58,7 @@ function add() {
     // }
     let photo = "/covers/404.png";
 
-    apiAdd(iTitle.value, iDescription.value, iReleaseDate.value, iISBN.value, iNumOfPages.value, photo);
+    apiAdd(iTitle.value, iDescription.value, iReleaseDate.value, iISBN.value, iNumOfPages.value, photo, iGenres.value);
 }
 
 fetchGenres();

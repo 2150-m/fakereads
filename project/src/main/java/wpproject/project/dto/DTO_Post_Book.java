@@ -14,27 +14,18 @@ public class DTO_Post_Book {
     private String description;
     private int numOfPages;
     private String isbn;
-    private List<String> genreNames = new ArrayList<>();
+    private List<BookGenre> genres = new ArrayList<>();
 
     public DTO_Post_Book() {}
 
-    public DTO_Post_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn) {
+    public DTO_Post_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn, List<BookGenre> genres) {
         this.title = title;
         this.coverPhoto = coverPhoto;
         this.releaseDate = releaseDate;
         this.description = description;
         this.numOfPages = numOfPages;
         this.isbn = isbn;
-    }
-
-    public DTO_Post_Book(String title, String coverPhoto, LocalDate releaseDate, String description, int numOfPages, String isbn, List<String> genreNames) {
-        this.title = title;
-        this.coverPhoto = coverPhoto;
-        this.releaseDate = releaseDate;
-        this.description = description;
-        this.numOfPages = numOfPages;
-        this.isbn = isbn;
-        this.genreNames = genreNames;
+        this.genres = genres;
     }
 
     public String getTitle() { return title; }
@@ -51,10 +42,10 @@ public class DTO_Post_Book {
     public void setIsbn(String isbn) {
         this.isbn = isbn;
     }
-    public List<String> getGenreNames() {
-        return genreNames;
+    public List<BookGenre> getGenres() {
+        return genres;
     }
-    public void setGenres(List<String> genreNames) {
-        this.genreNames = genreNames;
+    public void setGenres(List<BookGenre> genres) {
+        this.genres = genres;
     }
 }

@@ -30,7 +30,7 @@ async function saveEditedItem(item, idNum) {
     console.log(text);
 }
 
-async function fetchGenres() {
+async function editFetchGenres() {
     let select = createElement("select");
     select.multiple = "true";
 
@@ -48,7 +48,7 @@ async function fetchGenres() {
     return select;
 }
 
-function createItem(labelName, value, idNum, idPart, inputType) {
+function editCreateItem(labelName, value, idNum, idPart, inputType) {
     let tr = document.createElement("tr");
     let th = document.createElement("th");
     th.innerHTML = labelName;
@@ -56,7 +56,7 @@ function createItem(labelName, value, idNum, idPart, inputType) {
     let td = document.createElement("td");
     
     if (inputType == "select") {
-        td.append(fetchGenres());
+        td.append(editFetchGenres());
     } else {
         let input = document.createElement("input");
         input.type = inputType;
@@ -66,10 +66,10 @@ function createItem(labelName, value, idNum, idPart, inputType) {
     }
 
     tr.append(td);    
-    return tr
+    return tr;
 }
 
-function populateTable(item, idNum) {
+function editPopulateTable(item, idNum) {
     let i = item;
     if (i.book != null) { i = item.book; }
 
@@ -83,12 +83,21 @@ function populateTable(item, idNum) {
     let table = document.createElement("table");
 
     
+<<<<<<< Updated upstream
     table.append(createItem("TITLE: ",        i.title, idNum, "title", "text"));
     table.append(createItem("RELEASE DATE: ", i.releaseDate, idNum, "releaseDate", "date"));
     table.append(createItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
     table.append(createItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
     table.append(createItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
     table.append(createItem("GENRES: ",       i.bookGenres, idNum, "genres", "text"));
+=======
+    table.append(editCreateItem("TITLE: ",        i.title, idNum, "title", "text"));
+    table.append(editCreateItem("RELEASE DATE: ", i.releaseDate, idNum, "releaseDate", "date"));
+    table.append(editCreateItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
+    table.append(editCreateItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
+    table.append(editCreateItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
+    table.append(editCreateItem("GENRES: ",       i.genres, idNum, "genres", "text"));
+>>>>>>> Stashed changes
     span.append(table);
 
     let button = document.createElement("button");
@@ -112,19 +121,19 @@ async function loaditems(search = "") {
         if (search != "") { url = "/api/items/search=" + search; }
         
         for (let i = 0; i < itemsJson.length; i++) {
-            divEditBooks.append(populateTable(itemsJson[i], i));
+            divEditBooks.append(editPopulateTable(itemsJson[i], i));
         }
     }
 }
 
-loaditems();
+edit_loaditems();
 
 // SEARCH
 let txt_search = document.getElementById("txt_search");
 let btn_search = document.getElementById("btn_search");
 
 function search() {
-    loaditems(txt_search.value);
+    edit_loaditems(txt_search.value);
 }
 
 txt_search.addEventListener("keydown", function(event) { if (event.key == 'Enter') { search(); } }, false);

@@ -758,7 +758,7 @@ public class Controller_Rest {
                 return ResponseEntity.badRequest().body("A book with the same ISBN (" + DTOBook.getIsbn() + ") is already in the database.");
             }
 
-            Book book = new Book(DTOBook.getTitle(), DTOBook.getCoverPhoto(), LocalDate.now(), DTOBook.getDescription(), DTOBook.getNumOfPages(), 0, DTOBook.getIsbn());
+            Book book = new Book(DTOBook.getTitle(), DTOBook.getCoverPhoto(), LocalDate.now(), DTOBook.getDescription(), DTOBook.getNumOfPages(), 0, DTOBook.getIsbn(), DTOBook.getGenres());
             serviceBook.save(book);
 
             ShelfItem item = new ShelfItem(book);
@@ -836,11 +836,11 @@ public class Controller_Rest {
         targetBook.setCoverPhoto(newInfo.getCoverPhoto());
 
         targetBook.setBookGenres(new ArrayList<BookGenre>());
-        for (String genreName : newInfo.getGenreNames()) {
-            BookGenre genre = serviceBookGenre.findOne(genreName);
-            System.out.println(serviceBookGenre.findOne(genreName));
+        for (BookGenre g : newInfo.getGenres()) {
+            BookGenre genre = serviceBookGenre.findOne(g.getName());
+            System.out.println(serviceBookGenre.findOne(g.getName()));
             if (genre == null || genre.getName().isEmpty()) {
-                return ResponseEntity.badRequest().body("Genre " + genreName + " does not exist.");
+                return ResponseEntity.badRequest().body("Genre " + g.getName() + " does not exist.");
             }
             targetBook.getBookGenres().add(genre);
         }

@@ -25,6 +25,3 @@ function search() {
 
 txt_search.addEventListener("keydown", function(event) { if (event.key == 'Enter') { search(); } }, false);
 btn_search.onclick = function() { search(); }
-
-
-
