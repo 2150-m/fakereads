@@ -18,6 +18,7 @@ body {
 }
 
 * {
+    color: white;
     background-color: transparent;
 }
 
@@ -27,13 +28,13 @@ body {
     padding: 5px;
     padding-bottom: 10px;
     box-shadow: 1px black;
-    border: 1px darkslategray solid;
+    border: 1px #404040 solid;
     background-color: transparent;
 }
 
 #navbar li {
     display: inline;
-    border: darkcyan 1px solid;
+    border: #505050 1px solid;
     padding: 5px;
     border-radius: 2px;
     margin: 0 3px;
@@ -51,39 +52,17 @@ body {
 #navbar li a {
     text-decoration: none;
     font-weight: bolder;
-    color: cyan;
+    color: white;
     padding: 3px;
     background-color: transparent;
     font-size: larger;
     border-color: transparent;
 }
 
-#navbar .navbar_din {
-    margin-left: auto;
-    margin-right: 0;
-
-}
-
-#navbar_search {
-    margin: auto 0;
-}
-
-#txt_search {
-    font-size: large;
-    border: cyan 1px white;
-    color: white;
-    width: auto;
-    padding: 2px;
-}
-
-#txt_search:active {
-    outline: none;
-}
-
-#txt_search:focus {
-    outline: none;
-}
-
-#btn_search {
-    font-size: large;
+h1 {
+    text-align: center;
+    text-decoration: underline;
+    border-bottom: 3px white dotted;
+    margin: 10px auto;
+    width: 50%;
 }

@@ -1,0 +1,34 @@
+#user {
+    margin: 10px auto;
+    display: block;
+    width: fit-content;
+    border: 1px solid;
+    border-radius: 40px;
+    background: #151515;
+}
+
+#user img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#imgcont {
+    width: 300px;
+    height: 300px;
+    border: dashed 3px white;
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 50%;
+    background: #050505;
+}
+
+#user table {
+    display: inline-block;
+    background: #101010;
+    border: 3px dotted;
+    padding: 10px;
+    margin: 30px;
+}

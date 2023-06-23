@@ -1,0 +1,29 @@
+.item_link {
+    color: cyan;
+}
+
+.item {
+    display: inline-block;
+    margin: 10px;
+    padding: 3px;
+    background-color: #202020;
+}
+
+.item table {
+    display: inline-block;
+}
+
+.item img  {
+    display: inline-block;
+    max-height: 165px;
+    max-width: 120px;
+}
+
+.item th, .item td {
+    font-size: medium;
+    color: white;
+}
+
+.item th {
+    text-align: right;
+}

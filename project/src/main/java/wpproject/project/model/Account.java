@@ -63,9 +63,14 @@ public class Account implements Serializable {
         this.mailAddress = mailAddress;
         this.password = password;
         this.dateOfBirth = LocalDate.of(1970, 1, 1);
-        this.profilePicture = "default.jpg";
+        this.profilePicture = "/avatars/default.jpg";
         this.description = "bio";
         this.accountRole = Account_Role.READER;
+
+        Shelf shelf_WantToRead = new Shelf("WantToRead", true);
+        Shelf shelf_CurrentlyReading = new Shelf("CurrentlyReading", true);
+        Shelf shelf_Read = new Shelf("Read", true);
+        shelves.addAll(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
     }
 
     public Account(Account account) {

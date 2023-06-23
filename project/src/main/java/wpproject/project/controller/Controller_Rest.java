@@ -1,6 +1,8 @@
 package wpproject.project.controller;
 
+import com.sun.net.httpserver.HttpsServer;
 import jakarta.servlet.http.HttpSession;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,16 +45,52 @@ public class Controller_Rest {
     // TODO: rasporediti svaki kurac u odredjeni service
     // TODO: stavi da svi kurcevi returnaju response entity nema type
 
-    @PostMapping("/api/myaccount/register")
-    public Account registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
+    // TODO: replace ResponseEntity.ok ResponseEntity.badRequest
+
+
+    // TODO: DONE REQ
+
+    // MY ACCOUNT
+
+    @PostMapping("/api/login")
+    public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
         Account user = (Account) session.getAttribute("user");
-        if (user != null) { System.err.println("[x] already logged in"); return null; }
+        if (user != null) { return new ResponseEntity<>("already logged in", HttpStatus.BAD_REQUEST); }
+
+        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return new ResponseEntity<>("invlaid login data", HttpStatus.BAD_REQUEST); }
+
+        Account account = serviceAccount.findOneByUsername(DTOAccountLogin.getUsername());
+        if (account == null) { account = serviceAccount.findOneByMailAddress((DTOAccountLogin.getUsername())); }
+        if (account == null) { return new ResponseEntity<>("account not found", HttpStatus.NOT_FOUND);  }
+        if (!account.getPassword().equals(DTOAccountLogin.getPassword())) { return new ResponseEntity<>("wrong password", HttpStatus.UNAUTHORIZED); }
+
+        if (account != null && account.getAccountRole() == Account_Role.AUTHOR) {
+            if (!serviceAccountAuthor.findById(account.getId()).isAccountActivated()) { return new ResponseEntity<>("author account not activated", HttpStatus.UNAUTHORIZED);  }
+        }
+
+        session.setAttribute("user", account);
+        return new ResponseEntity<>("logged in as: " + account.getUsername(), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/myaccount")
+    public ResponseEntity<DTO_View_AccountAsAnon> myaccount(HttpSession session){
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED); }
+
+        DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(serviceAccount.findOne(user.getId()));
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/register")
+    public ResponseEntity<String> registerAccount(@RequestBody DTO_Post_AccountRegister accountRequest, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user != null) { return new ResponseEntity<>("already logged in", HttpStatus.BAD_REQUEST); }
 
         try {
             Account account = serviceAccount.findOneByMailAddress(accountRequest.getMailAddress());
-            if (account != null) { System.err.println("[x] can't register, mail exists:" + accountRequest.getMailAddress()); return null; }
+            if (account != null) { return new ResponseEntity<>("mail exists: " + accountRequest.getMailAddress(), HttpStatus.CONFLICT); }
             account = serviceAccount.findOneByUsername(accountRequest.getUsername());
-            if (account != null) { System.err.println("[x] can't register, username exists:" + accountRequest.getUsername()); return null; }
+            if (account != null) { return new ResponseEntity<>("username exists: " + accountRequest.getUsername(), HttpStatus.CONFLICT); }
 
             account = new Account(accountRequest.getFirstName(), accountRequest.getLastName(), accountRequest.getUsername(), accountRequest.getMailAddress(), accountRequest.getPassword());
 
@@ -65,79 +103,484 @@ public class Controller_Rest {
             account.setShelves(List.of(shelf_WantToRead, shelf_CurrentlyReading, shelf_Read));
 
             serviceAccount.save(account);
-
             session.setAttribute("user", account);
-            return account;
+            return new ResponseEntity<>("registered", HttpStatus.OK);
         } catch (Exception e) {
-            System.err.println("[x] failed to register: " + e.getMessage());
-            return null;
+            return new ResponseEntity<>("internal error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PostMapping("/api/myaccount/login")
-    public ResponseEntity<String> login(@RequestBody DTO_Post_AccountLogin DTOAccountLogin, HttpSession session){
-        Account user = (Account) session.getAttribute("user");
-        if (user != null) { return ResponseEntity.badRequest().body("Already logged in"); }
-
-        if (DTOAccountLogin.getUsername().isEmpty() || DTOAccountLogin.getPassword().isEmpty())  { return ResponseEntity.badRequest().body("Invalid login data"); }
-
-        Account loggedAccount = serviceAccount.login(DTOAccountLogin.getUsername(), DTOAccountLogin.getPassword());
-        if (loggedAccount == null)  { return new ResponseEntity<>("Account does not exist!", HttpStatus.NOT_FOUND); }
-
-        user = serviceAccount.findOneByUsername(DTOAccountLogin.getUsername());
-        if (user != null && user.getAccountRole() == Account_Role.AUTHOR) {
-            if (!serviceAccountAuthor.findById(user.getId()).isAccountActivated()) { return ResponseEntity.badRequest().body("This author account is not activated."); }
-        }
-
-        session.setAttribute("user", loggedAccount);
-        return ResponseEntity.ok("Successfully logged in: " + loggedAccount.getUsername());
-    }
-
-    @GetMapping("/api/myaccount")
-    public Account myaccount(HttpSession session){
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return null; }
-        return serviceAccount.findOne(user.getId());
-    }
-
-    @PostMapping("/api/myaccount/logout")
+    @PostMapping("/api/logout")
     public ResponseEntity<String> logout(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("Can't log out: already logged out."); }
+        if (user == null) { return new ResponseEntity<>("already logged out", HttpStatus.BAD_REQUEST); }
 
         session.invalidate();
-        return ResponseEntity.ok().body("Succesfully logged out: " + user.getUsername());
+        return new ResponseEntity<>("logged out: " + user.getUsername(), HttpStatus.OK);
     }
+
+    // USERS
+
+    @GetMapping("/api/users")
+    public ResponseEntity<List<DTO_View_AccountAsAnon>> getUsers(HttpSession session) {
+        List<Account> userList = serviceAccount.findAll();
+
+        List<DTO_View_AccountAsAnon> dtos = new ArrayList<>();
+        for (Account u : userList) {
+            DTO_View_AccountAsAnon dto = new DTO_View_AccountAsAnon(u);
+            dtos.add(dto);
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/users/{id}")
+    public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
+        return serviceAccount.findOne(id);
+    }
+
+    // AUTHORS
+
+    @GetMapping("/api/authors")
+    public ResponseEntity<List<DTO_View_AccountAuthorAsAnon>> getAuthors(HttpSession session) {
+        List<AccountAuthor> authors = serviceAccountAuthor.findAllAuthors();
+
+        List<DTO_View_AccountAuthorAsAnon> dtos = new ArrayList<>();
+        for (AccountAuthor a : authors) {
+            DTO_View_AccountAuthorAsAnon dto = new DTO_View_AccountAuthorAsAnon(a);
+
+            dtos.add(dto);
+        }
+
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    // ITEMS
+
+    @GetMapping("/api/items")
+    public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
+        List<ShelfItem> shelfItems = serviceShelfItem.findAll();
+
+        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
+        for (ShelfItem b : shelfItems) {
+            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
+            dtos.add(dto);
+        }
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/items/{id}")
+    public ResponseEntity<DTO_View_ShelfItem> getItem(@PathVariable(name = "id") Long id, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_ShelfItem(serviceShelfItem.findOne(id)), HttpStatus.OK);
+    }
+
+    @GetMapping("/api/items/search={search}")
+    public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
+        if (search.isEmpty()) { return null; }
+
+        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
+        for (ShelfItem i : serviceShelfItem.findAll()) {
+            // search by title / description
+            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase()) || i.getBook().getDescription().toLowerCase().contains(search.toLowerCase())) {
+                DTO_View_ShelfItem dto = new DTO_View_ShelfItem(i); dtos.add(dto);
+            }
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    // GENRES
+
+    @GetMapping("/api/genres")
+    public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
+        List<DTO_View_BookGenre> dtos = new ArrayList<>();
+        for (BookGenre g : serviceBookGenre.findAll()) {
+            dtos.add(new DTO_View_BookGenre(g));
+        }
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
+    @GetMapping("/api/genres/{id}")
+    public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(id)), HttpStatus.OK);
+    }
+
+
+
+    // BOOKS
+
+    @GetMapping("/api/books")
+    public ResponseEntity<List<DTO_View_Book>> getBooks(HttpSession session) {
+        List<Book> books = serviceBook.findAll();
+
+        List<DTO_View_Book> dtos = new ArrayList<>();
+        for (Book b : books) {
+            DTO_View_Book dto = new DTO_View_Book(b);
+            dtos.add(dto);
+        }
+        return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/api/books/{id}")
+    public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
+        return serviceBook.findOne(id);
+    }
+
+
+
+    // SHELVES
+
+    @PostMapping("/api/myaccount/shelves/add")
+    public ResponseEntity<String> addShelf(@RequestBody DTO_Post_Shelf dtoPostShelf, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+        user = serviceAccount.findOne(user.getId());
+
+        try {
+            for (Shelf shelf : user.getShelves()) {
+                if (shelf.getName().equals(dtoPostShelf.getName())) {
+                    return new ResponseEntity<>("shelf exists: " + dtoPostShelf.getName(), HttpStatus.CONFLICT);
+                }
+            }
+
+            Shelf newShelf = new Shelf(dtoPostShelf.getName(), false);
+            serviceShelf.save(newShelf);
+
+            user.getShelves().add(newShelf);
+            serviceAccount.save(user);
+
+            return new ResponseEntity<>("added shelf: " + dtoPostShelf.getName(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("failed to add shelf: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/api/myaccount/shelves/remove/{id}")
+    public ResponseEntity<String> removeShelfID(@PathVariable(name = "id") Long id, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+        user = serviceAccount.findOne(user.getId());
+
+        Shelf shelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getId().equals(id)) {
+                shelf = s;
+                break;
+            }
+        }
+        return removeShelf(user, shelf);
+    }
+
+    private ResponseEntity<String> removeShelf(Account user, Shelf shelf) {
+        if (shelf == null) { return ResponseEntity.badRequest().body("shelf does not exist"); }
+        if (shelf.isPrimary()) { return ResponseEntity.badRequest().body("primary shelves can not be removed"); }
+
+        try {
+            Iterator<Shelf> iterator = user.getShelves().iterator();
+            while (iterator.hasNext()) {
+                if (iterator.next().getId().equals(shelf.getId())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+
+            serviceShelf.save(user.getShelves());
+            return ResponseEntity.ok(shelf.getName().toUpperCase() + " (" + shelf.getId() + ") has been removed.");
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not remove the shelf" + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // SHELVES -> ADD / REMOVE BOOK
+
+    @PostMapping("/api/myaccount/shelves/{shelfId}/addbook/{bookId}")
+    public ResponseEntity<String> addToShelfIdId(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfId") Long shelfID, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
+
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookID));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
+
+        Shelf targetShelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getId().equals(shelfID)) {
+                targetShelf = s;
+                break;
+            }
+        }
+
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf with id " + shelfID + " does not exist.");
+        }
+
+        return addToShelf(user, targetItem, targetShelf, review);
+    }
+
+    private ResponseEntity<String> addToShelf(Account user, ShelfItem targetItem, Shelf targetShelf, DTO_Post_BookReview review) {
+        // contains() and object.equals(otherobject) don't work
+        for (ShelfItem item : targetShelf.getShelfItems()) {
+            if (item.getId().equals(targetItem.getId())) {
+                return ResponseEntity.badRequest().body("This book is already on " + targetShelf.getName().toUpperCase() + ".");
+            }
+        }
+
+        if (targetShelf.isPrimary()) {
+            // Remove the book from the other primary shelf (if it's on it)
+            outer:
+            for (Shelf shelf : user.getShelves().subList(0, 3)) {
+                if (shelf.getId().equals(targetShelf.getId())) { continue; }
+
+                Iterator<ShelfItem> iterator = shelf.getShelfItems().iterator();
+                while (iterator.hasNext()) {
+                    if (iterator.next().getId().equals(targetItem.getId())) {
+                        iterator.remove();
+                        break outer;
+                    }
+                }
+            }
+
+            targetShelf.getShelfItems().add(targetItem);
+            serviceShelf.save(targetShelf);
+
+            String msg = targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").";
+
+            if (targetShelf.getName().equalsIgnoreCase("Read") && review != null) {
+                msg += addReview(user, targetItem, review);
+            }
+
+            return ResponseEntity.ok().body(msg);
+        }
+
+        // Check if the item is in a primary shelf
+        for (Shelf shelf : user.getShelves().subList(0, 3)) {
+            for (ShelfItem item : shelf.getShelfItems()) {
+                if (item.getId().equals(targetItem.getId())) {
+                    targetShelf.getShelfItems().add(targetItem);
+                    serviceShelf.save(targetShelf);
+                    return ResponseEntity.ok().body(targetItem.getBook().getTitle().toUpperCase() + "(" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").");
+                }
+            }
+        }
+
+        return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
+    }
+
+    @PostMapping("/api/myaccount/shelves/{shelfId}/removebook/{bookId}")
+    public ResponseEntity<String> userRemoveBook(@PathVariable(name = "shelfId") Long shelfId, @PathVariable(name = "bookId") Long bookId, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+        user = serviceAccount.findOne(user.getId());
+
+        boolean doesExist = false;
+        boolean inPrimaryShelf = false;
+        Shelf targetShelf = new Shelf();
+        for (Shelf s : user.getShelves()) {
+            if (!s.getId().equals(shelfId)) { continue; }
+
+            doesExist = true;
+            if (s.isPrimary()) { inPrimaryShelf = true; }
+            targetShelf = s;
+            break;
+        }
+        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find that shelf  in this user's shelf list."); }
+
+        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookId), targetShelf, inPrimaryShelf);
+    }
+
+    private ResponseEntity<String> userRemoveBook(Account user, Book book, Shelf targetShelf, boolean inPrimaryShelf) {
+        String msg = "";
+        ShelfItem targetItem = serviceShelfItem.findByBook(book);
+
+        if (!(targetShelf.getName().equalsIgnoreCase("read") || targetShelf.getName().equalsIgnoreCase("currentlyreading") || targetShelf.getName().equalsIgnoreCase("wanttoread"))) {
+            for (Shelf s : user.getShelves().subList(3, user.getShelves().size())) {
+                if (!s.getId().equals(targetShelf.getId())) { continue; }
+
+                Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
+                while (iterator.hasNext()) {
+                    ShelfItem i = iterator.next();
+                    if (i.getId().equals(targetItem.getId())) {
+                        msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
+
+                        iterator.remove();
+                        serviceShelf.save(user.getShelves());
+
+                        // If not in a primary, the only thing that needs to be removed is a single ShelfItem
+                        if (!inPrimaryShelf) { return ResponseEntity.ok(msg); }
+                    }
+                }
+            }
+        }
+
+        for (Shelf s : user.getShelves().subList(0, 3)) {
+            if (!s.getId().equals(targetShelf.getId())) { continue; }
+
+            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
+            while (iterator.hasNext()) {
+                ShelfItem i = iterator.next();
+                if (i.getId().equals(targetItem.getId())) {
+                    msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
+
+                    // Remove the associated review
+                    if (targetShelf.getName().equalsIgnoreCase("Read")) {
+                        msg += removeReview(user, i, book);
+                    }
+
+                    iterator.remove();
+                    serviceShelf.save(user.getShelves());
+
+                    return ResponseEntity.ok(msg);
+                }
+            }
+        }
+
+        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + targetShelf.getName().toUpperCase() + ".");
+    }
+
+
+    // ADMIN ACTIVATIONS
+
+
+    @PostMapping("/api/sendactivation/{id}")
+    public ResponseEntity<String> sendActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_AccountActivationRequest dtoPostAccountActivationRequest, HttpSession session) {
+
+        AccountAuthor aa = serviceAccountAuthor.findOne(id);
+        if (aa == null) { return new ResponseEntity<>("can't find author with id: " + id, HttpStatus.NOT_FOUND); }
+
+        try {
+            AccountActivationRequest aar = new AccountActivationRequest(
+                    dtoPostAccountActivationRequest.getMailAddress(),
+                    dtoPostAccountActivationRequest.getPhoneNumber(),
+                    dtoPostAccountActivationRequest.getMessage(),
+                    LocalDate.now(),
+                    AccountActivationRequest_Status.WAITING,
+                    aa
+            );
+
+            serviceAccountActivationRequest.save(aar);
+
+            return new ResponseEntity<>("activation request sent", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("failed to send activation req: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/api/admin/activations")
+    public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
+        if (!isAdmin(session)) { return null; }
+
+        List<AccountActivationRequest> userList = serviceAccountActivationRequest.findAll();
+
+        List<DTO_View_AccountActivationRequest> dtos = new ArrayList<>();
+        for (AccountActivationRequest u : userList) {
+            DTO_View_AccountActivationRequest dto = new DTO_View_AccountActivationRequest(u);
+            dtos.add(dto);
+        }
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @PostMapping("/api/admin/activations/{id}/accept")
+    public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
+        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
+
+        // save as approved
+        aar.setStatus(AccountActivationRequest_Status.APPROVED);
+        serviceAccountActivationRequest.save(aar);
+
+        // set is activated for author
+        AccountAuthor accountAuthor = aar.getAuthor();
+        accountAuthor.setAccountActivated(true);
+        serviceAccountAuthor.save(accountAuthor);
+
+        // TODO: send mail that account has been activated --- send password
+        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
+
+        return ResponseEntity.ok().body("accepted activation request");
+    }
+
+    @PostMapping("/api/admin/activations/{id}/reject")
+    public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+
+        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
+        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
+
+        // save as rejected
+        aar.setStatus(AccountActivationRequest_Status.REJECTED);
+        serviceAccountActivationRequest.save(aar);
+
+        // set account as not activated
+        AccountAuthor accountAuthor = aar.getAuthor();
+        accountAuthor.setAccountActivated(false);
+        serviceAccountAuthor.save(accountAuthor);
+
+        // TODO: send mail -> reason for rejection
+        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
+
+        return ResponseEntity.ok().body("rejected activation request");
+    }
+    
+    // MY ACCOUNT -> UPDATE
 
     @PutMapping("/api/myaccount/update")
     public ResponseEntity<String> updateUser(@RequestBody DTO_Post_AccountUpdate newInfo, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+
         user = serviceAccount.findOne(user.getId());
 
-        if (!newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(user.getFirstName()))                user.setFirstName(newInfo.getFirstName());
-        if (!newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(user.getLastName()))                   user.setLastName(newInfo.getLastName());
-        if (!newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(user.getUsername()))                   user.setUsername(newInfo.getUsername());
-        if (newInfo.getDateOfBirth() != null && !newInfo.getDateOfBirth().equals(user.getDateOfBirth()))             user.setDateOfBirth(newInfo.getDateOfBirth());
-        if (!newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(user.getDescription()))          user.setDescription(newInfo.getDescription());
-        if (!newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(user.getProfilePicture())) user.setProfilePicture(newInfo.getProfilePicture());
+        boolean failed = false;
 
-        serviceAccount.save(user);
-        return ResponseEntity.ok("User info updated.");
+        if (newInfo.getFirstName() != null      && !newInfo.getFirstName().isEmpty() && !newInfo.getFirstName().equals(user.getFirstName()))                user.setFirstName(newInfo.getFirstName());
+        if (newInfo.getLastName() != null       && !newInfo.getLastName().isEmpty() && !newInfo.getLastName().equals(user.getLastName()))                   user.setLastName(newInfo.getLastName());
+        if (newInfo.getUsername() != null       && !newInfo.getUsername().isEmpty() && !newInfo.getUsername().equals(user.getUsername()))                   user.setUsername(newInfo.getUsername());
+        if (newInfo.getDateOfBirth() != null    && !newInfo.getDateOfBirth().equals(user.getDateOfBirth()))                                                 user.setDateOfBirth(newInfo.getDateOfBirth());
+        if (newInfo.getDescription() != null    && !newInfo.getDescription().isEmpty() && !newInfo.getDescription().equals(user.getDescription()))          user.setDescription(newInfo.getDescription());
+        if (newInfo.getProfilePicture() != null && !newInfo.getProfilePicture().isEmpty() && !newInfo.getProfilePicture().equals(user.getProfilePicture())) user.setProfilePicture(newInfo.getProfilePicture());
+
+        // update mail
+        if (newInfo.getMailAddress() != null && !newInfo.getMailAddress().isEmpty()) {
+
+            if (newInfo.getPassword().equals(user.getPassword())) { // current password must match
+                user.setMailAddress(newInfo.getMailAddress());
+            }
+            else {
+                failed = true;
+            }
+        }
+
+        // update password
+        if (newInfo.getNewPassword() != null && !newInfo.getNewPassword().isEmpty()) {
+
+            if (newInfo.getPassword().equals(user.getPassword())) { // current password must match
+                user.setPassword(newInfo.getNewPassword());
+            }
+            else {
+                failed = true;
+            }
+        }
+
+
+        if (failed) {
+            return new ResponseEntity<>("must enter current password to update mail/password", HttpStatus.FORBIDDEN);
+        }
+        else {
+            serviceAccount.save(user);
+            return new ResponseEntity<>("account updated", HttpStatus.OK);
+        }
     }
 
-    @PutMapping("/api/myaccount/update/passormail")
-    public ResponseEntity<String> updatePassword(@RequestBody DTO_Post_AccountUpdatePass newInfo, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = serviceAccount.findOne(user.getId());
-
-        if (!newInfo.getMail().isEmpty()     && !newInfo.getMail().equals(user.getMailAddress()))  user.setMailAddress(newInfo.getMail());
-        if (!newInfo.getPassword().isEmpty() && !newInfo.getPassword().equals(user.getPassword())) user.setPassword(newInfo.getPassword());
-
-        serviceAccount.save(user);
-        return ResponseEntity.ok("User info updated.");
-    }
+    //
+    // TODO: ALL
+    //
 
 
     @PutMapping("/api/myaccount/update/review/book_id={id}")
@@ -201,175 +644,6 @@ public class Controller_Rest {
         return ResponseEntity.ok("Review added.");
     }
 
-    @PostMapping("/api/myaccount/shelves/add")
-    public ResponseEntity<String> addShelf(@RequestBody String newShelfName, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = serviceAccount.findOne(user.getId());
-
-        try {
-            for (Shelf shelf : user.getShelves()) {
-                if (shelf.getName().equals(newShelfName)) {
-                    return ResponseEntity.badRequest().body("This user already has a shelf with this name.");
-                }
-            }
-
-            Shelf newShelf = new Shelf(newShelfName, false);
-            serviceShelf.save(newShelf);
-
-            user.getShelves().add(newShelf);
-            serviceAccount.save(user);
-
-            return ResponseEntity.ok("A new shelf, " + newShelfName.toUpperCase() + " (" + newShelf.getId() + "), had been added.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not add the shelf: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/api/myaccount/shelves/remove/{id}")
-    public ResponseEntity<String> removeShelfID(@PathVariable(name = "id") Long id, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = serviceAccount.findOne(user.getId());
-
-        Shelf shelf = null;
-        for (Shelf s : user.getShelves()) {
-            if (s.getId().equals(id)) {
-                shelf = s;
-                break;
-            }
-        }
-        return removeShelf(user, shelf);
-    }
-
-    @PostMapping("/api/myaccount/shelves/remove/name={name}")
-    public ResponseEntity<String> removeShelfName(@PathVariable(name = "name") String name, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in."); }
-        user = serviceAccount.findOne(user.getId());
-
-        Shelf shelf = null;
-        for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(name)) {
-                shelf = s;
-                break;
-            }
-        }
-        return removeShelf(user, shelf);
-    }
-
-    private ResponseEntity<String> removeShelf(Account user, Shelf shelf) {
-        if (shelf == null) { return ResponseEntity.badRequest().body("This shelf does not exist."); }
-        if (shelf.isPrimary()) { return ResponseEntity.badRequest().body("Primary shelves can not be removed."); }
-
-        try {
-            Iterator<Shelf> iterator = user.getShelves().iterator();
-            while (iterator.hasNext()) {
-                if (iterator.next().getId().equals(shelf.getId())) {
-                    iterator.remove();
-                    break;
-                }
-            }
-
-            serviceShelf.save(user.getShelves());
-            return ResponseEntity.ok(shelf.getName().toUpperCase() + " (" + shelf.getId() + ") has been removed.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not remove the shelf" + e.getMessage());
-        }
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
-    public ResponseEntity<String> userAddBookID(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = serviceAccount.findOne(user.getId());
-
-        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookId));
-        if (targetItem == null) {
-            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
-        }
-
-        return userAddBook(user, targetItem, shelfName, review);
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
-    public ResponseEntity<String> userAddBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) {
-            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
-        }
-        user = serviceAccount.findOne(user.getId());
-
-        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findByIsbn(isbn));
-        if (targetItem == null) {
-            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
-        }
-
-        return userAddBook(user, targetItem, shelfName, review);
-    }
-
-    private ResponseEntity<String> userAddBook(Account user, ShelfItem targetItem, String shelfName, DTO_Post_BookReview review) {
-        Shelf targetShelf = null;
-        for (Shelf s : user.getShelves()) {
-            if (s.getName().equalsIgnoreCase(shelfName)) {
-                targetShelf = s;
-                break;
-            }
-        }
-
-        if (targetShelf == null) {
-            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
-        }
-
-        // contains() and object.equals(otherobject) don't work
-        for (ShelfItem item : targetShelf.getShelfItems()) {
-            if (item.getId().equals(targetItem.getId())) {
-                return ResponseEntity.badRequest().body("This book is already on " + targetShelf.getName().toUpperCase() + ".");
-            }
-        }
-
-        if (targetShelf.isPrimary()) {
-            // Remove the book from the other primary shelf (if it's on it)
-            outer:
-            for (Shelf shelf : user.getShelves().subList(0, 3)) {
-                if (shelf.getId().equals(targetShelf.getId())) { continue; }
-
-                Iterator<ShelfItem> iterator = shelf.getShelfItems().iterator();
-                while (iterator.hasNext()) {
-                    if (iterator.next().getId().equals(targetItem.getId())) {
-                        iterator.remove();
-                        break outer;
-                    }
-                }
-            }
-
-            targetShelf.getShelfItems().add(targetItem);
-            serviceShelf.save(targetShelf);
-
-            String msg = targetItem.getBook().getTitle().toUpperCase() + " (" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").";
-
-            if (targetShelf.getName().equalsIgnoreCase("Read") && review != null) {
-                msg += addReview(user, targetItem, review);
-            }
-
-            return ResponseEntity.ok().body(msg);
-        }
-
-        // Check if the item is in a primary shelf
-        for (Shelf shelf : user.getShelves().subList(0, 3)) {
-            for (ShelfItem item : shelf.getShelfItems()) {
-                if (item.getId().equals(targetItem.getId())) {
-                    targetShelf.getShelfItems().add(targetItem);
-                    serviceShelf.save(targetShelf);
-                    return ResponseEntity.ok().body(targetItem.getBook().getTitle().toUpperCase() + "(" + targetItem.getBook().getId() + ") has been added to " + targetShelf.getName().toUpperCase() + " (" + targetShelf.getId() + ").");
-                }
-            }
-        }
-
-        return ResponseEntity.badRequest().body("An item has to be on a primary shelf in order to be added to custom ones.");
-    }
 
     private String addReview(Account user, ShelfItem item, DTO_Post_BookReview review) {
         BookReview newReview = new BookReview(review.getRating(), review.getText(), LocalDate.now(), user);
@@ -387,82 +661,6 @@ public class Controller_Rest {
         serviceBook.save(item.getBook());
         serviceShelfItem.save(item);
         return "\nReview posted.";
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
-    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
-
-        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
-    }
-
-    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
-    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
-        Account user = (Account) session.getAttribute("user");
-        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
-
-        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
-    }
-
-    private ResponseEntity<String> userRemoveBook(Account user, Book book, String shelfName) {
-        boolean doesExist = false;
-        boolean inPrimaryShelf = false;
-        for (Shelf s : user.getShelves()) {
-            if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
-
-            doesExist = true;
-            if (s.isPrimary()) { inPrimaryShelf = true; }
-            break;
-        }
-        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find " + shelfName.toUpperCase() + " in this user's shelf list."); }
-
-        String msg = "";
-        ShelfItem targetItem = serviceShelfItem.findByBook(book);
-
-        if (!(shelfName.equalsIgnoreCase("read") || shelfName.equalsIgnoreCase("currentlyreading") || shelfName.equalsIgnoreCase("wanttoread"))) {
-            for (Shelf s : user.getShelves().subList(3, user.getShelves().size())) {
-                if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
-
-                Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
-                while (iterator.hasNext()) {
-                    ShelfItem i = iterator.next();
-                    if (i.getId().equals(targetItem.getId())) {
-                        msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
-
-                        iterator.remove();
-                        serviceShelf.save(user.getShelves());
-
-                        // If not in a primary, the only thing that needs to be removed is a single ShelfItem
-                        if (!inPrimaryShelf) { return ResponseEntity.ok(msg); }
-                    }
-                }
-            }
-        }
-
-        for (Shelf s : user.getShelves().subList(0, 3)) {
-            if (!s.getName().equalsIgnoreCase(shelfName)) { continue; }
-
-            Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
-            while (iterator.hasNext()) {
-                ShelfItem i = iterator.next();
-                if (i.getId().equals(targetItem.getId())) {
-                    msg += i.getBook().getTitle().toUpperCase() + " (" + i.getBook().getId() + ") has been removed from " + s.getName().toUpperCase() + ".\n";
-
-                    // Remove the associated review
-                    if (shelfName.equalsIgnoreCase("Read")) {
-                        msg += removeReview(user, i, book);
-                    }
-
-                    iterator.remove();
-                    serviceShelf.save(user.getShelves());
-
-                    return ResponseEntity.ok(msg);
-                }
-            }
-        }
-
-        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + shelfName.toUpperCase() + ".");
     }
 
     private String removeReview(Account user, ShelfItem item, Book book) {
@@ -528,65 +726,6 @@ public class Controller_Rest {
             System.err.println("[x] failed to add new user (author): " + e.getMessage());
             return null;
         }
-    }
-
-    @GetMapping("/api/admin/activations")
-    public ResponseEntity<List<DTO_View_AccountActivationRequest>> getActivationRequests(HttpSession session) {
-        if (!isAdmin(session)) { return null; }
-
-        List<AccountActivationRequest> userList = serviceAccountActivationRequest.findAll();
-
-        List<DTO_View_AccountActivationRequest> dtos = new ArrayList<>();
-        for (AccountActivationRequest u : userList) {
-            DTO_View_AccountActivationRequest dto = new DTO_View_AccountActivationRequest(u);
-            dtos.add(dto);
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @PostMapping("/api/admin/activation/{id}/accept")
-    public ResponseEntity<String> acceptActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
-        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
-
-        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
-        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
-
-        // save as approved
-        aar.setStatus(AccountActivationRequest_Status.APPROVED);
-        serviceAccountActivationRequest.save(aar);
-
-        // set is activated for author
-        AccountAuthor accountAuthor = aar.getAuthor();
-        accountAuthor.setAccountActivated(true);
-        serviceAccountAuthor.save(accountAuthor);
-
-        // TODO: send mail that account has been activated --- send password
-        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
-
-        return ResponseEntity.ok().body("accepted activation request");
-    }
-
-    @PostMapping("/api/admin/activation/{id}/reject")
-    public ResponseEntity<String> rejectActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_MailMessage dtoPostMailMessage, HttpSession session) {
-        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
-
-        AccountActivationRequest aar = serviceAccountActivationRequest.findById(id);
-        if (aar == null) { return ResponseEntity.badRequest().body("request doesn't exist"); }
-
-        // save as rejected
-        aar.setStatus(AccountActivationRequest_Status.REJECTED);
-        serviceAccountActivationRequest.save(aar);
-
-        // set account as not activated
-        AccountAuthor accountAuthor = aar.getAuthor();
-        accountAuthor.setAccountActivated(false);
-        serviceAccountAuthor.save(accountAuthor);
-
-        // TODO: send mail -> reason for rejection
-        System.out.println("sent mail message from admin: " + dtoPostMailMessage.getMessage());
-
-        return ResponseEntity.ok().body("rejected activation request");
     }
 
     @PostMapping("/api/admin/addgenre")
@@ -727,71 +866,127 @@ public class Controller_Rest {
         return ResponseEntity.ok("Author info updated.");
     }
 
-    @GetMapping("/api/users")
-    public ResponseEntity<List<DTO_View_Account>> getUsers(HttpSession session) {
-        List<Account> userList = serviceAccount.findAll();
 
-        List<DTO_View_Account> dtos = new ArrayList<>();
-        for (Account u : userList) {
-            DTO_View_Account dto = new DTO_View_Account(u);
-            dtos.add(dto);
-        }
 
-        return ResponseEntity.ok(dtos);
-    }
+
+
+
+
+
+
+
+
+
+
+
+    // USELESS FOR NOW
 
     @GetMapping("/api/users/username={username}")
     public Account getUser(@PathVariable(name = "username") String username, HttpSession session) {
         return serviceAccount.findOneByUsername(username);
     }
 
-    @GetMapping("/api/users/{id}")
-    public Account getUser(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceAccount.findOne(id);
+    @GetMapping("/api/genres/name={name}")
+    public ResponseEntity<DTO_View_BookGenre> getGenre(@PathVariable(name = "name") String name, HttpSession session) {
+        return new ResponseEntity<>(new DTO_View_BookGenre(serviceBookGenre.findOne(name)), HttpStatus.OK);
     }
 
-    @GetMapping("/api/authors")
-    public ResponseEntity<List<DTO_View_AccountAuthor>> getAuthors(HttpSession session) {
-        List<AccountAuthor> userList = serviceAccountAuthor.findAllAuthors();
+    @GetMapping("/api/books/title={title}")
+    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
+        return serviceBook.findOne(title);
+    }
 
-        List<DTO_View_AccountAuthor> dtos = new ArrayList<>();
-        for (AccountAuthor u : userList) {
-            DTO_View_AccountAuthor dto = new DTO_View_AccountAuthor(new Account(u.getFirstName(), u.getLastName(), u.getUsername(), u.getMailAddress(), u.getPassword(), u.getDateOfBirth(), u.getMailAddress(), u.getDescription(), u.getAccountRole()), u);
-            dtos.add(dto);
+
+    // USELESS
+
+
+    @PostMapping("/api/myaccount/shelves/remove/name={name}")
+    public ResponseEntity<String> removeShelfName(@PathVariable(name = "name") String name, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+        user = serviceAccount.findOne(user.getId());
+
+        Shelf shelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(name)) {
+                shelf = s;
+                break;
+            }
+        }
+        return removeShelf(user, shelf);
+    }
+
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/{bookId}")
+    public ResponseEntity<String> addToShelfNameId(@PathVariable(name = "bookId") Long bookId, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
+
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findOne(bookId));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
         }
 
-        return ResponseEntity.ok(dtos);
+        Shelf targetShelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = s;
+                break;
+            }
+        }
+
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
+        }
+
+        return addToShelf(user, targetItem, targetShelf, review);
     }
 
-    @GetMapping("/api/genres")
-    public ResponseEntity<List<DTO_View_BookGenre>> getGenres(HttpSession session) {
-        List<BookGenre> genreList = serviceBookGenre.findAll();
+    @PostMapping("/api/myaccount/shelves/name={shelfName}/addbook/isbn={isbn}")
+    public ResponseEntity<String> addToShelfNameIsbn(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, @RequestBody(required = false) DTO_Post_BookReview review, HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) {
+            return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf.");
+        }
+        user = serviceAccount.findOne(user.getId());
 
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        if (genre == null) { System.out.println("No session"); }
-        else               { System.out.println(genre);        }
+        ShelfItem targetItem = serviceShelfItem.findByBook(serviceBook.findByIsbn(isbn));
+        if (targetItem == null) {
+            return ResponseEntity.badRequest().body("Book with this ID does not exist.");
+        }
 
-        List<DTO_View_BookGenre> dtos = new ArrayList<>();
-        for (BookGenre g : genreList) { DTO_View_BookGenre dto = new DTO_View_BookGenre(g); dtos.add(dto); }
+        Shelf targetShelf = null;
+        for (Shelf s : user.getShelves()) {
+            if (s.getName().equalsIgnoreCase(shelfName)) {
+                targetShelf = s;
+                break;
+            }
+        }
 
-        return ResponseEntity.ok(dtos);
+        if (targetShelf == null) {
+            return ResponseEntity.badRequest().body("Shelf " + shelfName.toUpperCase() + " does not exist.");
+        }
+
+        return addToShelf(user, targetItem, targetShelf, review);
     }
 
-    @GetMapping("/api/genres/{id}")
-    public BookGenre getGenre(@PathVariable(name = "id") Long id, HttpSession session) {
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        System.out.println(genre);
-        session.invalidate();
-        return serviceBookGenre.findOne(id);
-    }
-
-    @GetMapping("/api/genres/name={name}")
-    public BookGenre getGenre(@PathVariable(name = "name") String name, HttpSession session) {
-        BookGenre genre = (BookGenre) session.getAttribute("genre");
-        System.out.println(genre);
-        session.invalidate();
-        return serviceBookGenre.findOne(name);
-    }
+//    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/{bookId}")
+//    public ResponseEntity<String> userRemoveBookID(@PathVariable(name = "bookId") Long bookID, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+//        Account user = (Account) session.getAttribute("user");
+//        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+//
+//        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookID), shelfName);
+//    }
+//
+//    @PostMapping("/api/myaccount/shelves/name={shelfName}/removebook/isbn={isbn}")
+//    public ResponseEntity<String> userRemoveBookISBN(@PathVariable(name = "isbn") String isbn, @PathVariable(name = "shelfName") String shelfName, HttpSession session) {
+//        Account user = (Account) session.getAttribute("user");
+//        if (user == null) { return ResponseEntity.badRequest().body("You have to be logged in to add a book to a shelf."); }
+//
+//        return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findByIsbn(isbn), shelfName);
+//    }
 
     @GetMapping("/api/reviews")
     public ResponseEntity<List<DTO_View_BookReviewNoShelves>> getBookReviews(HttpSession session) {
@@ -870,6 +1065,7 @@ public class Controller_Rest {
         return null;
     }
 
+
     @GetMapping("/api/users/{userId}/shelves")
     public List<Shelf> getUserShelves(@PathVariable(name = "userId") Long userID, HttpSession session) {
         Account user = serviceAccount.findOne(userID);
@@ -886,50 +1082,10 @@ public class Controller_Rest {
         return user.getShelves();
     }
 
-    @GetMapping("/api/items")
-    public ResponseEntity<List<DTO_View_ShelfItem>> getItems(HttpSession session) {
-        List<ShelfItem> shelfItems = serviceShelfItem.findAll();
-
-        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem b : shelfItems) {
-            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(b);
-            dtos.add(dto);
-        }
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/items/{id}")
-    public ShelfItem getItem(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceShelfItem.findOne(id);
-    }
-
     @GetMapping("/api/items/title={title}")
     public ShelfItem getItem(@PathVariable(name = "title") String title, HttpSession session) {
         return serviceShelfItem.findByBook(serviceBook.findOne(title));
     }
-
-    @GetMapping("/api/books")
-    public ResponseEntity<List<DTO_View_Book>> getBooks(HttpSession session) {
-        List<Book> books = serviceBook.findAll();
-
-        List<DTO_View_Book> dtos = new ArrayList<>();
-        for (Book b : books) {
-            DTO_View_Book dto = new DTO_View_Book(b);
-            dtos.add(dto);
-        }
-        return ResponseEntity.ok(dtos);
-    }
-
-    @GetMapping("/api/books/{id}")
-    public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
-        return serviceBook.findOne(id);
-    }
-
-    @GetMapping("/api/books/title={title}")
-    public Book getBook(@PathVariable(name = "title") String title, HttpSession session) {
-        return serviceBook.findOne(title);
-    }
-
 
     @GetMapping("/api/books/search={search}")
     public ResponseEntity<List<DTO_View_Book>> searchBooks(@PathVariable(name = "search") String search, HttpSession session) {
@@ -946,45 +1102,6 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/api/items/search={search}")
-    public ResponseEntity<List<DTO_View_ShelfItem>> searchItems(@PathVariable(name = "search") String search, HttpSession session) {
-        if (search.isEmpty()) { return null; }
-
-        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
-        for (ShelfItem i : serviceShelfItem.findAll()) {
-            // search by title / description
-            if (i.getBook().getTitle().toLowerCase().contains(search.toLowerCase()) || i.getBook().getDescription().toLowerCase().contains(search.toLowerCase())) {
-                DTO_View_ShelfItem dto = new DTO_View_ShelfItem(i); dtos.add(dto);
-            }
-        }
-
-        return ResponseEntity.ok(dtos);
-    }
-
-    @PostMapping("/api/sendactivation/{id}")
-    public AccountActivationRequest sendActivationRequest(@PathVariable(name = "id") Long id, @RequestBody DTO_Post_AccountActivationRequest dtoPostAccountActivationRequest, HttpSession session) {
-
-        AccountAuthor aa = serviceAccountAuthor.findOne(id);
-        if (aa == null) { System.err.println("[x] account existn't"); return null; }
-
-        try {
-            AccountActivationRequest aar = new AccountActivationRequest(
-                    dtoPostAccountActivationRequest.getMailAddress(),
-                    dtoPostAccountActivationRequest.getPhoneNumber(),
-                    dtoPostAccountActivationRequest.getMessage(),
-                    LocalDate.now(),
-                    AccountActivationRequest_Status.WAITING,
-                    aa
-            );
-
-            serviceAccountActivationRequest.save(aar);
-
-            return aar;
-        } catch (Exception e) {
-            System.err.println("[x] failed to send activation req: " + e.getMessage());
-            return null;
-        }
-    }
 
 
 

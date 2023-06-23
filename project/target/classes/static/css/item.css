@@ -1,0 +1,28 @@
+#book {
+    display: block;
+    margin: 10px auto;
+    padding: 3px;
+    background-color: #202020;
+    width: 800px;
+}
+
+#book table {
+    display: inline-block;
+    padding: 3px;
+    background-color: #202020;
+    margin: 0 auto;
+}
+
+#book img  {
+    display: inline-block;
+    height: 300px;
+    width: 300px;
+    object-fit: contain;
+    background-color: #252525;
+    margin: 3px;
+}
+
+#book table th, #book table td {
+    font-size: medium;
+    color: white;
+}
