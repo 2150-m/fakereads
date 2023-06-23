@@ -29,6 +29,27 @@ function items_populate_makeitem_row(clm1, clm2, link = "") {
     return tr
 }
 
+function items_populate_makeitem_row_genres(genres) {
+
+    let tr = document.createElement("tr");
+    let th = document.createElement("th");
+    th.innerHTML = "GENRES:";
+    tr.append(th);
+    let td = document.createElement("td");
+
+    for (let i = 0; i < genres.length; i++) {
+        let a = document.createElement("a");
+        a.innerHTML = genres[i].name;
+        a.href = "/genres/" + genres[i].id;
+        td.append(a)
+    }
+
+    tr.append(td);
+
+
+    return tr;
+}
+
 async function removeBookFromShelf(element, shelfId, bookId) {
     const response = await fetch('/api/myaccount/shelves/' + shelfId + '/removebook/' + bookId, {
         method: 'POST',
@@ -58,13 +79,16 @@ function items_populate_makeitem(item, shelfId = 0) {
     let table = document.createElement("table");
 
     
-    table.append(items_populate_makeitem_row("TITLE: ",        i.title, "/items/" + item.id));
-    table.append(items_populate_makeitem_row("RELEASE DATE: ", i.releaseDate));
-    table.append(items_populate_makeitem_row("DESCRIPTION: ",  i.description));
-    table.append(items_populate_makeitem_row("NUM OF PAGES: ", i.numOfPages));
-    table.append(items_populate_makeitem_row("ISBN: ",         i.isbn));
-    table.append(items_populate_makeitem_row("RATING: ",       i.rating));
-    table.append(items_populate_makeitem_row("GENRES: ",       i.genres));
+    table.append(items_populate_makeitem_row("TITLE:",        i.title, "/items/" + item.id));
+    table.append(items_populate_makeitem_row("RELEASE DATE:", i.releaseDate));
+    table.append(items_populate_makeitem_row("DESCRIPTION:",  i.description));
+    table.append(items_populate_makeitem_row("NUM OF PAGES:", i.numOfPages));
+    table.append(items_populate_makeitem_row("ISBN:",         i.isbn));
+    table.append(items_populate_makeitem_row("RATING:",       i.rating));
+    table.append(items_populate_makeitem_row_genres(i.bookGenres));
+
+
+    
     span.append(table);
 
     if (shelfId != 0) {

@@ -128,6 +128,14 @@ public class Controller_Basic {
         return "add_books.html";
     }
 
+    @GetMapping("/add/genres")
+    public String addGenre(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+
+        return "add_genres.html";
+    }
+
     @GetMapping("/add/authors")
     public String addAuthor(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
@@ -159,4 +167,6 @@ public class Controller_Basic {
 
         return "update.html";
     }
+
+
 }
