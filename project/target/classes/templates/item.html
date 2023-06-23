@@ -8,7 +8,7 @@
 
         <title>ITEM</title>
         <link rel="stylesheet" href="/css/item.css">
-        <link rel="stylesheet" href="/css/form3.css">
+        <link rel="stylesheet" href="/css/dataform.css">
         <link rel="stylesheet" href="/css/popup.css">
     </head>
     <body>
@@ -21,9 +21,9 @@
         <div class="popup" id="form_postReview_popup" style="display: none;">
             <div class="popup-content">
                 <h1>POST REVIEW</h1>
-                <div class="form" id="form_postReview">
+                <div class="dataform" id="form_postReview">
                     <table>
-                        <tr><th>RATING:</th><td><input id="form_postReview_rating" type="range" min="1" max="10" value="10"><p id="form_postReview_rating_text"></p></td></tr>
+                        <tr><th>RATING:</th><td><input id="form_postReview_rating" type="range" min="1" max="10" value="10"><p id="form_postReview_rating_text">10</p></td></tr>
                         <tr><th>TEXT:</th><td><input   id="form_postReview_text" type="text" class="txtfld" placeholder="message"/></td></tr>
                     </table>
                     <button id="form_postReview_btn">post review</button>
@@ -51,14 +51,18 @@
         </div>
 
 
-        <table id="reviews">
-            <tr>
-                <th>RATING</th>
-                <th>TEXT</th>
-                <th>DATE</th>
-                <th>AUTHOR</th>
-            </tr>
-        </table>
+        <div>
+            <h2>REVIEWS</h2>
+            <table id="reviews" class="datatable">
+                <tr>
+                    <th id="reviews_rating">RATING</th>
+                    <th id="reviews_text">TEXT</th>
+                    <th id="reviews_date">DATE</th>
+                    <th id="reviews_author">AUTHOR</th>
+                </tr>
+            </table>
+        </div>
+
 
 
         <script type="text/javascript" src="/js/navbar.js"></script>

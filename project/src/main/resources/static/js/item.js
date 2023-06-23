@@ -72,13 +72,24 @@ async function addToShelf(bookId) {
     let selectedShelfId = sel.value;
 
     if (selectedShelfName.toUpperCase() == "READ") {
-        document.getElementById("form_postReview_popup").style.display = "block";
 
 
+        // SETUP STUFF
         let btn_postReview = document.getElementById("form_postReview_btn");
         btn_postReview.onclick = function() {
             addbook_wReview(selectedShelfId, bookId);
         }
+
+        // update txt by slider
+        let slider = document.getElementById("form_postReview_rating");
+
+        slider.addEventListener('input', function () {
+            document.getElementById("form_postReview_rating_text").innerHTML = slider.value;
+        }, false);
+        
+
+        // SHOW POPUP
+        document.getElementById("form_postReview_popup").style.display = "block";
     }
     else {
         addbook(selectedShelfId, bookId);

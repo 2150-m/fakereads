@@ -1,44 +1,36 @@
-.form {
+.doform {
     border-radius: 30px;
     border: solid rgb(64, 68, 75) 1px;
     background-color: transparent;
     margin: 30px auto;
     width: fit-content;
-    padding: 5px;
+    padding: 10px 30px;
 }
 
-.form th {
-    text-align: right;
-    color: gray;
-    border-color: rgb(64, 68, 75);
-    border-radius: 50px;
-    font-weight: initial;
-    width: fit-content;
-}
-
-.form input[type="text"], .form input[type="password"] {
+.doform input[type="text"], .doform input[type="password"] {
     color: white;
     background-color: rgba(64, 68, 75, 0.4);
-    font-size: large;
+    font-size: 20px;
     border-style: solid;
-    border-width: 2px;
+    border-width: thick;
     border-color: rgb(64, 68, 75);
     border-radius: 25px;
-    display: block;
+    display: inline;
+    margin: 9px auto;
     padding: 10px;
 }
 
-.form ::placeholder {
+.doform ::placeholder {
     color: rgb(114, 118, 122);
     opacity: 1;
 }
 
-.form button {
-    display: block;
+.doform button {
+    display: inline;
     color: rgb(218, 219, 220);
     background-color: rgb(54, 57, 63);
     border-width: 0px;
-    font-size: 40px;
+    font-size: 20px;
     margin: 3px auto;
     padding-top: 5px;
     padding-right: 5px;
@@ -48,13 +40,13 @@
     box-shadow: 3px 3px 3px #616161;
 }
 
-.form button:active {
+.doform button:active {
     background-color: #151515;
     box-shadow: 1px 1px 1px #616161;
     transform: translateX(2px) translateY(2px);
 }
 
-.form p {
+.doform p {
     margin: 10px auto;
     display: block;
     text-align: center;
