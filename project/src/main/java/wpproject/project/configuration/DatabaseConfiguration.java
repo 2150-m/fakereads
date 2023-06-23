@@ -93,14 +93,26 @@ public class DatabaseConfiguration {
         );
 
         CreateAccount(
-                "Scranton",
-                "The Electric City",
+                "Mike",
+                "From Scranton Witch Project",
                 "scranton",
                 "scranton@gmail.com",
                 "123",
                 LocalDate.now(),
                 "/avatars/scranton.png",
                 "i'm so scared",
+                Account_Role.READER
+        );
+
+        CreateAccount(
+                "Prison",
+                "Mike",
+                "prisonmike",
+                "prisonmike@gmail.com",
+                "123",
+                LocalDate.now(),
+                "/avatars/prisonmike.png",
+                "and i never got caught neither",
                 Account_Role.READER
         );
 
