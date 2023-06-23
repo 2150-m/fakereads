@@ -1,4 +1,5 @@
-let divEditBooks = document.getElementById("edit_books")
+// let genres;
+let divEditBooks = document.getElementById("edit_books");
 
 async function saveEditedItem(item, idNum) {
     let iTitle = document.getElementById("input" + idNum + "_title").value;
@@ -6,7 +7,9 @@ async function saveEditedItem(item, idNum) {
     let iReleaseDate = document.getElementById("input" + idNum + "_releaseDate").value;
     let iISBN = document.getElementById("input" + idNum + "_isbn").value;
     let iNumOfPages = document.getElementById("input" + idNum + "_numOfPages").value;
-    let iGenres = document.getElementById("input" + idNum + "_genres").value;
+    let iGenres = document.getElementById("input" + idNum + "_genres");
+
+    console.log(iGenres);
 
     const response = await fetch('/api/admin/update/item/' + item.id, {
         method: 'PUT',
@@ -20,7 +23,8 @@ async function saveEditedItem(item, idNum) {
             releaseDate: iReleaseDate,
             isbn: iISBN,
             numOfPages: iNumOfPages,
-            // genres: iGenres
+            bookGenres: iGenres.value,
+            coverPhoto: item.book.coverPhoto // pic stays the same
         })
     });
 
@@ -30,25 +34,14 @@ async function saveEditedItem(item, idNum) {
     console.log(text);
 }
 
-async function editFetchGenres() {
-    let select = createElement("select");
-    select.multiple = "true";
-
+async function edit_CreateSelect() {
+    // const response = await fetch("/api/genreswobooks");
     const response = await fetch("/api/genres");
     const genres = await response.json();
-
-    for (let i = 0; i < genres.length; i++) {
-        let option = document.createElement("option");
-        option.value = genres[i].id;
-        option.name = genres[i].name;
-        option.innerHTML = genres[i].name;
-        select.append(option);
-    }
-
-    return select;
+    return genres;
 }
 
-function editCreateItem(labelName, value, idNum, idPart, inputType) {
+function edit_CreateItem(labelName, value, idNum, idPart, inputType) {
     let tr = document.createElement("tr");
     let th = document.createElement("th");
     th.innerHTML = labelName;
@@ -56,7 +49,24 @@ function editCreateItem(labelName, value, idNum, idPart, inputType) {
     let td = document.createElement("td");
     
     if (inputType == "select") {
-        td.append(editFetchGenres());
+        let select = document.createElement("select");
+        edit_CreateSelect().then(
+            function(genres) {
+                select.id = "input" + idNum + "_" + idPart;
+                select.multiple = "true";
+
+                for (let i = 0; i < genres.length; i++) {
+                    let option = document.createElement("option");
+                    option.value = genres[i].id;
+                    option.innerHTML = genres[i].name;
+            
+                    select.append(option);
+                }
+            }
+        );
+
+        console.log(select);
+        td.append(select);
     } else {
         let input = document.createElement("input");
         input.type = inputType;
@@ -69,7 +79,7 @@ function editCreateItem(labelName, value, idNum, idPart, inputType) {
     return tr;
 }
 
-function editPopulateTable(item, idNum) {
+function edit_PopulateTable(item, idNum) {
     let i = item;
     if (i.book != null) { i = item.book; }
 
@@ -81,14 +91,13 @@ function editPopulateTable(item, idNum) {
     span.append(img);
 
     let table = document.createElement("table");
-
     
-    table.append(editCreateItem("TITLE: ",        i.title, idNum, "title", "text"));
-    table.append(editCreateItem("RELEASE DATE: ", i.releaseDate, idNum, "releaseDate", "date"));
-    table.append(editCreateItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
-    table.append(editCreateItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
-    table.append(editCreateItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
-    table.append(editCreateItem("GENRES: ",       i.bookGenres, idNum, "genres", "text"));
+    table.append(edit_CreateItem("TITLE: ",        i.title, idNum, "title", "text"));
+    table.append(edit_CreateItem("RELEASE DATE: ", i.releaseDate, idNum, "releaseDate", "date"));
+    table.append(edit_CreateItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
+    table.append(edit_CreateItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
+    table.append(edit_CreateItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
+    table.append(edit_CreateItem("GENRES: ",       i.bookGenres, idNum, "genres", "select"));
     span.append(table);
 
     let button = document.createElement("button");
@@ -101,7 +110,7 @@ function editPopulateTable(item, idNum) {
     return span;
 }
 
-async function editLoadItems(search = "") {
+async function edit_LoadItems(search = "") {
     items_clear(divEditBooks);
 
     let url = "/api/items";
@@ -111,18 +120,18 @@ async function editLoadItems(search = "") {
     const itemsJson = await responseItems.json();
     
     for (let i = 0; i < itemsJson.length; i++) {
-        divEditBooks.append(editPopulateTable(itemsJson[i], i));
+        divEditBooks.append(edit_PopulateTable(itemsJson[i], i));
     }
 }
 
-editLoadItems();
+edit_LoadItems();
 
 // SEARCH
 let txt_search = document.getElementById("txt_search");
 let btn_search = document.getElementById("btn_search");
 
 function search() {
-    editLoadItems(txt_search.value);
+    edit_LoadItems(txt_search.value);
 }
 
 txt_search.addEventListener("keydown", function(event) { if (event.key == 'Enter') { search(); } }, false);

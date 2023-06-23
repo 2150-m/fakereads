@@ -14,6 +14,7 @@ async function fetchGenres() {
     if (response.ok) {
         let options = document.getElementById("genres_select");
         
+        // const response2 = await fetch("/api/genreswobooks");
         const response2 = await fetch("/api/genres");
         const genres = await response2.json();
 
@@ -28,6 +29,13 @@ async function fetchGenres() {
 }
 
 async function apiAdd(vTitle, vDescription, vReleaseDate, vISBN, vNumOfPages, vPhoto, vGenres) {
+    console.log(vGenres);
+    let selected = []; 
+    for (let i = 0; i < vGenres.selectedOptions.length; i++) {
+        selected.push(vGenres.selectedOptions[i]);
+    }
+    console.log(selected);
+
     const response = await fetch('/api/admin/additem', {
         method: 'POST',
         headers: {
@@ -41,7 +49,7 @@ async function apiAdd(vTitle, vDescription, vReleaseDate, vISBN, vNumOfPages, vP
             isbn: vISBN,
             numOfPages: vNumOfPages,
             coverPhoto: vPhoto,
-            bookGenres: vGenres
+            genres: selected
         })
     });
 
@@ -58,7 +66,7 @@ function add() {
     // }
     let photo = "/covers/404.png";
 
-    apiAdd(iTitle.value, iDescription.value, iReleaseDate.value, iISBN.value, iNumOfPages.value, photo, iGenres.value);
+    apiAdd(iTitle.value, iDescription.value, iReleaseDate.value, iISBN.value, iNumOfPages.value, photo, iGenres);
 }
 
 fetchGenres();
