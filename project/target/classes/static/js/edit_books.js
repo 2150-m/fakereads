@@ -9,7 +9,14 @@ async function saveEditedItem(item, idNum) {
     let iNumOfPages = document.getElementById("input" + idNum + "_numOfPages").value;
     let iGenres = document.getElementById("input" + idNum + "_genres");
 
+    console.log("Genres: ");
     console.log(iGenres);
+
+    let selected = []; 
+    for (let i = 0; i < iGenres.selectedOptions.length; i++) {
+        selected.push(iGenres.selectedOptions[i]);
+    }
+    console.log(selected);
 
     const response = await fetch('/api/admin/update/item/' + item.id, {
         method: 'PUT',
@@ -23,7 +30,7 @@ async function saveEditedItem(item, idNum) {
             releaseDate: iReleaseDate,
             isbn: iISBN,
             numOfPages: iNumOfPages,
-            bookGenres: iGenres.value,
+            genres: selected,
             coverPhoto: item.book.coverPhoto // pic stays the same
         })
     });
@@ -59,6 +66,7 @@ function edit_CreateItem(labelName, value, idNum, idPart, inputType) {
                     let option = document.createElement("option");
                     option.value = genres[i].id;
                     option.innerHTML = genres[i].name;
+                    option.name = genres[i].name;
             
                     select.append(option);
                 }

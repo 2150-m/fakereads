@@ -838,7 +838,7 @@ public class Controller_Rest {
         targetBook.setBookGenres(new ArrayList<BookGenre>());
         for (BookGenre g : newInfo.getGenres()) {
             BookGenre genre = serviceBookGenre.findOne(g.getName());
-            System.out.println(serviceBookGenre.findOne(g.getName()));
+//            System.out.println("Found genre: " + serviceBookGenre.findOne(g.getName()).getName());
             if (genre == null || genre.getName().isEmpty()) {
                 return ResponseEntity.badRequest().body("Genre " + g.getName() + " does not exist.");
             }
