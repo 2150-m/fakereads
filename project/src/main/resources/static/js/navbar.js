@@ -13,11 +13,11 @@ function createLi(text, link) {
     return li;
 }
 
-span1.append(createLi("HOME",    "/home"));
-span1.append(createLi("ITEMS",   "/items"));
-span1.append(createLi("USERS",   "/users"));
-span1.append(createLi("AUTHORS", "/authors"));
-span1.append(createLi("GENRES",  "/genres"));
+span1.append(createLi("🏠",   "/home"));
+span1.append(createLi("📚",   "/items"));
+span1.append(createLi("👥",   "/users"));
+span1.append(createLi("✍️",  "/authors"));
+span1.append(createLi("🕮",  "/genres"));
 
 navbar.append(span1);
 
@@ -33,18 +33,18 @@ async function load_dynamic() {
         const myaccountjson = await response.json();
         
         if (myaccountjson.accountRole == "ADMINISTRATOR") {
-            span2.append(createLi("ACTIVATIONS", "/activations"));
-            span2.append(createLi("ADD", "/add"));
+            span2.append(createLi("🚨", "/activations"));
+            span2.append(createLi("➕", "/add"));
         }
 
-        span2.append(createLi("MY ACCOUNT",                              "/myaccount"));
-        span2.append(createLi("UPDATE ACCOUNT",                          "/update"));
-        span2.append(createLi("LOGOUT (" + myaccountjson.username + ")", "/logout"));
+        span2.append(createLi("👤",                                 "/myaccount"));
+        span2.append(createLi("⚙",                                 "/update"));
+        span2.append(createLi("🚪 (" + myaccountjson.username + ")", "/logout"));
         
     }
     else {
-        span2.append(createLi("LOGIN",    "/login"));
-        span2.append(createLi("REGISTER", "/register"));
+        span2.append(createLi("🔑", "/login"));
+        span2.append(createLi("📝", "/register"));
     }
 }
 
