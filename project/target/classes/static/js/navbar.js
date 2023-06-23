@@ -34,7 +34,7 @@ async function load_dynamic() {
         
         if (myaccountjson.accountRole == "ADMINISTRATOR") {
             span2.append(createLi("🚨", "/activations"));
-            span2.append(createLi("➕", "/add"));
+            span2.append(createLi("➕", "/manage"));
         }
 
         span2.append(createLi("👤",                                 "/myaccount"));
