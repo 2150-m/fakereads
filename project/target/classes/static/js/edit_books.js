@@ -83,21 +83,12 @@ function editPopulateTable(item, idNum) {
     let table = document.createElement("table");
 
     
-<<<<<<< Updated upstream
-    table.append(createItem("TITLE: ",        i.title, idNum, "title", "text"));
-    table.append(createItem("RELEASE DATE: ", i.releaseDate, idNum, "releaseDate", "date"));
-    table.append(createItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
-    table.append(createItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
-    table.append(createItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
-    table.append(createItem("GENRES: ",       i.bookGenres, idNum, "genres", "text"));
-=======
     table.append(editCreateItem("TITLE: ",        i.title, idNum, "title", "text"));
     table.append(editCreateItem("RELEASE DATE: ", i.releaseDate, idNum, "releaseDate", "date"));
     table.append(editCreateItem("DESCRIPTION: ",  i.description, idNum, "description", "text"));
     table.append(editCreateItem("NUM OF PAGES: ", i.numOfPages, idNum, "numOfPages", "number"));
     table.append(editCreateItem("ISBN: ",         i.isbn, idNum, "isbn", "text"));
-    table.append(editCreateItem("GENRES: ",       i.genres, idNum, "genres", "text"));
->>>>>>> Stashed changes
+    table.append(editCreateItem("GENRES: ",       i.bookGenres, idNum, "genres", "text"));
     span.append(table);
 
     let button = document.createElement("button");
@@ -110,30 +101,28 @@ function editPopulateTable(item, idNum) {
     return span;
 }
 
-async function loaditems(search = "") {
-    const response = await fetch("/api/myaccount");
+async function editLoadItems(search = "") {
+    items_clear(divEditBooks);
 
-    if (response.ok) {
-        const responseItems = await fetch("/api/items");
-        const itemsJson = await responseItems.json();
-        
-        let url = "/api/items";
-        if (search != "") { url = "/api/items/search=" + search; }
-        
-        for (let i = 0; i < itemsJson.length; i++) {
-            divEditBooks.append(editPopulateTable(itemsJson[i], i));
-        }
+    let url = "/api/items";
+    if (search != "") { url = "/api/items/search=" + search; }
+
+    const responseItems = await fetch(url);
+    const itemsJson = await responseItems.json();
+    
+    for (let i = 0; i < itemsJson.length; i++) {
+        divEditBooks.append(editPopulateTable(itemsJson[i], i));
     }
 }
 
-edit_loaditems();
+editLoadItems();
 
 // SEARCH
 let txt_search = document.getElementById("txt_search");
 let btn_search = document.getElementById("btn_search");
 
 function search() {
-    edit_loaditems(txt_search.value);
+    editLoadItems(txt_search.value);
 }
 
 txt_search.addEventListener("keydown", function(event) { if (event.key == 'Enter') { search(); } }, false);
