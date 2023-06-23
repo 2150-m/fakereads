@@ -136,6 +136,22 @@ public class Controller_Basic {
         return "add_authors.html";
     }
 
+    @GetMapping("/edit/books")
+    public String editBooks(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+
+        return "edit_books.html";
+    }
+
+    @GetMapping("/edit/authors")
+    public String editAuthors(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+
+        return "edit_authors.html";
+    }
+
     @GetMapping("/update")
     public String update(HttpSession session) {
         Account user = (Account) session.getAttribute("user");

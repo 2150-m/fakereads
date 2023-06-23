@@ -13,11 +13,11 @@ function createLi(text, link) {
     return li;
 }
 
-span1.append(createLi("🏠",   "/home"));
-span1.append(createLi("📚",   "/items"));
-span1.append(createLi("👥",   "/users"));
-span1.append(createLi("✍️",  "/authors"));
-span1.append(createLi("🕮",  "/genres"));
+span1.append(createLi("🏠 Home",   "/home"));
+span1.append(createLi("📚 Books",   "/items"));
+span1.append(createLi("🕮 Genres",  "/genres"));
+span1.append(createLi("👥 Users",   "/users"));
+span1.append(createLi("✍️ Authors",  "/authors"));
 
 navbar.append(span1);
 
@@ -33,18 +33,18 @@ async function load_dynamic() {
         const myaccountjson = await response.json();
         
         if (myaccountjson.accountRole == "ADMINISTRATOR") {
-            span2.append(createLi("🚨", "/activations"));
-            span2.append(createLi("➕", "/manage"));
+            // span2.append(createLi("🚨", "/activations"));
+            span2.append(createLi("➕ Management", "/manage"));
         }
 
         span2.append(createLi("👤",                                 "/myaccount"));
         span2.append(createLi("⚙",                                 "/update"));
-        span2.append(createLi("🚪 (" + myaccountjson.username + ")", "/logout"));
+        span2.append(createLi("🚪 Log out (" + myaccountjson.username + ")", "/logout"));
         
     }
     else {
-        span2.append(createLi("🔑", "/login"));
-        span2.append(createLi("📝", "/register"));
+        span2.append(createLi("🔑 Log in", "/login"));
+        span2.append(createLi("📝 Register", "/register"));
     }
 }
 
