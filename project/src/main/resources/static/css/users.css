@@ -1,4 +1,3 @@
-
 .user_link {
     color: white;
     text-decoration: none;
@@ -21,8 +20,8 @@
 
 .user img {
     display: block;
-    width: 250px;
-    height: 250px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     border: 3px solid white;
     border-radius: 100px;
@@ -30,13 +29,23 @@
 }
 
 .user table {
+    overflow: auto;
+    width: 350px;
+    height: 180px;
+    max-width: 500px;
+    max-height: 300px;
+    font-size: large;
     border: 1px dashed white;
     padding: 3px;
     margin: 10px;
     display: block;
-    
 }
 
-.user table {
-    width: 500px;
+.user table th {
+    width: 120px;
+}
+
+.user table td {
+    overflow: clip;
+    width: auto;
 }
