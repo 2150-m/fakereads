@@ -1,38 +1,32 @@
-let div_items = document.getElementById("div_items");
+let genres = document.getElementById("genres");
 
-function div_items_clear() {
-    
-    while (div_items.firstChild) {
-        div_items.removeChild(div_items.lastChild);
-    }
-}
-
-function makeItem(json) {
+function makeGenre(json) {
     let a = document.createElement("a");
+    a.className = "genre_link";
     a.href = "/genres/" + json.id;
 
-    let p = document.createElement("p");
-    p.innerHTML = json.name;
-    a.append(p);
+    let h2 = document.createElement("h2");
+    h2.className = "genre";
+    h2.innerHTML = json.name;
+    a.append(h2);
 
     return a;
 }
 
-function div_items_populate(jsonData) {
+function genres_populate(jsonData) {
 
     for (let i = 0; i < jsonData.length; i++) {
-        div_items.append(makeItem(jsonData[i]));
+        genres.append(makeGenre(jsonData[i]));
     }
 }
 
-async function loaditems() {
-    div_items_clear();
+async function loadGenres() {
 
     const response = await fetch("/api/genres");
     const jsonData = await response.json();
 
-    div_items_populate(jsonData);
+    genres_populate(jsonData);
 }
 
-loaditems();
+loadGenres();
 

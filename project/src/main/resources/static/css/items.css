@@ -3,25 +3,34 @@
 }
 
 .item {
+    border: 1px solid white;
     display: inline-block;
     margin: 10px;
     padding: 3px;
     background-color: #202020;
 }
 
-.item table {
-    display: inline-block;
+.item img  {
+    display: block;
+    margin: 0 auto;
+    height: 165px;
+    width: 120px;
+    object-fit: contain;
+    padding: 3px;
+    border: 2px dotted white;
 }
 
-.item img  {
-    display: inline-block;
-    max-height: 165px;
-    max-width: 120px;
+.item table {
+    display: block;
+    width: 350px;
+    max-width: 350px;
 }
+
 
 .item th, .item td {
     font-size: medium;
     color: white;
+    text-overflow: ellipsis;
 }
 
 .item th {
