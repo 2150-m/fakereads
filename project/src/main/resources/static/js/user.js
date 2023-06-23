@@ -157,7 +157,12 @@ async function loadUser() {
     const response_myaccount = await fetch("/api/myaccount");
 
     if (response_myaccount.ok) {
-        displayUserControls();
+
+        console.log(window.location.pathname);
+        if (window.location.pathname == "/myaccount") {
+            displayUserControls();
+        }
+        
 
         // const response_myaccount = await response_myaccount.json()
 

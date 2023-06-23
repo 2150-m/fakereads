@@ -9,7 +9,8 @@
         <title>USER</title>
         <link rel="stylesheet" href="/css/user.css">
         <link rel="stylesheet" href="/css/items.css">
-        <link rel="stylesheet" href="/css/form2.css">
+        <link rel="stylesheet" href="/css/popup.css">
+        <link rel="stylesheet" href="/css/form3.css">
     </head>
     <body>
         <div id="navbar"></div>
@@ -17,15 +18,19 @@
         <input type="hidden" id="user_id" th:value="${user_id}"/>
 
         <div class="popup" id="form_activation_popup" style="display: none;">
-            <div class="form" id="form_activation">
-                <table>
-                    <tr><th>EMAIL:</th><td><input         class="txtfld" type="text" id="form_activation_mail"  placeholder="email"/></td></tr>
-                    <tr><th>PHONE NUMBER:</th><td><input  class="txtfld" type="text" id="form_activation_phone" placeholder="phone number"/></td></tr>
-                    <tr><th>MESSAGE:</th><td><input       class="txtfld" type="text" id="form_activation_msg"   placeholder="message"/></td></tr>
-                </table>
-                <button id="form_activation_btn">[SEND ACTIVATION REQUEST]</button>
-                <p id="form_activation_status">...</p>
+            <div class="popup-content">
+                <h1>SEND ACTIVATION</h1>
+                <div class="form" id="form_activation">
+                    <table>
+                        <tr><th>EMAIL:</th><td><input        type="text" id="form_activation_mail"  placeholder="email"/></td></tr>
+                        <tr><th>PHONE NUMBER:</th><td><input type="text" id="form_activation_phone" placeholder="phone number"/></td></tr>
+                        <tr><th>MESSAGE:</th><td><input      type="text" id="form_activation_msg"   placeholder="message"/></td></tr>
+                    </table>
+                    <button id="form_activation_btn">[SEND ACTIVATION REQUEST]</button>
+                    <p id="form_activation_status">...</p>
+                </div>
             </div>
+
         </div>
 
         <div id="user">
