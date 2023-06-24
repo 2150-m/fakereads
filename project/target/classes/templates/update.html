@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+    <head>
+        <!-- MAIN -->
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <title>UPDATE</title>
+        <link rel="stylesheet" href="/css/update.css">
+        <link rel="stylesheet" href="/css/dataform.css">
+    </head>
+    <body>
+        <div id="navbar"></div>
+
+        <h1>UPDATE ACCOUNT</h1>
+        <div class="dataform" id="form_update">
+            <table>
+                <tr><th>FIRST NAME:</th><td><input        class="txtfld" type="text" id="txt_firstName"   placeholder="firt name"/></td></tr>
+                <tr><th>LAST NAME:</th><td><input         class="txtfld" type="text" id="txt_lastName"    placeholder="last name"/></td></tr>
+                <tr><th>USERNAME:</th><td><input          class="txtfld" type="text" id="txt_username"    placeholder="username"/></td></tr>
+                <tr><th>DATE OF BIRTH:</th><td><input     class="txtfld" type="text" id="txt_dateOfBirth" placeholder="date of birth"/></td></tr>
+                <tr><th>DESCRIPTION:</th><td><input       class="txtfld" type="text" id="txt_description" placeholder="bio"/></td></tr>
+                <tr><th>MAIL:</th><td><input              class="txtfld" type="text" id="txt_mailAddress" placeholder="email"/></td></tr>
+                <tr><th>CURRENT PASSWORD:</th><td><input  class="txtfld" type="text" id="txt_password"    placeholder="current password"/></td></tr>
+                <tr><th>NEW PASSWORD:</th><td><input      class="txtfld" type="text" id="txt_newPassword" placeholder="new password"/></td></tr>
+            </table>
+            <button id="btn_update">UPDATE INFO</button>
+            <p id="p_status">...</p>
+        </div>
+
+        <script type="text/javascript" src="/js/navbar.js"></script>
+        <script type="text/javascript" src="/js/update.js"></script>
+    </body>
+</html>

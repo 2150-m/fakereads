@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+    <head>
+        <!-- MAIN -->
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <title>ITEM</title>
+        <link rel="stylesheet" href="/css/item.css">
+        <link rel="stylesheet" href="/css/dataform.css">
+        <link rel="stylesheet" href="/css/popup.css">
+    </head>
+    <body>
+
+        <input type="hidden" id="item_id" th:value="${item_id}"/>
+
+
+        <div id="navbar"></div>
+
+        <div class="popup" id="form_postReview_popup" style="display: none;">
+            <div class="popup-content">
+                <h1>POST REVIEW</h1>
+                <div class="dataform" id="form_postReview">
+                    <table>
+                        <tr><th>RATING:</th><td><input id="form_postReview_rating" type="range" min="1" max="10" value="10"><p id="form_postReview_rating_text">10</p></td></tr>
+                        <tr><th>TEXT:</th><td><input   id="form_postReview_text" type="text" class="txtfld" placeholder="message"/></td></tr>
+                    </table>
+                    <button id="form_postReview_btn">post review</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="book">
+            <img id="book_coverPhoto" src="/covers/404.png">
+            <table>
+                <tr><th>TITLE:</th><td        id="book_title">...</td></tr>
+                <tr><th>RELEASE DATE:</th><td id="book_releaseDate">...</td></tr>
+                <tr><th>DESCRIPTION:</th><td  id="book_description">...</td></tr>
+                <tr><th>NUM OF PAGES:</th><td id="book_numOfPages">...</td></tr>
+                <tr><th>ISBN:</th><td         id="book_isbn">...</td></tr>
+                <tr><th>RATING:</th><td       id="book_rating">...</td></tr>
+                <tr><th>GENRES:</th><td       id="book_genres">...</td></tr>
+            </table>
+        </div>
+
+        <div id="book_controls" style="display: none;">
+            <select id="shelf"></select>
+            <button id="shelf_add">ADD TO SHELF</button>
+            <p id="shelf_status">...</p>
+        </div>
+
+
+        <div>
+            <h2>REVIEWS</h2>
+            <table id="reviews" class="datatable">
+                <tr>
+                    <th id="reviews_rating">RATING</th>
+                    <th id="reviews_text">TEXT</th>
+                    <th id="reviews_date">DATE</th>
+                    <th id="reviews_author">AUTHOR</th>
+                </tr>
+            </table>
+        </div>
+
+
+
+        <script type="text/javascript" src="/js/navbar.js"></script>
+        <script type="text/javascript" src="/js/item.js"></script>
+    </body>
+</html>
+
+

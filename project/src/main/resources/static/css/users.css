@@ -1,0 +1,51 @@
+.user_link {
+    color: white;
+    text-decoration: none;
+    width: fit-content;
+    display: inline-block;
+    height: fit-content;
+    margin: 20px;
+}
+
+
+.user {
+    display: inline-block;
+    width: fit-content;
+    height: fit-content;
+    background-color: #101010;
+    border: 1px solid white;
+    padding: 3px;
+    border-radius: 10px;
+}
+
+.user img {
+    display: block;
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    border: 3px solid white;
+    border-radius: 100px;
+    margin: 0 auto;
+}
+
+.user table {
+    overflow: auto;
+    width: 350px;
+    height: 180px;
+    max-width: 500px;
+    max-height: 300px;
+    font-size: large;
+    border: 1px dashed white;
+    padding: 3px;
+    margin: 10px;
+    display: block;
+}
+
+.user table th {
+    width: 120px;
+}
+
+.user table td {
+    overflow: clip;
+    width: auto;
+}

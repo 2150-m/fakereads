@@ -1,0 +1,69 @@
+.form {
+    border-radius: 30px;
+    border: solid rgb(64, 68, 75) 1px;
+    background-color: transparent;
+    margin: 30px auto;
+    width: fit-content;
+    padding: 5px;
+}
+
+.form table {
+    border-spacing: 15px;
+}
+
+.form th {
+    color: gray;
+    background-color: rgba(47, 49, 53, 0.41);
+    border-style: solid;
+    border-width: thick;
+    border-color: rgb(64, 68, 75);
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-weight: initial;
+    width: fit-content;
+}
+
+.form input[type="text"], .form input[type="password"] {
+    color: white;
+    background-color: rgba(64, 68, 75, 0.4);
+    font-size: 40px;
+    border-style: solid;
+    border-width: thick;
+    border-color: rgb(64, 68, 75);
+    border-radius: 25px;
+    display: block;
+    margin: 9px auto;
+    padding: 10px;
+}
+
+.form ::placeholder {
+    color: rgb(114, 118, 122);
+    opacity: 1;
+}
+
+.form button {
+    display: block;
+    color: rgb(218, 219, 220);
+    background-color: rgb(54, 57, 63);
+    border-width: 0px;
+    font-size: 40px;
+    margin: 3px auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    cursor: pointer;
+    box-shadow: 3px 3px 3px #616161;
+}
+
+.form button:active {
+    background-color: #151515;
+    box-shadow: 1px 1px 1px #616161;
+    transform: translateX(2px) translateY(2px);
+}
+
+.form p {
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+}

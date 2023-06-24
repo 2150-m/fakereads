@@ -15,21 +15,22 @@ public class Service_BookGenre {
     @Autowired
     private Repository_Genre repositoryGenre;
 
+    //#
+    //# ESSENTIAL
+    //#
+
     public List<BookGenre> findAll() {
         return repositoryGenre.findAll();
     }
-
-    public BookGenre findOne(String name) {
-        Optional<BookGenre> genre = repositoryGenre.findByName(name);
-        return genre.orElse(null);
-    }
-
-    public BookGenre findOne(Long id) {
-        Optional<BookGenre> genre = repositoryGenre.findById(id);
-        return genre.orElse(null);
-    }
-
+    public BookGenre findOne(String name) { return repositoryGenre.findByName(name).orElse(null); }
+    public BookGenre findOne(Long id) { return repositoryGenre.findById(id).orElse(null); }
     public BookGenre save(BookGenre genre) {
         return repositoryGenre.save(genre);
     }
+
+    //#
+    //# FUNCTIONAL
+    //#
+
+
 }

@@ -1,0 +1,63 @@
+#user {
+    margin: 10px auto;
+    display: block;
+    width: fit-content;
+    border: 1px solid;
+    border-radius: 40px;
+    background: #151515;
+}
+
+#user img {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#imgcont {
+    width: 300px;
+    height: 300px;
+    border: dashed 3px white;
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 50%;
+    background: #050505;
+}
+
+#user table {
+    display: inline-block;
+    background: #101010;
+    border: 3px dotted;
+    padding: 10px;
+    margin: 30px;
+}
+
+#user_activate {
+    display: block;
+    margin: 10px auto;
+}
+
+.shelf {
+    margin: 50px;
+}
+
+.shelf_head {
+    margin-bottom: 20px;
+}
+
+.shelf_head h2 {
+    display: inline;
+}
+
+.shelf_remove {
+    display: inline;
+    font-size: xx-large;
+    border: none;
+    color: white;
+    margin: 0 auto;
+}
+
+.item_remove {
+    color: red;
+}

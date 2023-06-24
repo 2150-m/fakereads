@@ -19,24 +19,27 @@ public class Service_ShelfItem {
     @Autowired
     private Repository_Book repositoryBook;
 
+
+    //#
+    //# ESSENTIAL
+    //#
+
     public ShelfItem findByBook(Book book) {
         return repositoryShelfItem.findByBook(book);
     }
-
-    public ShelfItem findOne(Long id) {
-        Optional<ShelfItem> item = repositoryShelfItem.findById(id);
-        return item.orElse(null);
-    }
-
+    public ShelfItem findOne(Long id) { return repositoryShelfItem.findById(id).orElse(null); }
     public List<ShelfItem> findAll() {
         return repositoryShelfItem.findAll();
     }
-
     public ShelfItem save(ShelfItem item) {
         return repositoryShelfItem.save(item);
     }
-
     public void remove(ShelfItem i) {
         repositoryShelfItem.delete(i);
     }
+
+    //#
+    //# FUNCTIONAL
+    //#
+
 }

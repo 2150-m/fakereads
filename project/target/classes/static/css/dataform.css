@@ -1,0 +1,61 @@
+.dataform {
+    border-radius: 30px;
+    border: solid rgb(64, 68, 75) 1px;
+    background-color: transparent;
+    margin: 30px auto;
+    width: fit-content;
+    padding: 5px;
+}
+
+.dataform th {
+    text-align: right;
+    color: gray;
+    border-color: rgb(64, 68, 75);
+    border-radius: 50px;
+    font-weight: initial;
+    width: fit-content;
+}
+
+.dataform input[type="text"], .dataform input[type="password"] {
+    color: white;
+    background-color: rgba(64, 68, 75, 0.4);
+    font-size: large;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(64, 68, 75);
+    border-radius: 25px;
+    display: block;
+    padding: 10px;
+}
+
+.dataform ::placeholder {
+    color: rgb(114, 118, 122);
+    opacity: 1;
+}
+
+.dataform button {
+    display: block;
+    color: rgb(218, 219, 220);
+    background-color: rgb(54, 57, 63);
+    border-width: 0px;
+    font-size: 40px;
+    margin: 3px auto;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    cursor: pointer;
+    box-shadow: 3px 3px 3px #616161;
+}
+
+.dataform button:active {
+    background-color: #151515;
+    box-shadow: 1px 1px 1px #616161;
+    transform: translateX(2px) translateY(2px);
+}
+
+.dataform p {
+    margin: 10px auto;
+    display: block;
+    text-align: center;
+}

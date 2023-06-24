@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+    <head>
+        <!-- MAIN -->
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <title>USER</title>
+        <link rel="stylesheet" href="/css/user.css">
+        <link rel="stylesheet" href="/css/items.css">
+        <link rel="stylesheet" href="/css/popup.css">
+        <link rel="stylesheet" href="/css/dataform.css">
+        <link rel="stylesheet" href="/css/doform.css">
+    </head>
+    <body>
+        <div id="navbar"></div>
+
+        <input type="hidden" id="user_id" th:value="${user_id}"/>
+
+        <div class="popup" id="form_activation_popup" style="display: none;">
+            <div class="popup-content">
+                <h1>SEND ACTIVATION</h1>
+                <div class="dataform" id="form_activation">
+                    <table>
+                        <tr><th>EMAIL:</th><td><input        type="text" id="form_activation_mail"  placeholder="email"/></td></tr>
+                        <tr><th>PHONE NUMBER:</th><td><input type="text" id="form_activation_phone" placeholder="phone number"/></td></tr>
+                        <tr><th>MESSAGE:</th><td><input      type="text" id="form_activation_msg"   placeholder="message"/></td></tr>
+                    </table>
+                    <button id="form_activation_btn">[SEND ACTIVATION REQUEST]</button>
+                    <p id="form_activation_status">...</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="user">
+            <div id="imgcont">
+                <img id="user_profilePicture" src="/avatars/default.jpg">
+            </div>
+            <table>
+                <tr><th>FIRST NAME:</th><td    id="user_firstName">...</td></tr>
+                <tr><th>LAST NAME:</th><td     id="user_lastName">...</td></tr>
+                <tr><th>USERNAME:</th><td      id="user_username">...</td></tr>
+                <tr><th>MAIL:</th><td          id="user_mailAddress">...</td></tr>
+                <tr><th>DATE OF BIRTH:</th><td id="user_dateOfBirth">...</td></tr>
+                <tr><th>DESCRITPION:</th><td   id="user_description">...</td></tr>
+                <tr><th>ACCOUNT ROLE:</th><td  id="user_accountRole">...</td></tr>
+            </table>
+
+            <div id="user_activate_cont" style="display: none;">
+                <button id="user_activate">[SEND ACTIVATION REQUEST]</button>
+            </div>
+        </div>
+
+        <div id="user_controls">
+            <div class="doform" id="addshelf" style="display: none";>
+                <input type="text" id="addshelf_txt" placeholder="new shelf name"/>
+                <button id="addshelf_btn">ADD NEW SHELF</button>
+                <p id="addshelf_status"></p>
+            </div>
+
+
+        </div>
+
+        <div id="shelves_cont">
+            <h1>SHELVES</h1>
+            <ul id="shelves">
+                
+            </ul>
+
+            
+        </div>
+
+        <script type="text/javascript" src="/js/main.js"></script>
+        <script type="text/javascript" src="/js/navbar.js"></script>
+        <script type="text/javascript" src="/js/user.js"></script>
+    </body>
+</html>
+
+

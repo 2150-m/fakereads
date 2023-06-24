@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+    <head>
+        <!-- MAIN -->
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <title>REGISTER</title>
+        <link rel="stylesheet" href="/css/register.css">
+        <link rel="stylesheet" href="/css/dataform.css">
+    </head>
+    <body>
+        <div id="navbar"></div>
+
+        <h1>REGISTER</h1>
+        <div class="dataform" id="form_register">
+            <table>
+                <tr><th>FIRST NAME:</th><td><input class="txtfld" type="text" id="txt_firstname" placeholder="first name"/></td></tr>
+                <tr><th>LAST NAME:</th><td><input  class="txtfld" type="text" id="txt_lastname"  placeholder="last name"/></td></tr>
+                <tr><th>USERNAME:</th><td><input   class="txtfld" type="text" id="txt_username"  placeholder="username"/></td></tr>
+                <tr><th>MAIL:</th><td><input       class="txtfld" type="text" id="txt_mail"      placeholder="email"/></td></tr>
+                <tr><th>PASSWORD:</th><td><input   class="txtfld" type="text" id="txt_password"  placeholder="password"/></td></tr>
+            </table>
+            <button id="btn_register">REGISTER</button>
+            <p id="p_status">...</p>
+        </div>
+
+        <script type="text/javascript" src="/js/navbar.js"></script>
+        <script type="text/javascript" src="/js/register.js"></script>
+    </body>
+</html>
