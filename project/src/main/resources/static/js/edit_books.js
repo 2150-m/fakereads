@@ -119,7 +119,7 @@ function edit_PopulateTable(item, idNum) {
 }
 
 async function edit_LoadItems(search = "") {
-    items_clear(divEditBooks);
+    items_clear(divEditAuthors);
 
     let url = "/api/items";
     if (search != "") { url = "/api/items/search=" + search; }
@@ -129,7 +129,7 @@ async function edit_LoadItems(search = "") {
     
     for (let i = 0; i < itemsJson.length; i++) {
         console.log(itemsJson[i]);
-        divEditBooks.append(edit_PopulateTable(itemsJson[i], i));
+        divEditAuthors.append(edit_PopulateTable(itemsJson[i], i));
     }
 }
 

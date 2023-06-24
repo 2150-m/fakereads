@@ -78,16 +78,13 @@ function items_populate_makeitem(item, shelfId = 0) {
 
     let table = document.createElement("table");
 
-    
     table.append(items_populate_makeitem_row("TITLE:",        i.title, "/items/" + item.id));
     table.append(items_populate_makeitem_row("RELEASE DATE:", i.releaseDate));
     table.append(items_populate_makeitem_row("DESCRIPTION:",  i.description));
     table.append(items_populate_makeitem_row("NUM OF PAGES:", i.numOfPages));
     table.append(items_populate_makeitem_row("ISBN:",         i.isbn));
     table.append(items_populate_makeitem_row("RATING:",       i.rating));
-    table.append(items_populate_makeitem_row_genres(i.bookGenres));
-
-
+    table.append(items_populate_makeitem_row_genres(i.genres));
     
     span.append(table);
 
@@ -100,12 +97,10 @@ function items_populate_makeitem(item, shelfId = 0) {
         span.append(button);
     }
     
-    
     return span;
 }
 
 function items_populate(div_items, items, shelfId = 0) {
-
     for (let i = 0; i < items.length; i++) {
         div_items.append(items_populate_makeitem(items[i], shelfId));
     }

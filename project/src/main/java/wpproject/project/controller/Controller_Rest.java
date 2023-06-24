@@ -155,6 +155,21 @@ public class Controller_Rest {
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
+    @GetMapping("/api/unactivated_authors")
+    public ResponseEntity<List<DTO_View_AccountAuthorAsAnon>> getUnactivatedAuthors(HttpSession session) {
+        List<AccountAuthor> authors = serviceAccountAuthor.findAllAuthors();
+
+        List<DTO_View_AccountAuthorAsAnon> dtos = new ArrayList<>();
+        for (AccountAuthor a : authors) {
+            if (!a.isAccountActivated()) {
+                DTO_View_AccountAuthorAsAnon dto = new DTO_View_AccountAuthorAsAnon(a);
+                dtos.add(dto);
+            }
+        }
+
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
+    }
+
     // ITEMS
 
     @GetMapping("/api/items")
