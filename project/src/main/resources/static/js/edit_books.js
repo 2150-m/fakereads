@@ -128,6 +128,7 @@ async function edit_LoadItems(search = "") {
     const itemsJson = await responseItems.json();
     
     for (let i = 0; i < itemsJson.length; i++) {
+        console.log(itemsJson[i]);
         divEditBooks.append(edit_PopulateTable(itemsJson[i], i));
     }
 }

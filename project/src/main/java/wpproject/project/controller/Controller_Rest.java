@@ -221,6 +221,22 @@ public class Controller_Rest {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/api/author/mybooks")
+    public ResponseEntity<?> authorGetBooks(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+        AccountAuthor author = serviceAccountAuthor.findOne(user.getId());
+        if (author == null) { return new ResponseEntity<>("Not an author", HttpStatus.UNAUTHORIZED); }
+
+        List<Book> books = author.getBooks();
+        List<DTO_View_ShelfItem> dtos = new ArrayList<>();
+        for (Book b : books) {
+            DTO_View_ShelfItem dto = new DTO_View_ShelfItem(serviceShelfItem.findByBook(b));
+            dtos.add(dto);
+        }
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/api/books/{id}")
     public Book getBook(@PathVariable(name = "id") Long id, HttpSession session) {
         return serviceBook.findOne(id);
@@ -751,7 +767,7 @@ public class Controller_Rest {
 
     @PostMapping("/api/admin/additem")
     public ResponseEntity<String> addItemAdmin(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
-        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin"); }
 
         try {
             if (serviceBook.findByIsbn(DTOBook.getIsbn()) != null) {
@@ -770,28 +786,35 @@ public class Controller_Rest {
         }
     }
 
-    @PostMapping("/api/books/add")
-    public ResponseEntity<String> addItem(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
+    @PostMapping("/api/author/addbook")
+    public ResponseEntity<String> authorAddBook(@RequestBody DTO_Post_Book DTOBook, HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null) { System.err.println("[x] you have to be logged in"); return null; }
+        if (user == null) { return ResponseEntity.badRequest().body("Not logged in."); }
 
-        user = serviceAccount.findOne(user.getId());
-        if (user.getAccountRole() != Account_Role.AUTHOR) { System.err.println("[x] not author: " + user); return null; }
+        AccountAuthor author = serviceAccountAuthor.findOne(user.getId());
+        if (author == null) { return ResponseEntity.badRequest().body("Not an author."); }
 
         try {
-            // TODO: addgenres for the item
+            // Check if this book already exists, if it does, author(s) can claim it
+            Book book = serviceBook.findByIsbn(DTOBook.getIsbn());
+            if (book != null) {
+                // TODO check if another author has it
+                // TODO create a system where an admin has to approve this
 
-            if (serviceBook.findByIsbn(DTOBook.getIsbn()) != null) {
-                return ResponseEntity.badRequest().body("A book with the same ISBN (" + DTOBook.getIsbn() + ") is already in the database.");
+                author.getBooks().add(book);
+                serviceAccountAuthor.save(author);
+                return ResponseEntity.ok(book.getTitle().toUpperCase() + " added.");
             }
 
-            Book book = new Book(DTOBook.getTitle(), DTOBook.getCoverPhoto(), LocalDate.now(), DTOBook.getDescription(), DTOBook.getNumOfPages(), 0, DTOBook.getIsbn());
+            book = new Book(DTOBook.getTitle(), DTOBook.getCoverPhoto(), LocalDate.now(), DTOBook.getDescription(), DTOBook.getNumOfPages(), 0, DTOBook.getIsbn(), DTOBook.getGenres());
             serviceBook.save(book);
 
             ShelfItem item = new ShelfItem(book);
             serviceShelfItem.save(item);
 
-            return ResponseEntity.ok(book.getTitle().toUpperCase() + " (" + book.getId() + ") has been added to the database.");
+            author.getBooks().add(book);
+            serviceAccountAuthor.save(author);
+            return ResponseEntity.ok(book.getTitle().toUpperCase() + " added.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Could not add the item: " + e.getMessage());
         }
@@ -816,7 +839,12 @@ public class Controller_Rest {
 
     @PutMapping("/api/admin/update/item/{id}")
     public ResponseEntity<String> updateItem(@PathVariable("id") Long itemId, @RequestBody DTO_Post_Book newInfo, HttpSession session) {
-        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin;"); }
+//        if (!isAdmin(session)) { return ResponseEntity.badRequest().body("Not admin"); }
+        Account user = (Account) session.getAttribute("user");
+        if (user == null) { return new ResponseEntity<>("not logged in", HttpStatus.UNAUTHORIZED); }
+
+        user = serviceAccount.findOne(user.getId());
+        if (user.getAccountRole() != Account_Role.AUTHOR && user.getAccountRole() != Account_Role.ADMINISTRATOR) { return new ResponseEntity<>("You have to be an author or an admin.", HttpStatus.UNAUTHORIZED); }
 
         ShelfItem item = serviceShelfItem.findOne(itemId);
         if (item == null) { return ResponseEntity.badRequest().body("This item doesn't exist."); }

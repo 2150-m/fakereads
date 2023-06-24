@@ -113,19 +113,35 @@ public class Controller_Basic {
     }
 
     @GetMapping("/manage")
-    public String add(HttpSession session) {
+    public String manage(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
         if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
 
         return "manage.html";
     }
 
+    @GetMapping("/manage_author")
+    public String authorManage(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.AUTHOR) { return "forbidden.html"; }
+
+        return "manage_author.html";
+    }
+
     @GetMapping("/add/books")
     public String addBook(HttpSession session) {
         Account user = (Account) session.getAttribute("user");
-        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
+        if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR ) { return "forbidden.html"; }
 
         return "add_books.html";
+    }
+
+    @GetMapping("/add/books_author")
+    public String authorAddBook(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.AUTHOR ) { return "forbidden.html"; }
+
+        return "add_books_author.html";
     }
 
     @GetMapping("/add/genres")
@@ -150,6 +166,14 @@ public class Controller_Basic {
         if (user == null || user.getAccountRole() != Account_Role.ADMINISTRATOR) { return "forbidden.html"; }
 
         return "edit_books.html";
+    }
+
+    @GetMapping("/edit/books_author")
+    public String authorEditBooks(HttpSession session) {
+        Account user = (Account) session.getAttribute("user");
+        if (user == null || user.getAccountRole() != Account_Role.AUTHOR) { return "forbidden.html"; }
+
+        return "edit_books_author.html";
     }
 
     @GetMapping("/edit/authors")

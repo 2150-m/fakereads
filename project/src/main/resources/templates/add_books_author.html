@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+    <head>
+        <!-- MAIN -->
+        <meta charset="UTF-8">
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        <link rel="stylesheet" href="/css/main.css">
+
+        <title>ADD YOUR BOOK</title>
+        <link rel="stylesheet" href="/css/add_books.css">
+        <link rel="stylesheet" href="/css/dataform.css">
+    </head>
+    <body>
+        <div id="navbar"></div>
+
+        <h1>ADD YOUR BOOK</h1>
+
+        <div class="dataform" id="add_books">
+            <table>
+                <tr><th>TITLE:</th><td><input type="text" id="title" placeholder="Title"/></td></tr>
+                <tr><th>PHOTO:</th><td><input type="file" id="photo" accept="image/png, image/jpeg"/></td></tr>
+                <tr><th>RELEASE DATE:</th><td><input type="date" id="release_date" value="1970-01-01"/></td></tr>
+                <tr><th>DESCRIPTION:</th><td><input type="text" id="description" placeholder="Description"/></td></tr>
+                <tr><th>NUMBER OF PAGES:</th><td><input type="number" id="num_of_pages" placeholder="123" min="1" max="99999"/></td></tr>
+                <tr><th>ISBN:</th><td><input type="text" id="isbn" placeholder="123456789"/></td></tr>
+                <tr><th>GENRES:</th><td><select id="genres_select" multiple="true"></select></td></tr>
+            </table>
+            <button id="btn_add">ADD</button>
+            <p id="p_status">...</p>
+        </div>
+
+        <script type="text/javascript" src="/js/navbar.js"></script>
+        <script type="text/javascript" src="/js/add_books_author.js"></script>
+    </body>
+</html>

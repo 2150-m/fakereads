@@ -121,10 +121,10 @@ function edit_PopulateTable(item, idNum) {
 async function edit_LoadItems(search = "") {
     items_clear(divEditBooks);
 
-    let url = "/api/items";
-    if (search != "") { url = "/api/items/search=" + search; }
+    // let url = "/api/items";
+    // if (search != "") { url = "/api/items/search=" + search; }
 
-    const responseItems = await fetch(url);
+    const responseItems = await fetch("/api/author/mybooks");
     const itemsJson = await responseItems.json();
     
     for (let i = 0; i < itemsJson.length; i++) {
@@ -136,12 +136,12 @@ async function edit_LoadItems(search = "") {
 edit_LoadItems();
 
 // SEARCH
-let txt_search = document.getElementById("txt_search");
-let btn_search = document.getElementById("btn_search");
+// let txt_search = document.getElementById("txt_search");
+// let btn_search = document.getElementById("btn_search");
 
-function search() {
-    edit_LoadItems(txt_search.value);
-}
+// function search() {
+    // edit_LoadItems(txt_search.value);
+// }
 
-txt_search.addEventListener("keydown", function(event) { if (event.key == 'Enter') { search(); } }, false);
-btn_search.onclick = function() { search(); }
+// txt_search.addEventListener("keydown", function(event) { if (event.key == 'Enter') { search(); } }, false);
+// btn_search.onclick = function() { search(); }
