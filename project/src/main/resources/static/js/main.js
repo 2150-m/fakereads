@@ -50,8 +50,9 @@ function items_populate_makeitem_row_genres(genres) {
     return tr;
 }
 
-async function removeBookFromShelf(element, shelfId, bookId) {
-    const response = await fetch('/api/myaccount/shelves/' + shelfId + '/removebook/' + bookId, {
+async function removeBookFromShelf(element, shelfId, item) {
+    console.log(element);
+    const response = await fetch('/api/myaccount/shelves/' + shelfId + '/removebook/' + item.id, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -61,7 +62,10 @@ async function removeBookFromShelf(element, shelfId, bookId) {
 
     const text = await response.text();
     console.log(text);
-    if (response.ok) { element.parentNode.removeChild(element); }
+    if (response.ok) { 
+        element.parentNode.removeChild(element);
+        location.reload();
+    }
 }
 
 function items_populate_makeitem(item, shelfId = 0) {
@@ -78,13 +82,20 @@ function items_populate_makeitem(item, shelfId = 0) {
 
     let table = document.createElement("table");
 
+    console.log(i);
+
     table.append(items_populate_makeitem_row("TITLE:",        i.title, "/items/" + item.id));
     table.append(items_populate_makeitem_row("RELEASE DATE:", i.releaseDate));
     table.append(items_populate_makeitem_row("DESCRIPTION:",  i.description));
     table.append(items_populate_makeitem_row("NUM OF PAGES:", i.numOfPages));
     table.append(items_populate_makeitem_row("ISBN:",         i.isbn));
     table.append(items_populate_makeitem_row("RATING:",       i.rating));
-    table.append(items_populate_makeitem_row_genres(i.genres));
+
+    if (i.genres != null) {
+        table.append(items_populate_makeitem_row_genres(i.genres));
+    } else {
+        table.append(items_populate_makeitem_row_genres(i.bookGenres));
+    }
     
     span.append(table);
 
@@ -92,7 +103,7 @@ function items_populate_makeitem(item, shelfId = 0) {
         let button = document.createElement("button");
         button.className = "item_remove";
         button.innerHTML = "-";
-        button.onclick = function() { removeBookFromShelf(span, shelfId, item.id) }
+        button.onclick = function() { removeBookFromShelf(span, shelfId, i) }
 
         span.append(button);
     }

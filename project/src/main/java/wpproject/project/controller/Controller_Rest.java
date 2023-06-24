@@ -418,7 +418,7 @@ public class Controller_Rest {
             targetShelf = s;
             break;
         }
-        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find that shelf  in this user's shelf list."); }
+        if (!doesExist) { return ResponseEntity.badRequest().body("Could not find that shelf in this user's shelf list."); }
 
         return userRemoveBook(serviceAccount.findOne(user.getId()), serviceBook.findOne(bookId), targetShelf, inPrimaryShelf);
     }
@@ -447,8 +447,8 @@ public class Controller_Rest {
             }
         }
 
-        for (Shelf s : user.getShelves().subList(0, 3)) {
-            if (!s.getId().equals(targetShelf.getId())) { continue; }
+        for (Shelf s : user.getShelves()/*.subList(0, 3)*/) {
+//            if (!s.getId().equals(targetShelf.getId())) { continue; }
 
             Iterator<ShelfItem> iterator = s.getShelfItems().iterator();
             while (iterator.hasNext()) {
@@ -463,13 +463,13 @@ public class Controller_Rest {
 
                     iterator.remove();
                     serviceShelf.save(user.getShelves());
-
-                    return ResponseEntity.ok(msg);
                 }
             }
         }
 
-        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + targetShelf.getName().toUpperCase() + ".");
+        return ResponseEntity.ok(msg);
+
+//        return ResponseEntity.badRequest().body("Could not find " + book.getTitle().toUpperCase() + " (" + book.getId() + ") in " + targetShelf.getName().toUpperCase() + ".");
     }
 
 
